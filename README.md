@@ -1,2 +1,4 @@
-docker compose up -d --build
-http://localhost:8080/
+### How to start locally
+
+- git clone https://github.com/joelhackinen/projecthub.git
+- docker compose up -d --build
