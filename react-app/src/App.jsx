@@ -8,7 +8,6 @@ const App = () => {
     fetch('http://localhost:8080/api/')
       .then(response => response.json())
       .then(({ data }) => {
-        console.log(data);
         setMessage(data);
       })
       .catch(error => {
@@ -28,7 +27,7 @@ const App = () => {
   return (
     <div>
       <h1>{message}</h1>
-      <h2>These items are fetched from the database</h2>
+      <h2>These items are fetched from the database:</h2>
       <ul>
         {items.map(item => <li key={item.id}>{item.stuff}</li>)}
       </ul>
