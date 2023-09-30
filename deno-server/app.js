@@ -41,5 +41,5 @@ const handleRequest = async (request) => {
   }
 };
 
-const portConfig = { port: 7777, hostname: "0.0.0.0" };
+const portConfig = { port: 4000, hostname: "0.0.0.0" };
 Deno.serve(portConfig, handleRequest);

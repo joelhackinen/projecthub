@@ -35,7 +35,7 @@ services:
     volumes:
       - ./deno-server/:/usr/src/app
     ports:
-      - '7777:7777'
+      - '4000:4000'
     env_file:
       - project.dev.env
     depends_on:
