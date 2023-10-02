@@ -1,4 +1,5 @@
 node_modules
 .dockerignore
-dev.Dockerfile
+Dockerfile*
 .eslintrc.cjs
+dist
