@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import LoginPage from './components/LoginPage' 
 
 const App = () => {
   const [message, setMessage] = useState('');
@@ -31,6 +32,9 @@ const App = () => {
       <ul>
         {items.map(item => <li key={item.id}>{item.stuff}</li>)}
       </ul>
+
+
+      <LoginPage />
     </div>
   );
 };

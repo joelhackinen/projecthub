@@ -1,0 +1,103 @@
+/* Make background green */
+html { 
+  background-color: #053929;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+/*
+Page is split into a 2x6-grid:
+empty | Title  | empty      | empty
+empty | forms  | info text  | empty
+*/
+.login-page {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 4fr 4fr 1fr ;
+  min-width: 490px; /* Nää min/max leveydet korvataa bootstrapil sit joskus */
+  max-width: 1000px; /* Nää min/max leveydet korvataa bootstrapil sit joskus */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+}
+
+.login-title {
+  color: white;
+  grid-area: 1 / 2 / 2 / 3;   /* row-start / col-start / row-end / col-end */
+  text-align: center;
+  align-self: flex-end;
+  font-size: 32px;
+}
+
+.forms {
+  grid-area: 2 / 2 / 3 / 3;   /* row-start / col-start / row-end / col-end */
+  min-height: 400px; /* Hacky way to keep forms on the same level when toggling "Register" <-> "Sign in" */
+}
+.form {
+  background-color: #D2E4D6;
+  padding-top: 16px;
+  padding-bottom: 5px;
+}
+.form-navbar { /* Togglable register/Sign in buttons */
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  height: 50px;
+}
+.form-navbar .not-visible {
+  width: 45%;
+  height: 80%;
+  background-color: #5BC067;
+  border: none;
+  transition-duration: 0.1s;
+}
+.form-navbar .not-visible:hover {
+  height: 96%;
+  width: 48%;
+  font-size: 20px;
+  cursor: pointer;
+}
+.form-navbar .visible {
+  width: 50%;
+  height: 100%;
+  background-color: #D2E4D6;
+  border: none;
+  font-size: 20px;
+  margin-bottom: -1px; /* hides the gap */
+}
+
+.forms input {
+  display: block;
+  padding: 8px;
+  margin: 2px auto 5px auto; /* top, right, bottom, left */
+  width: 90%;
+  box-shadow: 4px 4px 3px rgba(0,0,0,0.2);
+  border:none;
+}
+
+.submit-button {
+  background-color: #5BC067;
+  border: none;
+  text-align: center;
+  font-weight: bold;
+  display: block;
+  margin: 1em auto 0.5em auto; /* top, right, bottom, left */
+  width: 80%;
+  box-shadow: 4px 4px 3px rgba(0,0,0,0.2);
+  padding: 5px;
+  cursor: pointer;
+  transition-duration: 0.1s;
+}
+.submit-button:hover {
+  background-color: #24ad34;
+}
+
+.info {
+  color: white;
+  font-size: large;
+  grid-area: 2 / 3 / 3 / 4;
+  padding-left: 0.5em;
+}
