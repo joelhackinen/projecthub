@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
-import LoginPage from './components/LoginPage.jsx';
+import MainPage from './components/MainPage.jsx';
 
 const appLoader = async () => {
   const [res1, res2, /*res3*/] = await Promise.all([
@@ -8,12 +8,6 @@ const appLoader = async () => {
     fetch('/api/dbtest'),
     //fetch('/api/whoami'),
   ]);
-  /*
-  const { user } = await res3.json();
-  if (!user) {
-    redirect("/login")
-  }
-  */
   return [ (await res1.json()).data, (await res2.json()) ];
 };
 
@@ -28,10 +22,29 @@ const router = createBrowserRouter([
     path: '/',
     element: <App />,
     loader: appLoader,
+    id: 'root',
     children: [
       {
-        path: '/login',
-        element: <LoginPage />,
+        path: '/',
+        element: <MainPage />,
+      },
+      {
+        path: '/dashboard',
+        element: <div>todo</div>,
+        children: [
+          {
+            path: '/dashboard/edit',
+            element: <div>todo</div>,
+          },
+        ],
+      },
+      {
+        path: '/:username',
+        loader: ({ params }) => {
+          console.log("username whose profile is to be rendered:", params.username);
+          return null;
+        },
+        element: <div>todo</div>,
       },
     ],
   },
