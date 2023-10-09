@@ -6,8 +6,8 @@ empty | forms  | info text  | empty
 .login-page {
   display: grid;
   grid-template-columns: 1fr 4fr 4fr 1fr ;
-  min-width: 490px; /* Nää min/max leveydet korvataa bootstrapil sit joskus */
-  max-width: 1000px; /* Nää min/max leveydet korvataa bootstrapil sit joskus */
+  min-width: 490px;
+  max-width: 1000px;
   margin: 10% auto;
 }
 
@@ -84,7 +84,32 @@ empty | forms  | info text  | empty
 
 .info {
   color: white;
-  font-size: large;
+  font-size: larger;
   grid-area: 2 / 3 / 3 / 4;
   padding-left: 0.5em;
+}
+
+.toggle-info-btn {
+  border: none;
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  font-size: large;
+  text-decoration: underline;
+}
+
+.more-info-paragraph {
+  line-height: 1;
+  margin-top: 8px;
+  transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+}
+.more-info-paragraph.show {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+.more-info-paragraph.hide {
+  visibility: hidden;
+  opacity: 0;
 }

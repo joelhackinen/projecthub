@@ -10,6 +10,7 @@ const LoginPage = () => {
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
+  const [showMoreInfo, setShowMoreInfo] = useState(false)
 
   const handleRegister = (e) => {
     e.preventDefault()
@@ -32,6 +33,11 @@ const LoginPage = () => {
   const handleSignInClick = (e) => {
     e.preventDefault()
     registerFormIsVisible && setRegisterFormIsVisible( !registerFormIsVisible )
+  }
+
+  const toggleReadMore = (e) => {
+    e.preventDefault()
+    setShowMoreInfo(!showMoreInfo)
   }
 
   const registerForm = () => (
@@ -95,10 +101,21 @@ const LoginPage = () => {
     </form>
   )
 
+  const moreInfoParagraph = () => (
+    <div className={`more-info-paragraph ${showMoreInfo ? "show" : "hide"}`}>
+      <p>
+        Here is some extra info on our website!
+        <br /><br />
+        Register to start creating your ProjectHub profile.
+      </p>
+    </div>
+  )
+
   return (
     <div className="login-page">
-      
-      <h1 className="login-title">Join today.</h1>
+      <h1 className="login-title">
+        Join today.
+      </h1>
       <div className="forms">
         <div className="form-navbar">
           <button className={registerFormIsVisible ? "visible" : "not-visible"}
@@ -114,7 +131,7 @@ const LoginPage = () => {
         </div>
         <div className="form">
           {registerFormIsVisible &&
-          registerForm() }
+          registerForm()}
           {!registerFormIsVisible &&
           loginForm() }
         </div>
@@ -126,7 +143,10 @@ const LoginPage = () => {
         <p>
           The ultimate platform for showcasing your programming projects and resume
         </p>
-        Read more..
+        <button className="toggle-info-btn" onClick={toggleReadMore}>
+            {showMoreInfo ? "Hide text.." : "Read more.."}
+        </button>
+        {moreInfoParagraph()}
       </div>
     </div>
   )
