@@ -39,64 +39,94 @@ const LoginPage = () => {
     e.preventDefault()
     setShowMoreInfo(!showMoreInfo)
   }
-
+  const togglePasswordVisibility = (e) => {
+    const eye = e.target
+    const password = e.target.previousSibling
+    password.type === "password" ? password.type = "text": password.type = "password"
+    eye.classList.toggle('fa-eye-slash');
+    console.log(eye, `\n`, password)
+  }
   const registerForm = () => (
     <form className="register-form" onSubmit={handleRegister}>
-      <input
-        type="text"
-        value={firstName}
-        name="firstName"
-        placeholder="First name"
-        onChange={({ target }) => setFirstName(target.value)}
-      />
-      <input
-        type="text"
-        value={lastName}
-        name="lastName"
-        placeholder="Last name"
-        onChange={({ target }) => setLastName(target.value)}
-      />
-      <input
-        type="text"
-        value={email}
-        name="email"
-        placeholder="Email"
-        onChange={({ target }) => setEmail(target.value)}
-      />
-      <input
-        type="password"
-        value={password}
-        name="password"
-        placeholder="Password"
-        onChange={({ target }) => setPassword(target.value)}
-      />
-      <input
-        type="password"
-        value={passwordConfirm}
-        name="passwordConfirm"
-        placeholder="Confirm password"
-        onChange={({ target }) => setPasswordConfirm(target.value)}
-      />
+      <div className="input-container">
+        <input
+          type="text"
+          value={firstName}
+          name="firstName"
+          placeholder="First name"
+          onChange={({ target }) => setFirstName(target.value)}
+        />
+      </div>
+      
+      <div className="input-container">
+        <input
+          type="text"
+          value={lastName}
+          name="lastName"
+          placeholder="Last name"
+          onChange={({ target }) => setLastName(target.value)}
+        />
+      </div>
+      
+      <div className="input-container">
+        <input
+          type="text"
+          value={email}
+          name="email"
+          placeholder="Email"
+          onChange={({ target }) => setEmail(target.value)}
+        />
+      </div>
+      
+      <div className="input-container">
+        <input
+          type="password"
+          value={password}
+          name="password"
+          placeholder="Password"
+          onChange={({ target }) => setPassword(target.value)}
+        />
+        <i className="fa fa-eye fa-eye-slash" id="eye"
+          onClick={(event) => togglePasswordVisibility(event)}></i>
+      </div>
+      <div className="input-container">
+        <input
+          type="password"
+          value={passwordConfirm}
+          name="passwordConfirm"
+          placeholder="Confirm password"
+          onChange={({ target }) => setPasswordConfirm(target.value)}
+        />
+        <i className="fa-solid fa-eye fa-eye-slash" id="eye"
+          onClick={(event) => togglePasswordVisibility(event)}></i>
+      </div>
+
       <button className="submit-button" type="submit">Register</button>
     </form>
   )
 
   const loginForm = () => (
     <form className="login-form" onSubmit={handleLogin}>
-      <input
-        type="text"
-        value={loginEmail}
-        name="loginEmail"
-        placeholder="Email"
-        onChange={({ target }) => setLoginEmail(target.value)}
-      />
-      <input
-        type="password"
-        value={loginPassword}
-        name="loginPassword"
-        placeholder="Password"
-        onChange={({ target }) => setLoginPassword(target.value)}
-      />
+      <div className="input-container">
+        <input
+          type="text"
+          value={loginEmail}
+          name="loginEmail"
+          placeholder="Email"
+          onChange={({ target }) => setLoginEmail(target.value)}
+        />
+      </div>
+      <div className="input-container">
+        <input
+          type="password"
+          value={loginPassword}
+          name="loginPassword"
+          placeholder="Password"
+          onChange={({ target }) => setLoginPassword(target.value)}
+        />
+        <i className="fa-solid fa-eye fa-eye-slash" id="eye"
+          onClick={(event) => togglePasswordVisibility(event)}></i>
+      </div>
       <button className="submit-button" type="submit">Sign in</button>
     </form>
   )

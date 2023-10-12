@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import MainPage from './components/MainPage.jsx';
+import UserDashboard from './components/UserDashboard.jsx';
 
 const appLoader = async () => {
   const [res1, res2, /*res3*/] = await Promise.all([
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/dashboard',
-        element: <div>todo</div>,
+        element: <UserDashboard />,
         children: [
           {
             path: '/dashboard/edit',
