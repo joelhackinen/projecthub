@@ -1,5 +1,10 @@
+import './../css/loginPage.css'
 import { useState } from 'react'
-import './../loginPage.css'
+import { useNavigate  } from 'react-router-dom'
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
 
 const LoginPage = () => {
   const [registerFormIsVisible, setRegisterFormIsVisible] = useState(true)
@@ -12,16 +17,29 @@ const LoginPage = () => {
   const [loginPassword, setLoginPassword] = useState('')
   const [showMoreInfo, setShowMoreInfo] = useState(false)
 
-  const handleRegister = (e) => {
+  const navigate = useNavigate()
+
+  const handleMockRegister = (e) => {
     e.preventDefault()
-    console.log(`register with:
-    First name: ${firstName}
-    Last name: ${lastName}
-    Email: ${email}
-    Password: ${password}
-    Password has no typos: ${password === passwordConfirm}`
-    )
+    window.localStorage.setItem('firstName', firstName)
+    window.localStorage.setItem('lastName', lastName)
+    window.localStorage.setItem('email', email)
+    
+    navigate('/dashboard')
   }
+
+  // const handleRegister = (e) => {
+  //   e.preventDefault()
+  //   console.log(`register with:
+  //   First name: ${firstName}
+  //   Last name: ${lastName}
+  //   Email: ${email}
+  //   Password: ${password}
+  //   Password has no typos: ${password === passwordConfirm}`
+  //   )
+  // }
+
+
   const handleLogin = (e) => {
     e.preventDefault()
     console.log(`login with email ${loginEmail} and password ${loginPassword}`)
@@ -44,10 +62,9 @@ const LoginPage = () => {
     const password = e.target.previousSibling
     password.type === "password" ? password.type = "text": password.type = "password"
     eye.classList.toggle('fa-eye-slash');
-    console.log(eye, `\n`, password)
   }
   const registerForm = () => (
-    <form className="register-form" onSubmit={handleRegister}>
+    <form className="register-form" onSubmit={handleMockRegister}>
       <div className="input-container">
         <input
           type="text"
@@ -141,44 +158,48 @@ const LoginPage = () => {
     </div>
   )
 
+
   return (
-    <div className="login-page">
-      <h1 className="login-title">
-        Join today.
-      </h1>
-      <div className="forms">
-        <div className="form-navbar">
-          <button className={registerFormIsVisible ? "visible" : "not-visible"}
-            onClick={handleRegisterClick}
-          >
-            Register
+    <Container className="login-page">
+      <Row> {/* Outer row */}
+        <Col xs={12} md={6}> {/* Left side */}
+          <h1 className="login-title">
+            Join today.
+          </h1>
+          <div className="forms">
+            <div className="form-navbar">
+              <button className={registerFormIsVisible ? "visible" : "not-visible"}
+                onClick={handleRegisterClick}
+              >
+                Register
+              </button>
+              <button className={registerFormIsVisible ? "not-visible" : "visible"}
+                onClick={handleSignInClick}
+              >
+                Sign in
+              </button>
+            </div>
+            <div className="form">
+              {registerFormIsVisible &&
+              registerForm()}
+              {!registerFormIsVisible &&
+              loginForm() }
+            </div>
+          </div>
+        </Col> {/* Left side */}
+
+        <Col xs={12} md={6} className="info mt-5 ml-lg-0"> {/* Right side */}
+          <h2 className="info-title">ProjectHub:</h2>
+          <p>
+            The ultimate platform for showcasing your programming projects and resume
+          </p>
+          <button className="toggle-info-btn" onClick={toggleReadMore}>
+              {showMoreInfo ? "See less.." : "Read more.."}
           </button>
-          <button className={registerFormIsVisible ? "not-visible" : "visible"}
-            onClick={handleSignInClick}
-          >
-            Sign in
-          </button>
-        </div>
-        <div className="form">
-          {registerFormIsVisible &&
-          registerForm()}
-          {!registerFormIsVisible &&
-          loginForm() }
-        </div>
-        
-      </div>
-      
-      <div className="info">
-        <h2>ProjectHub:</h2>
-        <p>
-          The ultimate platform for showcasing your programming projects and resume
-        </p>
-        <button className="toggle-info-btn" onClick={toggleReadMore}>
-            {showMoreInfo ? "Hide text.." : "Read more.."}
-        </button>
-        {moreInfoParagraph()}
-      </div>
-    </div>
+          {moreInfoParagraph()}
+        </Col> {/* Right side */}
+      </Row>{/* Outer row */}
+    </Container>
   )
 }
 

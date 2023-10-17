@@ -1,5 +1,5 @@
 /* Make background green */
-html { 
+body { 
   background-color: #053929;
   -webkit-background-size: cover;
   -moz-background-size: cover;

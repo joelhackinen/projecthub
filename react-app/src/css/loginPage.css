@@ -1,28 +1,16 @@
-/*
-Page is split into a 2x6-grid:
-empty | Title  | empty      | empty
-empty | forms  | info text  | empty
-*/
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600&family=Rokkitt&display=swap');
+
 .login-page {
-  display: grid;
-  grid-template-columns: 1fr 4fr 4fr 1fr ;
-  min-width: 490px;
-  max-width: 1000px;
-  margin: 10% auto;
+  margin: 15% auto;
 }
 
 .login-title {
   color: white;
-  grid-area: 1 / 2 / 2 / 3;   /* row-start / col-start / row-end / col-end */
   text-align: center;
-  align-self: flex-end;
   font-size: 32px;
+  font-family: 'Outfit', sans-serif;
 }
 
-.forms {
-  grid-area: 2 / 2 / 3 / 3;   /* row-start / col-start / row-end / col-end */
-  min-height: 400px; /* Hacky way to keep forms on the same level when toggling "Register" <-> "Sign in" */
-}
 .form {
   background-color: #D2E4D6;
   padding-top: 16px;
@@ -55,13 +43,12 @@ empty | forms  | info text  | empty
   font-size: 20px;
   margin-bottom: -1px; /* hides the gap */
 }
-
 .input-container {
   position: relative;
 }
 .input-container input {
   display: block;
-  padding: 8px;
+  padding: 5px;
   width: 90%;
   box-shadow: 4px 4px 3px rgba(0,0,0,0.2);
   border:none;
@@ -74,11 +61,9 @@ empty | forms  | info text  | empty
   cursor: pointer;
   color: lightgray;
 }
-
 .submit-button {
   background-color: #5BC067;
   border: none;
-  text-align: center;
   font-weight: bold;
   display: block;
   margin: 1em auto 0.5em auto; /* top, right, bottom, left */
@@ -91,21 +76,21 @@ empty | forms  | info text  | empty
 .submit-button:hover {
   background-color: #24ad34;
 }
-
+.info-title{
+  font-family: 'Outfit', sans-serif;
+}
 .info {
   color: white;
-  font-size: larger;
-  grid-area: 2 / 3 / 3 / 4;
-  padding-left: 0.5em;
+  font-size: xx-large;
+  margin: auto;
+  font-family: 'Rokkitt', serif;
 }
-
 .toggle-info-btn {
   border: none;
   background-color: transparent;
   color: inherit;
   cursor: pointer;
-  padding: 0;
-  font-size: large;
+  font-size: x-large;
   text-decoration: underline;
 }
 
@@ -113,6 +98,7 @@ empty | forms  | info text  | empty
   line-height: 1;
   margin-top: 8px;
   transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+  font-size: x-large;
 }
 .more-info-paragraph.show {
   visibility: visible;

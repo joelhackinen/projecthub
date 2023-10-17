@@ -1,0 +1,103 @@
+.login-page {
+  margin: 15% auto;
+}
+.login-title {
+  color: white;
+  text-align: center;
+  font-size: 32px;
+}
+
+.form {
+  background-color: #D2E4D6;
+  padding-top: 16px;
+  padding-bottom: 5px;
+}
+.form-navbar { /* Togglable register/Sign in buttons */
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  height: 50px;
+}
+.form-navbar .not-visible {
+  width: 45%;
+  height: 80%;
+  background-color: #5BC067;
+  border: none;
+  transition-duration: 0.1s;
+}
+.form-navbar .not-visible:hover {
+  height: 96%;
+  width: 48%;
+  font-size: 20px;
+  cursor: pointer;
+}
+.form-navbar .visible {
+  width: 50%;
+  height: 100%;
+  background-color: #D2E4D6;
+  border: none;
+  font-size: 20px;
+  margin-bottom: -1px; /* hides the gap */
+}
+.input-container {
+  position: relative;
+}
+.input-container input {
+  display: block;
+  padding: 5px;
+  width: 90%;
+  box-shadow: 4px 4px 3px rgba(0,0,0,0.2);
+  border:none;
+  margin: 2px auto 5px auto; /* top, right, bottom, left */
+}
+.fa-eye {
+  position: absolute;
+  top: 25%;
+  right: 8%;
+  cursor: pointer;
+  color: lightgray;
+}
+.submit-button {
+  background-color: #5BC067;
+  border: none;
+  font-weight: bold;
+  display: block;
+  margin: 1em auto 0.5em auto; /* top, right, bottom, left */
+  width: 80%;
+  box-shadow: 4px 4px 3px rgba(0,0,0,0.2);
+  padding: 5px;
+  cursor: pointer;
+  transition-duration: 0.1s;
+}
+.submit-button:hover {
+  background-color: #24ad34;
+}
+
+.info {
+  color: white;
+  font-size: larger;
+  margin: auto;
+}
+.toggle-info-btn {
+  border: none;
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: large;
+  text-decoration: underline;
+}
+
+.more-info-paragraph {
+  line-height: 1;
+  margin-top: 8px;
+  transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+}
+.more-info-paragraph.show {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+.more-info-paragraph.hide {
+  visibility: hidden;
+  opacity: 0;
+}
