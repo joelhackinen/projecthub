@@ -1,0 +1,48 @@
+version: "3.4"
+
+services:
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - '8080:80'
+    container_name: reverse-proxy
+    depends_on:
+      - react-app
+
+  react-app:
+    image: react-app
+    build:
+      context: ./react-app
+      dockerfile: Dockerfile.prod
+    container_name: react-app
+    env_file:
+      - project.dev.env
+    depends_on:
+      - deno-server
+
+  deno-server:
+    image: deno-server-dev
+    build:
+      context: ./deno-server
+      dockerfile: Dockerfile.dev.mac
+    restart: "no"
+    volumes:
+      - ./deno-server/:/usr/src/app
+    ports:
+      - '4000:4000'
+    env_file:
+      - project.dev.env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14.1
+    restart: "no"
+    volumes:
+      - ./database/db-init.sql/:/docker-entrypoint-initdb.d/db-init.sql
+      - ./database/postgres-data-dev:/var/lib/postgresql/data
+    container_name: postgres
+    env_file:
+      - project.dev.env
