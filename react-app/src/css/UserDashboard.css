@@ -3,7 +3,7 @@
   padding: 0 2rem;
 }
 .header-container {
-  background-color: #D2E4D6;
+  background-color: #d2e4d6;
   opacity: 60%;
   padding: 1rem 1rem;
 }
@@ -33,12 +33,11 @@
 }*/
 .main-info-container {
   justify-self: center;
-  background-color: #5BC067;
+  background-color: #5bc067;
 }
 
 .main-info-input {
   border: none;
-  background-color: #5BC067;
+  background-color: #5bc067;
   width: 12rem;
 }
-

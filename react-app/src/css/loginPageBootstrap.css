@@ -8,11 +8,12 @@
 }
 
 .form {
-  background-color: #D2E4D6;
+  background-color: #d2e4d6;
   padding-top: 16px;
   padding-bottom: 5px;
 }
-.form-navbar { /* Togglable register/Sign in buttons */
+.form-navbar {
+  /* Togglable register/Sign in buttons */
   display: flex;
   justify-content: space-between;
   align-items: end;
@@ -21,7 +22,7 @@
 .form-navbar .not-visible {
   width: 45%;
   height: 80%;
-  background-color: #5BC067;
+  background-color: #5bc067;
   border: none;
   transition-duration: 0.1s;
 }
@@ -34,7 +35,7 @@
 .form-navbar .visible {
   width: 50%;
   height: 100%;
-  background-color: #D2E4D6;
+  background-color: #d2e4d6;
   border: none;
   font-size: 20px;
   margin-bottom: -1px; /* hides the gap */
@@ -46,8 +47,8 @@
   display: block;
   padding: 5px;
   width: 90%;
-  box-shadow: 4px 4px 3px rgba(0,0,0,0.2);
-  border:none;
+  box-shadow: 4px 4px 3px rgba(0, 0, 0, 0.2);
+  border: none;
   margin: 2px auto 5px auto; /* top, right, bottom, left */
 }
 .fa-eye {
@@ -58,13 +59,13 @@
   color: lightgray;
 }
 .submit-button {
-  background-color: #5BC067;
+  background-color: #5bc067;
   border: none;
   font-weight: bold;
   display: block;
   margin: 1em auto 0.5em auto; /* top, right, bottom, left */
   width: 80%;
-  box-shadow: 4px 4px 3px rgba(0,0,0,0.2);
+  box-shadow: 4px 4px 3px rgba(0, 0, 0, 0.2);
   padding: 5px;
   cursor: pointer;
   transition-duration: 0.1s;
@@ -90,7 +91,9 @@
 .more-info-paragraph {
   line-height: 1;
   margin-top: 8px;
-  transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+  transition:
+    visibility 0s linear 0.33s,
+    opacity 0.33s linear;
 }
 .more-info-paragraph.show {
   visibility: visible;

@@ -1,20 +1,18 @@
-import '../../css/AppError.css';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import "../../css/AppError.css";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AppError = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     setTimeout(() => {
-      navigate('/');
+      navigate("/");
     }, 2000);
   }, []);
 
   return (
-    <div className='errorElement'>
-      something went wrong, redirecting...
-    </div>
+    <div className="errorElement">something went wrong, redirecting...</div>
   );
 };
 
