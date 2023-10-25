@@ -9,7 +9,7 @@
   5. application is running at http://localhost:8080/
 
 ##### mac (client-side hot reload doesn't work)
-  3. `docker compose up -f docker-compose.dev.mac.yml up -d --build`
+  3. `docker compose -f docker-compose.dev.mac.yml up -d --build`
   4. application is running at http://localhost:8080/
 
 #### ...and in production mode
