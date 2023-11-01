@@ -13,6 +13,14 @@ const appLoader = async () => {
   return [(await res1.json()).data, await res2.json()];
 };
 
+const dashboardLoader = () => {
+  document.body.style.backgroundColor  = "#C3C5C3";
+  return {}
+}
+const loginLoader = () => {
+  document.body.style.backgroundColor  = "#053929";
+  return {}
+}
 //tarvittavat api-kutsut voi tehä tuol routejen loadereissa nii periaattees ei enää tartte tunkee useEffectejä komponentteihin =D
 //loader on siis vaa funktio joka suoritetaan ennen ku routen komponentti renderöidää,
 //eli tismallee sama ku useEffect tyhjäl dependency arrayl
@@ -28,10 +36,12 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <MainPage />,
+        loader: loginLoader
       },
       {
         path: "/dashboard",
         element: <UserDashboard />,
+        loader: dashboardLoader,
         children: [
           {
             path: "/dashboard/edit",
