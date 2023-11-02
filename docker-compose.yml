@@ -46,7 +46,6 @@ services:
     restart: "no"
     volumes:
       - ./database/db-init.sql/:/docker-entrypoint-initdb.d/db-init.sql
-      - ./database/postgres-data-dev:/var/lib/postgresql/data
     container_name: postgres
     env_file:
       - project.dev.env
