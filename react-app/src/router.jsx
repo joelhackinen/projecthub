@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import App from "./App.jsx";
 import MainPage from "./components/MainPage.jsx";
 import UserDashboard from "./components/UserDashboard.jsx";
@@ -15,15 +15,33 @@ const appLoader = async () => {
 
 const dashboardLoader = () => {
   document.body.style.backgroundColor  = "#C3C5C3";
-  return {}
-}
+  return {};
+};
+
 const loginLoader = () => {
   document.body.style.backgroundColor  = "#053929";
-  return {}
-}
-//tarvittavat api-kutsut voi tehä tuol routejen loadereissa nii periaattees ei enää tartte tunkee useEffectejä komponentteihin =D
-//loader on siis vaa funktio joka suoritetaan ennen ku routen komponentti renderöidää,
-//eli tismallee sama ku useEffect tyhjäl dependency arrayl
+  return {};
+};
+
+const loginAction = async ({ request }) => {
+  const data = await request.formData();
+  const email = data.get("loginEmail");
+  const password = data.get("loginPassword");
+
+  const res = await fetch("/api/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    return redirect("/");
+  }
+
+  const user = await res.json();
+  console.log(user);
+  return redirect("/dashboard");
+};
+
 
 const router = createBrowserRouter([
   {
@@ -61,6 +79,10 @@ const router = createBrowserRouter([
         element: <div>todo</div>,
       },
     ],
+  },
+  {
+    path: "/login",
+    action: loginAction,
   },
 ]);
 

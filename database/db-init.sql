@@ -28,3 +28,19 @@ INSERT INTO users (firstname, lastname, email, pwhash, pwsalt) VALUES (
   'c2NyeXB0AA4AAAAIAAAAAeMrpefBPiPMdWqpnIAmJJOVi7K6eV7fxV0rQel9bpYcrwcBxTMGJowmzV74XL+zrvmlsLFegzsLwXtvqhDkSRPOvO6paHHr6cnbVp3KFVj7',
   '416941844475d76a'
 );
+
+CREATE TABLE projects (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  project_name TEXT NOT NULL,
+  description TEXT,
+  languages JSONB,
+  repo_url TEXT
+);
+
+INSERT INTO projects (user_id, project_name, description, repo_url) VALUES (
+  1,
+  'test project',
+  'test description for test project',
+  'https://github.com/joelhackinen/projecthub'
+);

@@ -1,6 +1,6 @@
 import "./../css/loginPage.css";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSubmit } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -15,6 +15,7 @@ const LoginPage = () => {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showMoreInfo, setShowMoreInfo] = useState(false);
+  const submit = useSubmit();
 
   const navigate = useNavigate();
 
@@ -40,6 +41,12 @@ const LoginPage = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
+
+    submit(
+      { loginEmail, loginPassword },
+      { method: "post", action: "/login" }
+    );
+
     console.log(`login with email ${loginEmail} and password ${loginPassword}`);
   };
   const handleRegisterClick = (e) => {

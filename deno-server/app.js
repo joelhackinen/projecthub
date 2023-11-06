@@ -1,13 +1,12 @@
 import { sql } from "./database.js";
 import { scrypt } from "./deps.js";
 
-const handleRoot = async (_request) => {
+const handleRoot = (_request) => {
   return Response.json({ "data": "This message came from the deno-server" });
 };
 
 const handleDBTest = async (_request) => {
   const rows = await sql`SELECT * FROM test_table;`;
-  console.log(rows);
   return Response.json(rows);
 };
 
@@ -16,16 +15,16 @@ const createUser = async (request) => {
   const { firstname, lastname, email, password, } = data;
 
   const errors = [];
-  if (firstname === undefined || firstname.length < 2) {
+  if (firstname === undefined || typeof(firstname) !== "string" || firstname.length < 2) {
     errors.push("invalid or missing first name");
   }
-  if (lastname === undefined || lastname.length < 2) {
+  if (lastname === undefined || typeof(lastname) !== "string" || lastname.length < 2) {
     errors.push("invalid or missing last name");
   }
-  if (email === undefined || email.length < 6) {
+  if (email === undefined || typeof(email) !== "string" || email.length < 6) {
     errors.push("invalid or missing email");
   }
-  if (password === undefined || password.length < 6) {
+  if (password === undefined || typeof(password) !== "string" || password.length < 6) {
     errors.push("invalid or missing password");
   }
 
@@ -63,10 +62,13 @@ const login = async (request) => {
   const rows = await sql`SELECT * FROM users WHERE email=${email};`;
   const user = rows[0];
   
-  const match = scrypt.verify(password + user.pwsalt, user.pwhash, "scrypt");
+  let match;
+  if (user) {
+    match = scrypt.verify(password + user.pwsalt, user.pwhash, "scrypt");
+  }
 
   if (!match) {
-    return Response.json({ error: "invalid username or password" }, { status: 401 });
+    return Response.json({ error: "invalid credentials" }, { status: 401 });
   }
 
   return Response.json({
