@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from "react";
 import "./../css/UserDashboard.css";
 import { useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
@@ -6,7 +6,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
 
-const Header = ({firstName, lastName, handleMockLogout}) => {
+const Header = ({ firstName, lastName, handleMockLogout }) => {
   return (
     <Row className="header-container">
       <Col xs={12} sm={8}>
@@ -29,39 +29,46 @@ const Header = ({firstName, lastName, handleMockLogout}) => {
         </Dropdown>
       </Col>
     </Row>
-  )
-}
+  );
+};
 
-const Project = ({idx}) => {
+const Project = ({ idx }) => {
   return (
     <Row className="project pt-4">
       <Col className="text-center" sm={12} md={4} lg={3}>
         <div className="proj-img-placeholder"></div>
       </Col>
-      <Col md={{order: idx % 2 ? 'last' : 'first'}}>
+      <Col md={{ order: idx % 2 ? "last" : "first" }}>
         <h4>Project {idx}</h4>
         <p>
-          Longer description of the project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          Longer description of the project. Lorem ipsum dolor sit amet,
+          consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+          exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+          dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+          proident, sunt in culpa qui officia deserunt mollit anim id est
+          laborum.
         </p>
       </Col>
     </Row>
-  )
-}
-const Projects = ({projects}) => {
+  );
+};
+const Projects = ({ projects }) => {
   return (
     <Container>
-      <Project idx={1}/>
-      <Project idx={2}/>
-      <Project idx={3}/>
-      <Project idx={4}/>
+      <Project idx={1} />
+      <Project idx={2} />
+      <Project idx={3} />
+      <Project idx={4} />
     </Container>
-  )
-}
+  );
+};
 
 const UserDashboard = () => {
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [location, setLocation] = useState('')
-  const [link, setLink] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [location, setLocation] = useState("");
+  const [link, setLink] = useState("");
 
   const firstName = window.localStorage.getItem("firstName");
   const lastName = window.localStorage.getItem("lastName");
@@ -76,30 +83,44 @@ const UserDashboard = () => {
   const mainInfo = (
     <>
       <Row className="text-center">
-        <h2>{firstName} {lastName}</h2>
+        <h2>
+          {firstName} {lastName}
+        </h2>
       </Row>
       <Row>
         <div className="image-placeholder"></div>
       </Row>
       <Row className="text-center">
         <span>{email}</span>
-        { phoneNumber !== '' ? <span>{phoneNumber}</span> : <input placeholder="phone number"/>}
-        { location !== '' ? <span>{location}</span> : <input placeholder="location"/>}
-        { link !== '' ? <span>{link}</span> : <input placeholder="link"/>}
+        {phoneNumber !== "" ? (
+          <span>{phoneNumber}</span>
+        ) : (
+          <input placeholder="phone number" />
+        )}
+        {location !== "" ? (
+          <span>{location}</span>
+        ) : (
+          <input placeholder="location" />
+        )}
+        {link !== "" ? <span>{link}</span> : <input placeholder="link" />}
       </Row>
       <Row>
         <h5>About me:</h5>
         <p>
-          A short introduction about who I am and any extra text I want to display that is not directly related to the projects.
+          A short introduction about who I am and any extra text I want to
+          display that is not directly related to the projects.
         </p>
       </Row>
     </>
   );
 
-  
   return (
     <Container className="user-dashboard">
-      <Header firstName={firstName} lastName={lastName} handleMockLogout={handleMockLogout} />
+      <Header
+        firstName={firstName}
+        lastName={lastName}
+        handleMockLogout={handleMockLogout}
+      />
       <Row>
         <Col className="p-3 main-info-container" xs={12} sm={4} md={3}>
           {mainInfo}
@@ -107,7 +128,6 @@ const UserDashboard = () => {
         <Col className="projects-container">
           <Projects></Projects>
         </Col>
-      
       </Row>
     </Container>
   );

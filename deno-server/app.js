@@ -34,13 +34,19 @@ const createUser = async (request) => {
   const passwordsalt = Array.from(uint8salt).map(byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
   const passwordhash = scrypt.hash(password + passwordsalt, "scrypt");
 
-  const userRow = await sql`INSERT INTO users (firstname, lastname, email, pwhash, pwsalt) VALUES (
-    ${firstname},
-    ${lastname},
-    ${email},
-    ${passwordhash},
-    ${passwordsalt}
-  ) RETURNING *;`;
+  let userRow;
+
+  try {
+    userRow = await sql`INSERT INTO users (firstname, lastname, email, pwhash, pwsalt) VALUES (
+      ${firstname},
+      ${lastname},
+      ${email},
+      ${passwordhash},
+      ${passwordsalt}
+    ) RETURNING *;`;
+  } catch (_e) {
+    return Response.json({ errors: ["email already in use"] }, { status: 400 })
+  }
 
   return Response.json(userRow[0], { status: 200 });
 };

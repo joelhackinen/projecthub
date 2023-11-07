@@ -1,6 +1,6 @@
 import "./../css/loginPage.css";
 import { useState } from "react";
-import { useNavigate, useSubmit } from "react-router-dom";
+import { useSubmit } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -17,35 +17,24 @@ const LoginPage = () => {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const submit = useSubmit();
 
-  const navigate = useNavigate();
-
-  const handleMockRegister = (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
-    window.localStorage.setItem("firstName", firstName);
-    window.localStorage.setItem("lastName", lastName);
-    window.localStorage.setItem("email", email);
+    if (password === passwordConfirm) {
+      window.localStorage.setItem("firstName", firstName);
+      window.localStorage.setItem("lastName", lastName);
+      window.localStorage.setItem("email", email);
 
-    navigate("/dashboard");
+      submit(
+        { firstName, lastName, email, password },
+        { method: "post", action: "/register" },
+      );
+    }
   };
-
-  // const handleRegister = (e) => {
-  //   e.preventDefault()
-  //   console.log(`register with:
-  //   First name: ${firstName}
-  //   Last name: ${lastName}
-  //   Email: ${email}
-  //   Password: ${password}
-  //   Password has no typos: ${password === passwordConfirm}`
-  //   )
-  // }
 
   const handleLogin = (e) => {
     e.preventDefault();
 
-    submit(
-      { loginEmail, loginPassword },
-      { method: "post", action: "/login" }
-    );
+    submit({ loginEmail, loginPassword }, { method: "post", action: "/login" });
 
     console.log(`login with email ${loginEmail} and password ${loginPassword}`);
   };
@@ -71,7 +60,7 @@ const LoginPage = () => {
     eye.classList.toggle("fa-eye-slash");
   };
   const registerForm = () => (
-    <form className="register-form" onSubmit={handleMockRegister}>
+    <form className="register-form" onSubmit={handleRegister}>
       <div className="input-container">
         <input
           type="text"

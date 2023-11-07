@@ -14,12 +14,12 @@ const appLoader = async () => {
 };
 
 const dashboardLoader = () => {
-  document.body.style.backgroundColor  = "#C3C5C3";
+  document.body.style.backgroundColor = "#C3C5C3";
   return {};
 };
 
 const loginLoader = () => {
-  document.body.style.backgroundColor  = "#053929";
+  document.body.style.backgroundColor = "#053929";
   return {};
 };
 
@@ -42,6 +42,35 @@ const loginAction = async ({ request }) => {
   return redirect("/dashboard");
 };
 
+const registerAction = async ({ request }) => {
+  const data = await request.formData();
+  const firstname = data.get("firstName");
+  const lastname = data.get("lastName");
+  const email = data.get("email");
+  const password = data.get("password");
+
+  const res = await fetch("/api/users", {
+    method: "POST",
+    body: JSON.stringify({
+      firstname,
+      lastname,
+      email,
+      password,
+    }),
+  });
+
+  const resObject = await res.json();
+
+  if (!res.ok) {
+    resObject.errors.forEach((error) => {
+      console.log(error);
+    });
+    return redirect("/");
+  }
+
+  console.log(resObject);
+  return redirect("/dashboard");
+};
 
 const router = createBrowserRouter([
   {
@@ -54,7 +83,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <MainPage />,
-        loader: loginLoader
+        loader: loginLoader,
       },
       {
         path: "/dashboard",
@@ -68,7 +97,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/:username",
+        path: "/user/:username",
         loader: ({ params }) => {
           console.log(
             "username whose profile is to be rendered:",
@@ -83,6 +112,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     action: loginAction,
+  },
+  {
+    path: "/register",
+    action: registerAction,
   },
 ]);
 
