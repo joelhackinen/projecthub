@@ -22,7 +22,7 @@ services:
       - '3000:3000'
     container_name: react-app-dev
     env_file:
-      - ./react-app/.env
+      - project.dev.env
     depends_on:
       - deno-server
 

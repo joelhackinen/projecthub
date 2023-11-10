@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile.prod
     container_name: react-app
     env_file:
-      - ./react-app/.env
+      - project.dev.env
     depends_on:
       - deno-server
 
