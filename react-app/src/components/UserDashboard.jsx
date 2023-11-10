@@ -5,6 +5,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
+import GithubButton from "./GithubButton";
 
 const Header = ({ firstName, lastName, handleMockLogout }) => {
   return (
@@ -110,6 +111,7 @@ const UserDashboard = () => {
           A short introduction about who I am and any extra text I want to
           display that is not directly related to the projects.
         </p>
+        <GithubButton />
       </Row>
     </>
   );

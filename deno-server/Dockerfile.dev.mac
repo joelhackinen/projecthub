@@ -2,6 +2,8 @@ FROM lukechannings/deno:v1.36.4
 
 EXPOSE 4000
 
+ENV MODE="development"
+
 WORKDIR /usr/src/app
 
 COPY deps.js .

@@ -1,129 +1,45 @@
-import { sql } from "./database.js";
-import { scrypt } from "./deps.js";
+import { Application, verify, decode } from "./deps.js";
+import githubRouter from "./routers/githubRouter.js";
+import userRouter from "./routers/userRouter.js";
+import authRouter from "./routers/authRouter.js";
 
-const handleRoot = (_request) => {
-  return Response.json({ "data": "This message came from the deno-server" });
+const MODE = Deno.env.get("MODE");
+
+export const key = await crypto.subtle.generateKey(
+  { name: "HMAC", hash: "SHA-512" },
+  true,
+  ["sign", "verify"],
+);
+
+const app = new Application();
+
+const checkAuth = async (context, next) => {
+  const getPayloadFromToken = async (token) => {
+    try {
+      if (MODE === "production") {
+        return await verify(token, key);
+      }
+      const [_header, _payload, _signature] = decode(token);
+      return _payload;
+    } catch (_error) {
+      return null;
+    }
+  };
+
+  const token = await context.cookies.get("token");
+  const payload = await getPayloadFromToken(token)
+
+  console.log(payload);
+  if (payload && payload.exp * 1000 >= Date.now()) {
+    context.state.email = payload.email;
+  }
+
+  await next();
 };
 
-const handleDBTest = async (_request) => {
-  const rows = await sql`SELECT * FROM test_table;`;
-  return Response.json(rows);
-};
+app.use(userRouter.routes());
+app.use(checkAuth);
+app.use(authRouter.routes());
+app.use(githubRouter.routes());
 
-const createUser = async (request) => {
-  const data = await request.json();
-  const { firstname, lastname, email, password, } = data;
-
-  const errors = [];
-  if (firstname === undefined || typeof(firstname) !== "string" || firstname.length < 2) {
-    errors.push("invalid or missing first name");
-  }
-  if (lastname === undefined || typeof(lastname) !== "string" || lastname.length < 2) {
-    errors.push("invalid or missing last name");
-  }
-  if (email === undefined || typeof(email) !== "string" || email.length < 6) {
-    errors.push("invalid or missing email");
-  }
-  if (password === undefined || typeof(password) !== "string" || password.length < 6) {
-    errors.push("invalid or missing password");
-  }
-
-  if (errors.length > 0) return Response.json({ errors }, { status: 400 });
-
-  const uint8salt = scrypt.genSalt(8, "Uint8Array");
-  const passwordsalt = Array.from(uint8salt).map(byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
-  const passwordhash = scrypt.hash(password + passwordsalt, "scrypt");
-
-  let userRow;
-
-  try {
-    userRow = await sql`INSERT INTO users (firstname, lastname, email, pwhash, pwsalt) VALUES (
-      ${firstname},
-      ${lastname},
-      ${email},
-      ${passwordhash},
-      ${passwordsalt}
-    ) RETURNING *;`;
-  } catch (_e) {
-    return Response.json({ errors: ["email already in use"] }, { status: 400 })
-  }
-
-  return Response.json(userRow[0], { status: 200 });
-};
-
-const login = async (request) => {
-  const errors = [];
-  const { email, password } = await request.json();
-  if (email === undefined || email === "") {
-    errors.push("email missing");
-  }
-  if (password === undefined || email === "") {
-    errors.push("password missing")
-  }
-
-  if (errors.length > 0) {
-    return Response.json({ errors }, { status: 400 });
-  }
-
-  const rows = await sql`SELECT * FROM users WHERE email=${email};`;
-  const user = rows[0];
-  
-  let match;
-  if (user) {
-    match = scrypt.verify(password + user.pwsalt, user.pwhash, "scrypt");
-  }
-
-  if (!match) {
-    return Response.json({ error: "invalid credentials" }, { status: 401 });
-  }
-
-  return Response.json({
-    firstname: user.firstname,
-    lastname: user.lastname,
-    email: user.email,
-  }, { status: 200 });
-};
-
-const urlMapping = [
-  {
-    method: "GET",
-    pattern: new URLPattern({ pathname: "/" }),
-    fn: handleRoot,
-  },
-  {
-    method: "GET",
-    pattern: new URLPattern({ pathname: "/dbtest" }),
-    fn: handleDBTest,
-  },
-  {
-    method: "POST",
-    pattern: new URLPattern({ pathname: "/users" }),
-    fn: createUser,
-  },
-  {
-    method: "POST",
-    pattern: new URLPattern({ pathname: "/login "}),
-    fn: login,
-  },
-];
-
-const handleRequest = async (request) => {
-  const mapping = urlMapping.find(
-    (um) => um.method === request.method && um.pattern.test(request.url)
-  );
-
-  if (!mapping) {
-    return new Response("Not found", { status: 404 });
-  }
-
-  const mappingResult = mapping.pattern.exec(request.url);
-  try {
-    return await mapping.fn(request, mappingResult);
-  } catch (e) {
-    console.log(e);
-    return new Response(e.stack, { status: 500 })
-  }
-};
-
-const portConfig = { port: 4000, hostname: "0.0.0.0" };
-Deno.serve(portConfig, handleRequest);
+await app.listen({ port: 4000, hostname: "0.0.0.0" });

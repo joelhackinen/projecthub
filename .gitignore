@@ -3,3 +3,4 @@ project.env
 database/postgres-data*
 **/dist
 .vscode
+.env

@@ -3,14 +3,36 @@ import App from "./App.jsx";
 import MainPage from "./components/MainPage.jsx";
 import UserDashboard from "./components/UserDashboard.jsx";
 import AppError from "./components/errorElements/AppError.jsx";
+import GithubError from "./components/errorElements/GithubError.jsx";
+
+let redirectFlag = false;
 
 const appLoader = async () => {
-  const [res1, res2 /*res3*/] = await Promise.all([
-    fetch("/api/"),
-    fetch("/api/dbtest"),
-    //fetch('/api/whoami'),
-  ]);
-  return [(await res1.json()).data, await res2.json()];
+  if (redirectFlag) {
+    return null;
+  }
+
+  const res = await fetch("/api/whoami");
+
+  if (!res.ok) {
+    redirectFlag = true;
+    return redirect("/");
+  }
+  redirectFlag = false;
+
+  const { firstname, lastname, email, github, url_name } = await res.json();
+
+  localStorage.setItem("firstName", firstname);
+  localStorage.setItem("lastName", lastname);
+  localStorage.setItem("email", email);
+
+  return {
+    firstName: firstname,
+    lastName: lastname,
+    email,
+    github,
+    url_name,
+  };
 };
 
 const dashboardLoader = () => {
@@ -72,6 +94,36 @@ const registerAction = async ({ request }) => {
   return redirect("/dashboard");
 };
 
+const githubAction = async () => {
+  if (import.meta.env.VITE_GITHUB_CLIENT_ID) {
+    return redirect(
+      `https://github.com/login/oauth/authorize?client_id=${
+        import.meta.env.VITE_GITHUB_CLIENT_ID
+      }`,
+    );
+  }
+  alert("ei toimi ihan vielä :D");
+  return redirect("/dashboard");
+};
+
+const githubCallbackLoader = async ({ request }) => {
+  const url = new URL(request.url);
+  const codeParam = url.searchParams.get("code");
+
+  const res = await fetch("/api/github/verifyUser", {
+    method: "POST",
+    body: JSON.stringify({ code: codeParam }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error);
+  }
+
+  return redirect("/dashboard");
+};
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -106,6 +158,17 @@ const router = createBrowserRouter([
           return null;
         },
         element: <div>todo</div>,
+      },
+      {
+        path: "/github",
+        action: githubAction,
+        errorElement: <GithubError />,
+        children: [
+          {
+            path: "/github/callback/*",
+            loader: githubCallbackLoader,
+          },
+        ],
       },
     ],
   },
