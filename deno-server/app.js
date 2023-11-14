@@ -37,8 +37,8 @@ const checkAuth = async (context, next) => {
   await next();
 };
 
-app.use(userRouter.routes());
 app.use(checkAuth);
+app.use(userRouter.routes());
 app.use(authRouter.routes());
 app.use(githubRouter.routes());
 

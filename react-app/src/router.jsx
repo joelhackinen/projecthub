@@ -64,6 +64,13 @@ const loginAction = async ({ request }) => {
   return redirect("/dashboard");
 };
 
+const logoutAction = async () => {
+  await fetch("/api/logout", {
+    method: "POST",
+  });
+  return redirect("/");
+};
+
 const registerAction = async ({ request }) => {
   const data = await request.formData();
   const firstname = data.get("firstName");
@@ -175,6 +182,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     action: loginAction,
+  },
+  {
+    path: "/logout",
+    action: logoutAction,
   },
   {
     path: "/register",

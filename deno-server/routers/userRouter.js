@@ -11,6 +11,12 @@ const setJWT = async (user, context) => {
 
 router.post("/users", async (context) => {
   const { request, response } = context;
+
+  if (context.state.email) {
+    response.status = 409;
+    return response.body = { error: "already logged in" };
+  }
+
   const body = request.body({ type: "json" });
   const data = await body.value;
   const { firstname, lastname, email, password } = data;
@@ -64,9 +70,14 @@ router.post("/users", async (context) => {
 });
 
 
-
 router.post("/login", async (context) => {
   const { request, response } = context;
+
+  if (context.state.email) {
+    response.status = 409;
+    return response.body = { error: "already logged in" };
+  }
+
   const body = request.body({ type: "json" });
   const data = await body.value;
   const { email, password } = data;
@@ -106,6 +117,17 @@ router.post("/login", async (context) => {
     lastname: user.lastname,
     email: user.email,
   };
+});
+
+
+router.post("/logout", (context) => {
+  const { response } = context;
+  if (!context.state.email) {
+    return response.status = 401;
+  }
+
+  context.cookies.delete("token");
+  response.status = 204;
 });
 
 

@@ -1,13 +1,15 @@
 import { useState } from "react";
 import "./../css/UserDashboard.css";
-import { useNavigate } from "react-router-dom";
+import { useSubmit } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
 import GithubButton from "./GithubButton";
 
-const Header = ({ firstName, lastName, handleMockLogout }) => {
+const Header = ({ firstName, lastName }) => {
+  const submit = useSubmit();
+
   return (
     <Row className="header-container">
       <Col xs={12} sm={8}>
@@ -23,7 +25,7 @@ const Header = ({ firstName, lastName, handleMockLogout }) => {
           <Dropdown.Menu>
             <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
             <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-            <Dropdown.Item onClick={() => handleMockLogout()}>
+            <Dropdown.Item onClick={() => submit(null, { method: "post", action: "/logout" })}>
               Log out
             </Dropdown.Item>
           </Dropdown.Menu>
@@ -74,12 +76,7 @@ const UserDashboard = () => {
   const firstName = window.localStorage.getItem("firstName");
   const lastName = window.localStorage.getItem("lastName");
   const email = window.localStorage.getItem("email");
-  const navigate = useNavigate();
 
-  const handleMockLogout = () => {
-    window.localStorage.clear();
-    navigate("/");
-  };
 
   const mainInfo = (
     <>
@@ -121,7 +118,6 @@ const UserDashboard = () => {
       <Header
         firstName={firstName}
         lastName={lastName}
-        handleMockLogout={handleMockLogout}
       />
       <Row>
         <Col className="p-3 main-info-container" xs={12} sm={4} md={3}>
