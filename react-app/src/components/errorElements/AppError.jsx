@@ -1,6 +1,7 @@
 import "../../css/AppError.css";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRouteError } from "react-router-dom";
 
 const AppError = () => {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ const AppError = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       navigate("/");
-    }, 2000);
+    }, 3000);
 
     return () => clearTimeout(timeout);
   }, []);

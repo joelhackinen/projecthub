@@ -4,6 +4,7 @@ import { useSubmit } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { Form } from "react-router-dom";
 
 const LoginPage = () => {
   const [registerFormIsVisible, setRegisterFormIsVisible] = useState(true);
@@ -31,13 +32,6 @@ const LoginPage = () => {
     }
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    submit({ loginEmail, loginPassword }, { method: "post", action: "/login" });
-
-    console.log(`login with email ${loginEmail} and password ${loginPassword}`);
-  };
   const handleRegisterClick = (e) => {
     e.preventDefault();
     !registerFormIsVisible && setRegisterFormIsVisible(!registerFormIsVisible);
@@ -127,7 +121,7 @@ const LoginPage = () => {
   );
 
   const loginForm = () => (
-    <form className="login-form" onSubmit={handleLogin}>
+    <Form className="login-form" action="/login" method="post">
       <div className="input-container">
         <input
           type="text"
@@ -154,7 +148,7 @@ const LoginPage = () => {
       <button className="submit-button" type="submit">
         Sign in
       </button>
-    </form>
+    </Form>
   );
 
   const moreInfoParagraph = () => (

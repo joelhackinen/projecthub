@@ -22,10 +22,6 @@ const appLoader = async () => {
 
   const { firstname, lastname, email, github, url_name } = await res.json();
 
-  localStorage.setItem("firstName", firstname);
-  localStorage.setItem("lastName", lastname);
-  localStorage.setItem("email", email);
-
   return {
     firstName: firstname,
     lastName: lastname,
