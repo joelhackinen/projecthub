@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const AppError = () => {
   const navigate = useNavigate();
+  const error = useRouteError();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -14,7 +15,10 @@ const AppError = () => {
   }, []);
 
   return (
-    <div className="errorElement">something went wrong, redirecting...</div>
+    <div className="errorElement" style={{ color: "red" }}>
+      <div>something went wrong, redirecting...</div>
+      <div>{import.meta.env.MODE === "development" && error?.message}</div>
+    </div>
   );
 };
 

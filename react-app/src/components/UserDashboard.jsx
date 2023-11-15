@@ -25,7 +25,11 @@ const Header = ({ firstName, lastName }) => {
           <Dropdown.Menu>
             <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
             <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-            <Dropdown.Item onClick={() => submit(null, { method: "post", action: "/logout" })}>
+            <Dropdown.Item
+              onClick={() =>
+                submit(null, { method: "post", action: "/logout" })
+              }
+            >
               Log out
             </Dropdown.Item>
           </Dropdown.Menu>
@@ -77,7 +81,6 @@ const UserDashboard = () => {
   const lastName = window.localStorage.getItem("lastName");
   const email = window.localStorage.getItem("email");
 
-
   const mainInfo = (
     <>
       <Row className="text-center">
@@ -115,10 +118,7 @@ const UserDashboard = () => {
 
   return (
     <Container className="user-dashboard">
-      <Header
-        firstName={firstName}
-        lastName={lastName}
-      />
+      <Header firstName={firstName} lastName={lastName} />
       <Row>
         <Col className="p-3 main-info-container" xs={12} sm={4} md={3}>
           {mainInfo}

@@ -97,20 +97,19 @@ const registerAction = async ({ request }) => {
     return redirect("/");
   }
 
-  console.log(resObject);
   return redirect("/dashboard");
 };
 
 const githubAction = async () => {
-  if (import.meta.env.VITE_GITHUB_CLIENT_ID) {
-    return redirect(
-      `https://github.com/login/oauth/authorize?client_id=${
-        import.meta.env.VITE_GITHUB_CLIENT_ID
-      }`,
-    );
+  if (!import.meta.env.VITE_GITHUB_CLIENT_ID) {
+    throw Error("Github client id missing");
   }
-  alert("ei toimi ihan vielä :D");
-  return redirect("/dashboard");
+
+  return redirect(
+    `https://github.com/login/oauth/authorize?client_id=${
+      import.meta.env.VITE_GITHUB_CLIENT_ID
+    }`,
+  );
 };
 
 const githubCallbackLoader = async ({ request }) => {
