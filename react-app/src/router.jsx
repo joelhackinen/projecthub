@@ -1,10 +1,11 @@
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { createBrowserRouter, defer, redirect } from "react-router-dom";
 import App from "./App.jsx";
 import MainPage from "./components/MainPage.jsx";
 import UserDashboard from "./components/UserDashboard.jsx";
 import AppError from "./components/errorElements/AppError.jsx";
 import GithubError from "./components/errorElements/GithubError.jsx";
 import { whoAmI, login, register, logout } from "./services/auth";
+import GithubCallback from "./components/GithubCallback.jsx";
 
 let redirectFlag = false;
 
@@ -92,18 +93,25 @@ const githubCallbackLoader = async ({ request }) => {
   const url = new URL(request.url);
   const codeParam = url.searchParams.get("code");
 
-  const res = await fetch("/api/github/verifyUser", {
+  const userRes = await fetch("/api/github/verifyUser", {
     method: "POST",
     body: JSON.stringify({ code: codeParam }),
   });
 
-  const data = await res.json();
+  const userData = await userRes.json();
 
-  if (!res.ok) {
-    throw new Error(data.error);
+  if (!userRes.ok) {
+    throw new Error(userData.error);
   }
 
-  return redirect("/dashboard");
+  const repoRes = fetch("/api/github/fetchRepos", {
+    method: "POST",
+    body: JSON.stringify({ github_token: userData.github_token }),
+  });
+
+  return defer({
+    repos: repoRes.then((res) => res.json())
+  });
 };
 
 const router = createBrowserRouter([
@@ -147,8 +155,9 @@ const router = createBrowserRouter([
         errorElement: <GithubError />,
         children: [
           {
-            path: "/github/callback/*",
+            path: "/github/callback",
             loader: githubCallbackLoader,
+            element: <GithubCallback />,
           },
         ],
       },

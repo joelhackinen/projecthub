@@ -31,15 +31,19 @@ INSERT INTO users (firstname, lastname, email, pwhash, pwsalt) VALUES (
 
 CREATE TABLE projects (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id),
-  project_name TEXT NOT NULL,
+  user_email TEXT REFERENCES users(email),
+  owner TEXT,
+  name TEXT NOT NULL,
+  full_name TEXT,
   description TEXT,
   languages JSONB,
-  repo_url TEXT
+  html_url TEXT,
+  created_at TIMESTAMPTZ,
+  visible BOOLEAN DEFAULT false NOT NULL
 );
 
-INSERT INTO projects (user_id, project_name, description, repo_url) VALUES (
-  1,
+INSERT INTO projects (user_email, name, description, html_url) VALUES (
+  'test@test.com',
   'test project',
   'test description for test project',
   'https://github.com/joelhackinen/projecthub'

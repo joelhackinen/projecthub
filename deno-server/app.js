@@ -2,6 +2,7 @@ import { Application } from "./deps.js";
 import githubRouter from "./routers/githubRouter.js";
 import userRouter from "./routers/userRouter.js";
 import authRouter from "./routers/authRouter.js";
+import repoRouter from "./routers/reporouter.js";
 import { checkAuth } from "./middleware/index.js";
 
 export const key = await crypto.subtle.generateKey(
@@ -16,5 +17,6 @@ app.use(checkAuth);
 app.use(userRouter.routes());
 app.use(authRouter.routes());
 app.use(githubRouter.routes());
+app.use(repoRouter.routes());
 
 await app.listen({ port: 4000, hostname: "0.0.0.0" });

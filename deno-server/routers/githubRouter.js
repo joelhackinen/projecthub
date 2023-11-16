@@ -6,8 +6,10 @@ const CLIENT_SECRET = Deno.env.get("CLIENT_SECRET");
 
 const router = new Router();
 
-router.post("/github/verifyUser", async (context) => {
-  const { request, response } = context;
+router.post("/github/verifyUser", async ({ request, response, state }) => {
+  if (!state.email) {
+    return response.status = 401;
+  }
   const body = request.body({ type: "json" });
   const { code } = await body.value;
 
@@ -50,7 +52,7 @@ router.post("/github/verifyUser", async (context) => {
   const userData = await userResponse.json();
 
   try {
-    await sql`UPDATE users SET github = ${userData.login} WHERE email = ${context.state.email};`;
+    await sql`UPDATE users SET github = ${userData.login} WHERE email = ${state.email};`;
   } catch(e) {
     console.log(e);
     response.status = 400;
@@ -58,7 +60,54 @@ router.post("/github/verifyUser", async (context) => {
   }
 
   response.status = 200;
-  response.body = userData;
+  response.body = { github_token: data.access_token };
+});
+
+
+router.post("/github/fetchRepos", async ({ request, response, state }) => {
+  if (!state.email) {
+    return response.status = 401;
+  }
+
+  const body = request.body({ type: "json" });
+  const { github_token } = await body.value;
+
+  const repoResponse = await fetch("https://api.github.com/user/repos?visibility=all", {
+    method: "GET",
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": `Bearer ${github_token}`,
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  });
+
+  if (!repoResponse.ok) {
+    response.status = 400;
+    return response.body = { error: "error fetching repos from github" };
+  }
+
+  const repoData = await repoResponse.json();
+
+  let existingRepos;
+  try {
+    existingRepos = await sql`SELECT * FROM projects WHERE user_email = ${state.email};`;
+  } catch (error) {
+    console.log(error);
+    return response.status = 500;
+  }
+
+  const repos = repoData.map(r => ({
+    owner: r.owner.login,
+    name: r.name,
+    full_name: r.full_name,
+    html_url: r.html_url,
+    created_at: r.created_at,
+  }));
+
+  const existingRepoNames = existingRepos.map(r => r.name);
+
+  response.status = 200;
+  response.body = repos.filter(r => !existingRepoNames.includes(r.name));
 });
 
 export default router;
