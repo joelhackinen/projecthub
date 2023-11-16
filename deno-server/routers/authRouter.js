@@ -4,13 +4,12 @@ import { Router } from "../deps.js";
 const router = new Router();
 
 router.get("/whoami", async (context) => {
-  const { response } = context;
-  const email = context.state.email;
+  const { response, state } = context;
 
   let userRow;
 
   try {
-    userRow = await sql`SELECT firstname, lastname, email, github, url_name FROM users WHERE email = ${email};`;
+    userRow = await sql`SELECT firstname, lastname, email, github, url_name FROM users WHERE email = ${state.email};`;
   } catch(_e) {
     return response.status = 401;
   }

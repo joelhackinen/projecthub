@@ -6,6 +6,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
 import GithubButton from "./GithubButton";
+import { useUser } from "../hooks";
 
 const Header = ({ firstName, lastName }) => {
   const submit = useSubmit();
@@ -73,13 +74,14 @@ const Projects = ({ projects }) => {
 };
 
 const UserDashboard = () => {
+  const user = useUser();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [location, setLocation] = useState("");
   const [link, setLink] = useState("");
 
-  const firstName = window.localStorage.getItem("firstName");
-  const lastName = window.localStorage.getItem("lastName");
-  const email = window.localStorage.getItem("email");
+  const firstName = user?.firstname;
+  const lastName = user?.lastname
+  const email = user?.email;
 
   const mainInfo = (
     <>

@@ -4,17 +4,20 @@ import { key } from "../app.js";
 
 const router = new Router();
 
-const setJWT = async (user, context) => {
-  const jwt = await create({ alg: "HS512", typ: "JWT" }, { email: user.email, exp: getNumericDate(60 * 60) }, key);
-  context.cookies.set("token", jwt, { httpOnly: true })
+const setJWT = async (user, cookies) => {
+  const jwt = await create(
+    { alg: "HS512", typ: "JWT" },
+    { email: user.email, exp: getNumericDate(60 * 60) },
+    key
+  );
+
+  cookies.set("token", jwt, { httpOnly: true })
 };
 
-router.post("/users", async (context) => {
-  const { request, response } = context;
-
-  if (context.state.email) {
+router.post("/users", async ({ request, response, state, cookies }) => {
+  if (state.email) {
     response.status = 409;
-    return response.body = { error: "already logged in" };
+    return response.body = { errors: ["already logged in"] };
   }
 
   const body = request.body({ type: "json" });
@@ -58,24 +61,24 @@ router.post("/users", async (context) => {
     response.status = 400;
     return response.body = { errors: ["email already in use"] };
   }
+  const { _pwhash, _pwsalt, ...user } = userRow[0];
 
-  await setJWT(userRow[0], context);
+  try {
+    await setJWT(user, cookies);
+  } catch (_e) {
+    response.status = 500;
+    return response.body = { errors: ["JWT creation error"] };
+  }
 
   response.status = 200;
-  response.body = {
-    firstname: userRow[0].firstname,
-    lastname: userRow[0].lastname,
-    email: userRow[0].email,
-  };
+  response.body = user;
 });
 
 
-router.post("/login", async (context) => {
-  const { request, response } = context;
-
-  if (context.state.email) {
+router.post("/login", async ({ request, response, state, cookies }) => {
+  if (state.email) {
     response.status = 409;
-    return response.body = { error: "already logged in" };
+    return response.body = { errors: ["already logged in"] };
   }
 
   const body = request.body({ type: "json" });
@@ -83,7 +86,7 @@ router.post("/login", async (context) => {
   const { email, password } = data;
 
   const errors = [];
-  
+
   if (email === undefined || email === "") {
     errors.push("email missing");
   }
@@ -96,37 +99,39 @@ router.post("/login", async (context) => {
     return response.body = { errors };
   }
 
-  const rows = await sql`SELECT * FROM users WHERE email=${email};`;
-  const user = rows[0];
-  
-  let match;
-  if (user) {
-    match = scrypt.verify(password + user.pwsalt, user.pwhash, "scrypt");
+  const rows = await sql`SELECT firstname, pwsalt, pwhash, lastname, email, github, url_name FROM users WHERE email = ${email};`;
+
+  if (!rows[0]) {
+    response.status = 401;
+    return response.body = { errors: ["invalid credentials"] };
   }
+
+  const { pwsalt, pwhash, ...user } = rows[0];
+  const match = scrypt.verify(password + pwsalt, pwhash, "scrypt");
 
   if (!match) {
     response.status = 401;
-    return response.body = { error: "invalid credentials" };
+    return response.body = { errors: ["invalid credentials"] };
   }
 
-  await setJWT(user, context);
-
-  response.status = 200;
-  response.body = {
-    firstname: user.firstname,
-    lastname: user.lastname,
-    email: user.email,
-  };
+  try {
+    await setJWT(user, cookies);
+  } catch (_e) {
+    response.status = 500;
+    return response.body = { errors: ["JWT creation error"] };
+  }
+  
+  response.status = 201;
+  response.body = user;
 });
 
 
-router.post("/logout", (context) => {
-  const { response } = context;
-  if (!context.state.email) {
+router.post("/logout", ({ response, state, cookies }) => {
+  if (!state.email) {
     return response.status = 401;
   }
 
-  context.cookies.delete("token");
+  cookies.delete("token");
   response.status = 204;
 });
 

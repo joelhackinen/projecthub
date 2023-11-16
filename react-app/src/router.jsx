@@ -4,6 +4,7 @@ import MainPage from "./components/MainPage.jsx";
 import UserDashboard from "./components/UserDashboard.jsx";
 import AppError from "./components/errorElements/AppError.jsx";
 import GithubError from "./components/errorElements/GithubError.jsx";
+import { whoAmI, login, register, logout } from "./services/auth";
 
 let redirectFlag = false;
 
@@ -12,23 +13,15 @@ const appLoader = async () => {
     return null;
   }
 
-  const res = await fetch("/api/whoami");
+  const userData = await whoAmI();
 
-  if (!res.ok) {
+  if (!userData) {
     redirectFlag = true;
     return redirect("/");
   }
   redirectFlag = false;
 
-  const { firstname, lastname, email, github, url_name } = await res.json();
-
-  return {
-    firstName: firstname,
-    lastName: lastname,
-    email,
-    github,
-    url_name,
-  };
+  return userData;
 };
 
 const dashboardLoader = () => {
@@ -46,24 +39,23 @@ const loginAction = async ({ request }) => {
   const email = data.get("loginEmail");
   const password = data.get("loginPassword");
 
-  const res = await fetch("/api/login", {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-  });
-
-  if (!res.ok) {
+  try {
+    await login(email, password);
+  } catch (e) {
+    console.error(e);
     return redirect("/");
   }
 
-  const user = await res.json();
-  console.log(user);
   return redirect("/dashboard");
 };
 
 const logoutAction = async () => {
-  await fetch("/api/logout", {
-    method: "POST",
-  });
+  try {
+    await logout();
+  } catch (e) {
+    console.error(e);
+  }
+
   return redirect("/");
 };
 
@@ -74,22 +66,10 @@ const registerAction = async ({ request }) => {
   const email = data.get("email");
   const password = data.get("password");
 
-  const res = await fetch("/api/users", {
-    method: "POST",
-    body: JSON.stringify({
-      firstname,
-      lastname,
-      email,
-      password,
-    }),
-  });
-
-  const resObject = await res.json();
-
-  if (!res.ok) {
-    resObject.errors.forEach((error) => {
-      console.log(error);
-    });
+  try {
+    await register(firstname, lastname, email, password);
+  } catch (e) {
+    console.error(e);
     return redirect("/");
   }
 
