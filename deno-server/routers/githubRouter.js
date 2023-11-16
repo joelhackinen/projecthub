@@ -37,7 +37,7 @@ router.post("/github/verifyUser", async (context) => {
     method: "GET",
     headers: {
       "Accept": "application/vnd.github+json",
-      "Authorization": data.access_token,
+      "Authorization": `Bearer ${data.access_token}`,
       "X-GitHub-Api-Version": "2022-11-28",
     },
   });
@@ -50,7 +50,7 @@ router.post("/github/verifyUser", async (context) => {
   const userData = await userResponse.json();
 
   try {
-    await sql`UPDATE users SET login = ${userData.login} WHERE email = ${context.state.email};`;
+    await sql`UPDATE users SET github = ${userData.login} WHERE email = ${context.state.email};`;
   } catch(e) {
     console.log(e);
     response.status = 400;

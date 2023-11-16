@@ -34,8 +34,6 @@ services:
       - ./deno-server/:/usr/src/app
     ports:
       - '4000:4000'
-    env_file:
-      - project.dev.env
     depends_on:
       - db
 
@@ -45,5 +43,7 @@ services:
     volumes:
       - ./database/db-init.sql/:/docker-entrypoint-initdb.d/db-init.sql
     container_name: postgres
-    env_file:
-      - project.dev.env
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=db

@@ -26,8 +26,6 @@ services:
       context: ./deno-server
       dockerfile: Dockerfile.prod
     restart: "on-failure"
-    env_file:
-      - project.dev.env
     depends_on:
       - db
 
@@ -37,5 +35,7 @@ services:
     volumes:
       - ./database/db-init.sql/:/docker-entrypoint-initdb.d/db-init.sql
     container_name: postgres
-    env_file:
-      - project.dev.env
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=db
