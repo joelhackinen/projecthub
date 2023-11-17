@@ -1,0 +1,42 @@
+.public-container {
+  max-width: 60rem;
+  padding: 0 2rem;
+}
+.public-header-container {
+  background-color: #d2e4d6;
+  opacity: 60%;
+  padding: 1rem 1rem;
+}
+.public-header-text {
+  font-size: x-large;
+}
+.public-header-dropdown {
+  background-color: #78fb87;
+  width: 90%;
+}
+.public-header-dropdown:hover {
+  background-color: #65d772;
+}
+
+.public-main-info-container {
+  background-color: #053929;
+  color: white;
+}
+
+.public-projects-container {
+  width: 100%;
+  background: linear-gradient(#d2e4d6, #5bc067);
+}
+.public-image-placeholder {
+  width: 150px;
+  height: 150px;
+  border-radius: 75px;
+  margin: 1em auto;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+.public-proj-img-placeholder {
+  width: 150px;
+  height: 150px;
+  margin-right: 1em;
+  background-color: #053929;
+}

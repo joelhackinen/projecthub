@@ -2,41 +2,30 @@
   max-width: 60rem;
   padding: 0 2rem;
 }
-.header-container {
-  background-color: #d2e4d6;
-  opacity: 60%;
-  padding: 1rem 1rem;
-}
-.header-text {
-  font-size: x-large;
-}
-.header-dropdown {
-  background-color: #78fb87;
-  width: 90%;
-}
-.header-dropdown:hover {
-  background-color: #65d772;
+
+.row {
+  position: relative;
 }
 
-.main-info-container {
-  background-color: #053929;
-  color: white;
+.info-container {
+  border: 1px solid black;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  .row {
+    padding: 0.5em;
+  }
 }
-
 .projects-container {
-  width: 100%;
-  background: linear-gradient(#d2e4d6, #5bc067);
+  border: 1px solid black;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  .row {
+    padding: 0.5em;
+  }
 }
-.image-placeholder {
-  width: 150px;
-  height: 150px;
-  border-radius: 75px;
-  margin: 1em auto;
-  background-color: rgba(255, 255, 255, 0.3);
-}
-.proj-img-placeholder {
-  width: 150px;
-  height: 150px;
-  margin-right: 1em;
-  background-color: #053929;
+
+.edit-btn {
+  position: absolute;
+  width:fit-content;
+  right: 10px;
 }

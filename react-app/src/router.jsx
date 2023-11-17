@@ -133,8 +133,8 @@ const router = createBrowserRouter([
         loader: dashboardLoader,
         children: [
           {
-            path: "/dashboard/edit",
-            element: <div>todo</div>,
+            path: "/dashboard/edit/:formParam",
+            element: <UserEditLayout />,
           },
         ],
       },
@@ -147,7 +147,7 @@ const router = createBrowserRouter([
           );
           return null;
         },
-        element: <div>todo</div>,
+        element: <PublicPage />,
       },
       {
         path: "/github",

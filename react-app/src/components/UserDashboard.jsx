@@ -1,134 +1,119 @@
-import { useState } from "react";
-import "./../css/UserDashboard.css";
-import { useSubmit } from "react-router-dom";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Dropdown from "react-bootstrap/Dropdown";
-import GithubButton from "./GithubButton";
-import { useUser } from "../hooks";
+import { Link, Outlet, useRouteLoaderData, useSubmit } from "react-router-dom";import Container from "react-bootstrap/Container"
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
+import Dropdown from "react-bootstrap/Dropdown"
+import GithubButton from "./GithubButton"
+import EditIcon from "@mui/icons-material/Edit"
 
-const Header = ({ firstName, lastName }) => {
+import "./../css/UserDashboard.css"
+
+const EditButton = ({ to }) => (
+  <div className="edit-btn">
+    <Link to={to} ><EditIcon sx={{ color: "black" }} /></Link>
+  </div>
+)
+
+const Header = () => {
   const submit = useSubmit();
 
+  const settings = () => (
+    <Dropdown>
+      <Dropdown.Toggle className="header-dropdown">Options</Dropdown.Toggle>
+      <Dropdown.Menu>
+        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+        <Dropdown.Item
+          onClick={() =>
+            submit(null, { method: "post", action: "/logout" })
+          }
+        >
+          Log out
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+  )
   return (
-    <Row className="header-container">
-      <Col xs={12} sm={8}>
-        <div className="header-text">
-          Logged in as {firstName} {lastName}
-        </div>
+    <>
+      <Col xs={3} >
+        {settings()}
       </Col>
+      <Col xs={{span:9, end:0}} className="text-end">
+        <a className="btn btn-light" onClick={() => console.log('view profile!')}>View your public profile{"->"}</a>
+      </Col>
+    </>   
+  )
+}
 
-      <Col xs={12} sm={{ span: 2, offset: 2 }}>
-        <Dropdown>
-          <Dropdown.Toggle className="header-dropdown">...</Dropdown.Toggle>
+const PersonalInformation = ({ user }) => {
+  const conditionalInput = (field, placeholder) => (
+    <>{field ? <span>{field}</span> : <input placeholder={placeholder} />}</>
+  )
+  return user ? (
+    <>
+      <h2>Your information</h2>
+      <EditButton to="/dashboard/edit/information"/>
+      <Container className="info-container">
+        <Row>
+          <Col sm={2} md={3}>Email:</Col>
+          <Col><span>{user.email}</span> </Col>
+        </Row>
+        <Row>
+          <Col sm={2} md={3}>Name: </Col>
+          <Col><span>{user.firstname} {user.lastname}</span> </Col>
+        </Row>
+        <Row>
+          <Col sm={2} md={3}>Url:</Col>
+          <Col>{conditionalInput(user.url_name, "Set url")}</Col>
+        </Row>
+        <Row>
+          <Col sm={2} md={3}>Github:</Col>
+          <Col>{conditionalInput(user.github, "Github")}</Col>
+        </Row>
+      </Container>
+    </>
+  ) : <div>No user</div>
+}
 
-          <Dropdown.Menu>
-            <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-            <Dropdown.Item
-              onClick={() =>
-                submit(null, { method: "post", action: "/logout" })
-              }
-            >
-              Log out
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </Col>
-    </Row>
-  );
-};
-
-const Project = ({ idx }) => {
-  return (
-    <Row className="project pt-4">
-      <Col className="text-center" sm={12} md={4} lg={3}>
-        <div className="proj-img-placeholder"></div>
-      </Col>
-      <Col md={{ order: idx % 2 ? "last" : "first" }}>
-        <h4>Project {idx}</h4>
-        <p>
-          Longer description of the project. Lorem ipsum dolor sit amet,
-          consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-          exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-          dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-          proident, sunt in culpa qui officia deserunt mollit anim id est
-          laborum.
-        </p>
-      </Col>
-    </Row>
-  );
-};
 const Projects = ({ projects }) => {
+  const ProjectList_ = () => (
+    projects.map((project, idx) => {
+      return <Row key={idx}>Project {project} {idx}</Row>
+    })
+  )
   return (
-    <Container>
-      <Project idx={1} />
-      <Project idx={2} />
-      <Project idx={3} />
-      <Project idx={4} />
-    </Container>
-  );
-};
+    <>
+      <h2>Projects</h2>
+      <EditButton to="/dashboard/edit/projects" />
+      <Container className="projects-container">
+        {projects
+        ?
+          <ProjectList_ />
+        :
+          <div>You dont have any visible projects</div>}
+      </Container>
+    </>
+  ) 
+}
 
 const UserDashboard = () => {
-  const user = useUser();
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [location, setLocation] = useState("");
-  const [link, setLink] = useState("");
+  const user = useRouteLoaderData("root");
 
-  const firstName = user?.firstname;
-  const lastName = user?.lastname
-  const email = user?.email;
-
-  const mainInfo = (
-    <>
-      <Row className="text-center">
-        <h2>
-          {firstName} {lastName}
-        </h2>
-      </Row>
-      <Row>
-        <div className="image-placeholder"></div>
-      </Row>
-      <Row className="text-center">
-        <span>{email}</span>
-        {phoneNumber !== "" ? (
-          <span>{phoneNumber}</span>
-        ) : (
-          <input placeholder="phone number" />
-        )}
-        {location !== "" ? (
-          <span>{location}</span>
-        ) : (
-          <input placeholder="location" />
-        )}
-        {link !== "" ? <span>{link}</span> : <input placeholder="link" />}
-      </Row>
-      <Row>
-        <h5>About me:</h5>
-        <p>
-          A short introduction about who I am and any extra text I want to
-          display that is not directly related to the projects.
-        </p>
-        <GithubButton />
-      </Row>
-    </>
-  );
-
+  const visibleProjects = ["Proj", "Filler", "placeholder", "test", "last one"]
   return (
-    <Container className="user-dashboard">
-      <Header firstName={firstName} lastName={lastName} />
-      <Row>
-        <Col className="p-3 main-info-container" xs={12} sm={4} md={3}>
-          {mainInfo}
-        </Col>
-        <Col className="projects-container">
-          <Projects></Projects>
-        </Col>
+    <Container>
+      <Row className="pt-3 pb-3">
+        <Header />
       </Row>
+      
+      <Row className="p-3">
+        <PersonalInformation user={user}/>
+      </Row>
+
+      <GithubButton />
+      <Row className="p-3">
+        <Projects projects={visibleProjects}/>
+      </Row>
+      <Outlet />
     </Container>
   );
 };

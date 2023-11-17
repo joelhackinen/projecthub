@@ -53,6 +53,7 @@ const LoginPage = () => {
       : (password.type = "password");
     eye.classList.toggle("fa-eye-slash");
   };
+
   const registerForm = () => (
     <form className="register-form" onSubmit={handleRegister}>
       <div className="input-container">
