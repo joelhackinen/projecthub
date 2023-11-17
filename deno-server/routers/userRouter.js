@@ -14,6 +14,105 @@ const setJWT = async (user, cookies) => {
   cookies.set("token", jwt, { httpOnly: true })
 };
 
+
+router.put("/users", async ({ request, response, state, cookies }) => {
+  if (!state.email) {
+    response.status = 401;
+    return response.body = { error: "unauthorized" };
+  }
+
+  const body = request.body({ type: "json" });
+  const data = await body.value;
+  const { firstname, lastname, email, url_name, repos } = data;
+  console.log(data, state.email);
+  let updatedUserRow;
+  try {
+    updatedUserRow = await sql`
+      UPDATE 
+        users
+      SET
+        firstname = ${firstname},
+        lastname = ${lastname},
+        email = ${email},
+        url_name = ${url_name}
+      WHERE
+        email = ${state.email}
+      RETURNING
+        *;`;
+  } catch (error) {
+    console.log(error);
+    response.status = 500;
+    return response.body = { error: "email or url name might already be in use" };
+  }
+  console.log(updatedUserRow);
+  const { _pwhash, _pwsalt, ...updatedUser } = updatedUserRow[0];
+  state.email = updatedUser.email;
+
+  try {
+    await setJWT({ email: state.email }, cookies);//in case user changed their email
+  } catch (_e) {
+    response.status = 500;
+    return response.body = { error: "JWT creation error" };
+  }
+
+  let updatedRepos;
+  try {
+    updatedRepos = await Promise.all(
+      repos.map(({ id, owner, name, full_name, description, languages, html_url, created_at, visible }) => sql`
+        UPDATE
+          projects
+        SET
+          owner = ${owner},
+          name = ${name},
+          full_name = ${full_name},
+          description = ${description},
+          languages = ${languages},
+          html_url = ${html_url},
+          created_at = ${created_at},
+          visible = ${visible}
+        WHERE
+          id = ${id}
+        RETURNING
+          *;`
+      )
+    );
+  } catch (error) {
+    console.log(error);
+    response.status = 500;
+    return response.body = { error: "error updating projects" };
+  }
+
+  response.status = 200;
+  response.body = { ...updatedUser, repos: updatedRepos };
+});
+
+
+router.get("/users/:urlName", async ({ response, params }) => {
+  let userData;
+  let repoData;
+  try {
+    const userRows = await sql`
+      SELECT
+        firstname, lastname, email, github, url_name
+      FROM
+        users
+      WHERE
+        url_name = ${params.urlName};`;
+
+    userData = userRows[0];
+
+    repoData = await sql`
+      SELECT * FROM projects WHERE user_email = ${userData.email} AND visible=true;`;
+  } catch (error) {
+    console.log(error);
+    response.body = { error: "data fetch error" };
+    return response.status = 500;
+  }
+  response.status = 200;
+  response.body = { ...userData, repos: repoData };
+});
+
+
 router.post("/users", async ({ request, response, state, cookies }) => {
   if (state.email) {
     response.status = 409;
@@ -71,16 +170,11 @@ router.post("/users", async ({ request, response, state, cookies }) => {
   }
 
   response.status = 200;
-  response.body = user;
+  response.body = { ...user, repos: [] };
 });
 
 
-router.post("/login", async ({ request, response, state, cookies }) => {
-  if (state.email) {
-    response.status = 409;
-    return response.body = { errors: ["already logged in"] };
-  }
-
+router.post("/login", async ({ request, response, cookies }) => {
   const body = request.body({ type: "json" });
   const data = await body.value;
   const { email, password } = data;
@@ -98,8 +192,13 @@ router.post("/login", async ({ request, response, state, cookies }) => {
     response.status = 400;
     return response.body = { errors };
   }
-
-  const rows = await sql`SELECT firstname, pwsalt, pwhash, lastname, email, github, url_name FROM users WHERE email = ${email};`;
+  let rows;
+  try {
+    rows = await sql`SELECT firstname, pwsalt, pwhash, lastname, email, github, url_name FROM users WHERE email = ${email};`;
+  } catch (error) {
+    console.log(error);
+    return response.status = 500;
+  }
 
   if (!rows[0]) {
     response.status = 401;
@@ -120,9 +219,17 @@ router.post("/login", async ({ request, response, state, cookies }) => {
     response.status = 500;
     return response.body = { errors: ["JWT creation error"] };
   }
-  
+
+  let repos;
+  try {
+    repos = await sql`SELECT * FROM projects WHERE user_email = ${user.email};`;
+  } catch (error) {
+    console.log(error);
+    return response.status = 403;
+  }
+
   response.status = 201;
-  response.body = user;
+  response.body = { ...user, repos };
 });
 
 

@@ -7,6 +7,8 @@ const GithubError = () => {
   const navigate = useNavigate();
   const error = useRouteError();
 
+  import.meta.env.MODE === "development" && console.log(error?.message);
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       navigate("/dashboard");
@@ -19,7 +21,6 @@ const GithubError = () => {
     <div className="errorElement" style={{ color: "red" }}>
       <GithubLogo color={"#FFFFFF"} spin={true} />
       <div>An error occurred. Redirecting...</div>
-      <div>{import.meta.env.MODE === "development" && error?.message}</div>
     </div>
   );
 };

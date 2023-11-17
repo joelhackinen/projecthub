@@ -3,12 +3,12 @@ import { qclient } from "../queryClient";
 export const whoAmI = async () => {
   return await qclient.fetchQuery({
     queryKey: ["whoami"],
-    queryFn: queryUserFn,
+    queryFn: queryMeFn,
     staleTime: Infinity,
   });
 };
 
-export const queryUserFn = async () => {
+export const queryMeFn = async () => {
   const res = await fetch("/api/whoami");
   if (!res.ok) {
     return null;
@@ -54,5 +54,20 @@ export const register = async (firstname, lastname, email, password) => {
     throw new Error(data?.errors);
   }
   qclient.setQueryData(["whoami"], data);
+  return data;
+};
+
+export const verifyGithubUser = async (code) => {
+  const userRes = await fetch("/api/github/verifyUser", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
+  const data = await userRes.json();
+  if (!userRes.ok) {
+    throw new Error(data?.error);
+  }
+  qclient.setQueryData(["whoami"], (oldData) => {
+    return { ...oldData, github: data.login }
+  });
   return data;
 };

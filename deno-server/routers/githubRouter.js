@@ -60,7 +60,7 @@ router.post("/github/verifyUser", async ({ request, response, state }) => {
   }
 
   response.status = 200;
-  response.body = { github_token: data.access_token };
+  response.body = { github_token: data.access_token, login: userData.login };
 });
 
 

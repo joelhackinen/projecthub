@@ -7,6 +7,8 @@ const AppError = () => {
   const navigate = useNavigate();
   const error = useRouteError();
 
+  import.meta.env.MODE === "development" && console.log(error?.message);
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       navigate("/");
@@ -18,7 +20,6 @@ const AppError = () => {
   return (
     <div className="errorElement" style={{ color: "red" }}>
       <div>something went wrong, redirecting...</div>
-      <div>{import.meta.env.MODE === "development" && error?.message}</div>
     </div>
   );
 };

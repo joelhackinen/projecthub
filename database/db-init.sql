@@ -31,7 +31,7 @@ INSERT INTO users (firstname, lastname, email, pwhash, pwsalt) VALUES (
 
 CREATE TABLE projects (
   id SERIAL PRIMARY KEY,
-  user_email TEXT REFERENCES users(email),
+  user_email TEXT REFERENCES users(email) ON UPDATE CASCADE,
   owner TEXT,
   name TEXT NOT NULL,
   full_name TEXT,
@@ -39,7 +39,7 @@ CREATE TABLE projects (
   languages JSONB,
   html_url TEXT,
   created_at TIMESTAMPTZ,
-  visible BOOLEAN DEFAULT false NOT NULL
+  visible BOOLEAN DEFAULT true NOT NULL
 );
 
 INSERT INTO projects (user_email, name, description, html_url) VALUES (

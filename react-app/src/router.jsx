@@ -4,8 +4,10 @@ import MainPage from "./components/MainPage.jsx";
 import UserDashboard from "./components/UserDashboard.jsx";
 import AppError from "./components/errorElements/AppError.jsx";
 import GithubError from "./components/errorElements/GithubError.jsx";
-import { whoAmI, login, register, logout } from "./services/auth";
+import { whoAmI, login, register, logout, verifyGithubUser } from "./services/auth";
 import GithubCallback from "./components/GithubCallback.jsx";
+import UserEditLayout from "./components/UserEditLayout.jsx";
+import PublicPage from "./components/PublicPage.jsx";
 
 let redirectFlag = false;
 
@@ -93,20 +95,11 @@ const githubCallbackLoader = async ({ request }) => {
   const url = new URL(request.url);
   const codeParam = url.searchParams.get("code");
 
-  const userRes = await fetch("/api/github/verifyUser", {
-    method: "POST",
-    body: JSON.stringify({ code: codeParam }),
-  });
-
-  const userData = await userRes.json();
-
-  if (!userRes.ok) {
-    throw new Error(userData.error);
-  }
+  const { github_token } = await verifyGithubUser(codeParam);
 
   const repoRes = fetch("/api/github/fetchRepos", {
     method: "POST",
-    body: JSON.stringify({ github_token: userData.github_token }),
+    body: JSON.stringify({ github_token }),
   });
 
   return defer({

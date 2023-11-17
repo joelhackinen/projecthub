@@ -1,9 +1,11 @@
-import { Link, Outlet, useRouteLoaderData, useSubmit } from "react-router-dom";import Container from "react-bootstrap/Container"
+import { Link, Outlet, useSubmit } from "react-router-dom";
+import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Dropdown from "react-bootstrap/Dropdown"
 import GithubButton from "./GithubButton"
 import EditIcon from "@mui/icons-material/Edit"
+import { useUser } from "../hooks";
 
 import "./../css/UserDashboard.css"
 
@@ -96,7 +98,7 @@ const Projects = ({ projects }) => {
 }
 
 const UserDashboard = () => {
-  const user = useRouteLoaderData("root");
+  const user = useUser();
 
   const visibleProjects = ["Proj", "Filler", "placeholder", "test", "last one"]
   return (
