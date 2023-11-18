@@ -31,3 +31,28 @@ export const updateProfile = async (updatedProfile) => {
   qclient.setQueryData(["whoami"], newData);
   return data;
 };
+
+export const postRepos = async (reposToAdd) => {
+  const res = await fetch("/api/repos", {
+    method: "POST",
+    body: JSON.stringify(reposToAdd),
+  });
+  if (!res.ok) {
+    throw new Error("error adding repos");
+  }
+  return await res.json();
+};
+
+export const addReposToCache = (newRepos) => {
+  let user_url;
+  qclient.setQueryData(["whoami"], (oldData) => {
+    user_url = oldData?.url_name ?? null;
+    return { ...oldData, repos: [...oldData.repos, ...newRepos] };
+  });
+
+  if (user_url) {
+    qclient.setQueryData(["profile", user_url], (oldProfile) => {
+      return { ...oldProfile, repos: [...oldProfile.repos, ...newRepos.map(r => r.visible === true)] };
+    });
+  }
+};

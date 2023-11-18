@@ -1,11 +1,13 @@
 import { Suspense, useState } from "react";
 import { Await, useAsyncValue, useLoaderData, Link, useNavigate } from "react-router-dom";
+import { useAddRepos } from "../hooks";
 
 
 const GithubRepos = () => {
   const repos = useAsyncValue();
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
+  const addRepos = useAddRepos();
 
   const handleClick = (r) => {
     if (selected.includes(r)) {
@@ -17,12 +19,7 @@ const GithubRepos = () => {
 
   const applyRepos = async () => {
     if (selected.length !== 0) {
-      const res = await fetch("/api/repos", {
-        method: "POST",
-        body: JSON.stringify(selected),
-      });
-      const data = await res.json();
-      alert(`${data.length} new repos added`);
+      addRepos(selected);
       return navigate("/dashboard");
     }
   };

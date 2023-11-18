@@ -25,7 +25,7 @@ router.post("/repos", async ({ request, response, state }) => {
     return response.status = 500;
   }
   response.status = 201;
-  response.body = items;
+  response.body = items.flat();
 });
 
 
