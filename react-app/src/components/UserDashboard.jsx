@@ -79,7 +79,13 @@ const PersonalInformation = ({ user }) => {
 const Projects = ({ projects }) => {
   const ProjectList_ = () => (
     projects.map((project, idx) => {
-      return <Row key={idx}>Project {project} {idx}</Row>
+      return (
+        <Row key={idx}>
+          {project.name} {idx}<br />
+          created: {project.created_at}<br/>
+          {project.visible ? "public" : "private"}
+        </Row>
+      )
     })
   )
   return (
@@ -100,7 +106,6 @@ const Projects = ({ projects }) => {
 const UserDashboard = () => {
   const user = useUser();
 
-  const visibleProjects = ["Proj", "Filler", "placeholder", "test", "last one"]
   return (
     <Container>
       <Row className="pt-3 pb-3">
@@ -113,7 +118,7 @@ const UserDashboard = () => {
 
       <GithubButton />
       <Row className="p-3">
-        <Projects projects={visibleProjects}/>
+        <Projects projects={user.repos}/>
       </Row>
       <Outlet />
     </Container>

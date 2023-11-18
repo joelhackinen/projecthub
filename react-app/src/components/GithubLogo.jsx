@@ -1,9 +1,6 @@
-import "../css/animations/spin.css";
-
-const GithubLogo = ({ color, spin }) => {
+const GithubLogo = ({ color }) => {
   return (
     <svg
-      className={spin ? "spin" : ""}
       width="98"
       height="96"
       xmlns="http://www.w3.org/2000/svg"

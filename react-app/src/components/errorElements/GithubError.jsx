@@ -19,7 +19,7 @@ const GithubError = () => {
 
   return (
     <div className="errorElement" style={{ color: "red" }}>
-      <GithubLogo color={"#FFFFFF"} spin={true} />
+      <GithubLogo color={"#FFFFFF"} className="spin" />
       <div>An error occurred. Redirecting...</div>
     </div>
   );

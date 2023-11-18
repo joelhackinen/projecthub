@@ -1,12 +1,12 @@
 // import { useState } from "react";
 import "./../css/PublicPage.css";
-import { useSubmit } from "react-router-dom";
+import { Await, useAsyncValue, useLoaderData, useSubmit } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
 import GithubButton from "./GithubButton";
-import { useUser } from "../hooks";
+import { Suspense } from "react";
 
 
 
@@ -44,11 +44,24 @@ const Projects = ({ projects }) => {
 };
 
 const PublicPage = () => {
-  const user = useUser();
+  const data = useLoaderData();
 
-  const firstName = user?.firstname;
-  const lastName = user?.lastname
-  const email = user?.email;
+  return (
+    <Suspense fallback={<h2 style={{ color: "white" }}>Loading...</h2>}>
+      <Await resolve={data.user}>
+        <PublicPageContent />
+      </Await>
+    </Suspense>
+  );
+};
+
+
+const PublicPageContent = () => {
+  const user = useAsyncValue();
+
+  const firstName = user.firstname;
+  const lastName = user.lastname
+  const email = user.email;
 
   const mainInfo = (
     <>

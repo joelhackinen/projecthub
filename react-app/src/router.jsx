@@ -8,6 +8,7 @@ import { whoAmI, login, register, logout, verifyGithubUser } from "./services/au
 import GithubCallback from "./components/GithubCallback.jsx";
 import UserEditLayout from "./components/UserEditLayout.jsx";
 import PublicPage from "./components/PublicPage.jsx";
+import { fetchProfile } from "./services/profiles.js";
 
 let redirectFlag = false;
 
@@ -107,6 +108,20 @@ const githubCallbackLoader = async ({ request }) => {
   });
 };
 
+const profileLoader = ({ params }) => {
+  const urlName = params.url_name;
+  return defer({ user: fakeDelay(urlName) });
+};
+
+const fakeDelay = (urlName) => {
+  return new Promise((resolve, _reject) => {
+    setTimeout(() => {
+        resolve(fetchProfile(urlName));
+    }, 2000);
+  });
+};
+
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -132,17 +147,6 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/user/:username",
-        loader: ({ params }) => {
-          console.log(
-            "username whose profile is to be rendered:",
-            params.username,
-          );
-          return null;
-        },
-        element: <PublicPage />,
-      },
-      {
         path: "/github",
         action: githubAction,
         errorElement: <GithubError />,
@@ -155,6 +159,12 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "/user/:url_name",
+    loader: profileLoader,
+    element: <PublicPage />,
+    error: <AppError />,
   },
   {
     path: "/login",

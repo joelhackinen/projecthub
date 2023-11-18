@@ -7,7 +7,7 @@ export const fetchProfile = async (url_name) => {
       const res = await fetch(`/api/users/${url_name}`);
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data?.error);
+        throw new Error(data?.error ?? "profile fetching failed");
       }
       return data;
     },
