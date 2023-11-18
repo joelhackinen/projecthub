@@ -24,15 +24,10 @@ export const updateProfile = async (updatedProfile) => {
   if (!res.ok) {
     throw new Error(newData?.error ?? "updating the profile failed");
   }
-  qclient.setQueryData(
-    ["profile", newData.url_name],
-    { ...newData, repos: newData.repos.filter(r => r.visible === true)
-  });
-  qclient.setQueryData(["whoami"], newData);
-  return data;
+  return newData;
 };
 
-export const postRepos = async (reposToAdd) => {
+export const addRepos = async (reposToAdd) => {
   const res = await fetch("/api/repos", {
     method: "POST",
     body: JSON.stringify(reposToAdd),
@@ -41,18 +36,4 @@ export const postRepos = async (reposToAdd) => {
     throw new Error("error adding repos");
   }
   return await res.json();
-};
-
-export const addReposToCache = (newRepos) => {
-  let user_url;
-  qclient.setQueryData(["whoami"], (oldData) => {
-    user_url = oldData?.url_name ?? null;
-    return { ...oldData, repos: [...oldData.repos, ...newRepos] };
-  });
-
-  if (user_url) {
-    qclient.setQueryData(["profile", user_url], (oldProfile) => {
-      return { ...oldProfile, repos: [...oldProfile.repos, ...newRepos.map(r => r.visible === true)] };
-    });
-  }
 };

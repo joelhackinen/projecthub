@@ -118,7 +118,7 @@ const UserDashboard = () => {
 
       <GithubButton />
       <Row className="p-3">
-        <Projects projects={user.repos}/>
+        <Projects projects={user?.repos}/>
       </Row>
       <Outlet />
     </Container>

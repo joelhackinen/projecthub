@@ -7,7 +7,7 @@ const router = new Router();
 const setJWT = async (user, cookies) => {
   const jwt = await create(
     { alg: "HS512", typ: "JWT" },
-    { email: user.email, exp: getNumericDate(60 * 60) },
+    { email: user.email, exp: getNumericDate(60 * 60 * 24) },
     key
   );
 
@@ -181,10 +181,10 @@ router.post("/login", async ({ request, response, cookies }) => {
 
   const errors = [];
 
-  if (email === undefined || email === "") {
+  if (!email) {
     errors.push("email missing");
   }
-  if (password === undefined || email === "") {
+  if (!password) {
     errors.push("password missing")
   }
 

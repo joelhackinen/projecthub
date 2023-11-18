@@ -9,23 +9,42 @@ router.post("/repos", async ({ request, response, state }) => {
   }
 
   const body = request.body({ type: "json" });
-  const repos = await body.value;
-
+  const data = await body.value;
+  
   let items;
+  if (Array.isArray(data)) {
+    try {
+      const rows = await Promise.all(data.map(({owner, name, full_name, html_url, created_at}) => sql`
+        INSERT INTO projects
+          (user_email, owner, name, full_name, html_url, created_at)
+        VALUES
+          (${state.email}, ${owner}, ${name}, ${full_name}, ${html_url}, ${created_at})
+        RETURNING *;`
+      ));
+      items = rows.flat();
+    } catch (error) {
+      console.log(error);
+      return response.status = 500;
+    }
+    response.status = 201;
+    return response.body = items;
+  }
+
   try {
-    items = await Promise.all(repos.map(({owner, name, full_name, html_url, created_at}) => sql`
+    const { owner, name, full_name, html_url, created_at } = data;
+    items = await sql`
       INSERT INTO projects
         (user_email, owner, name, full_name, html_url, created_at)
       VALUES
         (${state.email}, ${owner}, ${name}, ${full_name}, ${html_url}, ${created_at})
       RETURNING *;`
-    ));
   } catch (error) {
     console.log(error);
     return response.status = 500;
   }
+
   response.status = 201;
-  response.body = items.flat();
+  response.body = items;
 });
 
 
