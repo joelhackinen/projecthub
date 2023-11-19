@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRouteError } from "react-router-dom";
 
-const AppError = () => {
+const AppError = ({ message="something went wrong" }) => {
   const navigate = useNavigate();
   const error = useRouteError();
 
@@ -19,7 +19,8 @@ const AppError = () => {
 
   return (
     <div className="errorElement" style={{ color: "red" }}>
-      <div>something went wrong, redirecting...</div>
+      <div>{message}</div>
+      <div>redirecting...</div>
     </div>
   );
 };

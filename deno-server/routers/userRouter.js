@@ -24,7 +24,7 @@ router.put("/users", async ({ request, response, state, cookies }) => {
   const body = request.body({ type: "json" });
   const data = await body.value;
   const { firstname, lastname, email, url_name, repos } = data;
-  console.log(data, state.email);
+
   let updatedUserRow;
   try {
     updatedUserRow = await sql`
@@ -44,7 +44,6 @@ router.put("/users", async ({ request, response, state, cookies }) => {
     response.status = 500;
     return response.body = { error: "email or url name might already be in use" };
   }
-  console.log(updatedUserRow);
   const { _pwhash, _pwsalt, ...updatedUser } = updatedUserRow[0];
   state.email = updatedUser.email;
 
@@ -98,6 +97,11 @@ router.get("/users/:urlName", async ({ response, params }) => {
         users
       WHERE
         url_name = ${params.urlName};`;
+    
+    if (userRows.length === 0) {
+      response.status = 404;
+      return response.body = { error: "user not found" };
+    }
 
     userData = userRows[0];
 

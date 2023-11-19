@@ -39,7 +39,8 @@ CREATE TABLE projects (
   languages JSONB,
   html_url TEXT,
   created_at TIMESTAMPTZ,
-  visible BOOLEAN DEFAULT true NOT NULL
+  visible BOOLEAN DEFAULT true NOT NULL,
+  CONSTRAINT unique_user_project UNIQUE(user_email, name)
 );
 
 INSERT INTO projects (user_email, name, description, html_url) VALUES (

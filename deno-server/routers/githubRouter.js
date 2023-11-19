@@ -96,12 +96,12 @@ router.post("/github/fetchRepos", async ({ request, response, state }) => {
     return response.status = 500;
   }
 
-  const repos = repoData.map(r => ({
-    owner: r.owner.login,
-    name: r.name,
-    full_name: r.full_name,
-    html_url: r.html_url,
-    created_at: r.created_at,
+  const repos = repoData.map(({ owner, name, full_name, html_url, created_at }) => ({
+    owner: owner.login,
+    name,
+    full_name,
+    html_url,
+    created_at,
   }));
 
   const existingRepoNames = existingRepos.map(r => r.name);

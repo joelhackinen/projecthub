@@ -96,29 +96,12 @@ const githubCallbackLoader = async ({ request }) => {
   const url = new URL(request.url);
   const codeParam = url.searchParams.get("code");
 
-  const { github_token } = await verifyGithubUser(codeParam);
-
-  const repoRes = fetch("/api/github/fetchRepos", {
-    method: "POST",
-    body: JSON.stringify({ github_token }),
-  });
-
-  return defer({
-    repos: repoRes.then((res) => res.json())
-  });
+  return defer({ repos: verifyGithubUser(codeParam) });
 };
 
 const profileLoader = ({ params }) => {
   const urlName = params.url_name;
-  return defer({ user: fakeDelay(urlName) });
-};
-
-const fakeDelay = (urlName) => {
-  return new Promise((resolve, _reject) => {
-    setTimeout(() => {
-        resolve(fetchProfile(urlName));
-    }, 2000);
-  });
+  return defer({ user: fetchProfile(urlName) });
 };
 
 

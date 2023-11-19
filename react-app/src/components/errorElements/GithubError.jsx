@@ -1,4 +1,5 @@
 import "../../css/AppError.css";
+import "../../css/animations/spin.css";
 import { useEffect } from "react";
 import { useNavigate, useRouteError } from "react-router-dom";
 import GithubLogo from "../GithubLogo";

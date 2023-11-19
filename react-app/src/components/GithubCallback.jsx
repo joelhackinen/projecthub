@@ -1,6 +1,7 @@
 import { Suspense, useState } from "react";
 import { Await, useAsyncValue, useLoaderData, Link, useNavigate } from "react-router-dom";
 import { useAddRepos } from "../hooks";
+import GithubSpinner from "./GithubSpinner";
 
 
 const GithubRepos = () => {
@@ -55,7 +56,7 @@ const GithubRepos = () => {
         apply & save
       </button>
     </div>
-  )
+  );
 };
 
 const GithubCallback = () => {
@@ -63,13 +64,16 @@ const GithubCallback = () => {
   return (
     <div>
       <Link to="/dashboard">back to dashboard</Link>
-      <Suspense fallback={<h3 style={{ color: "white" }}>fetching repos from github...</h3>}>
-        <Await resolve={repos}>
+      <Suspense fallback={<GithubSpinner />}>
+        <Await
+          resolve={repos}
+          errorElement={<GithubSpinner msg="Error when connecting with Github" color="red" />}
+        >
           <GithubRepos />
         </Await>
       </Suspense>
     </div>
-  )
+  );
 };
 
 export default GithubCallback;

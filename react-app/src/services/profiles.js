@@ -14,26 +14,3 @@ export const fetchProfile = async (url_name) => {
     staleTime: Infinity,
   });
 };
-
-export const updateProfile = async (updatedProfile) => {
-  const res = await fetch("/api/users/", {
-    method: "PUT",
-    body: JSON.stringify(updatedProfile),
-  });
-  const newData = await res.json();
-  if (!res.ok) {
-    throw new Error(newData?.error ?? "updating the profile failed");
-  }
-  return newData;
-};
-
-export const addRepos = async (reposToAdd) => {
-  const res = await fetch("/api/repos", {
-    method: "POST",
-    body: JSON.stringify(reposToAdd),
-  });
-  if (!res.ok) {
-    throw new Error("error adding repos");
-  }
-  return await res.json();
-};

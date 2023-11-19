@@ -1,4 +1,5 @@
 import { qclient } from "../queryClient";
+import { updateProfileToCache } from "./cacheUpdaters";
 
 export const whoAmI = async () => {
   return await qclient.fetchQuery({
@@ -25,7 +26,7 @@ export const login = async (email, password) => {
   if (!res.ok) {
     throw new Error(data?.errors);
   }
-  qclient.setQueryData(["whoami"], data);
+  updateProfileToCache(data);
   return data;
 };
 
@@ -36,7 +37,7 @@ export const logout = async () => {
   if (!res.ok) {
     throw new Error("user not logged in");
   }
-  qclient.invalidateQueries(["whoami"]);
+  qclient.removeQueries({ queryKey: ["whoami"] });
 };
 
 export const register = async (firstname, lastname, email, password) => {
@@ -53,7 +54,7 @@ export const register = async (firstname, lastname, email, password) => {
   if (!res.ok) {
     throw new Error(data?.errors);
   }
-  qclient.setQueryData(["whoami"], data);
+  updateProfileToCache(data)
   return data;
 };
 
@@ -66,8 +67,14 @@ export const verifyGithubUser = async (code) => {
   if (!userRes.ok) {
     throw new Error(data?.error);
   }
-  qclient.setQueryData(["whoami"], (oldData) => {
-    return { ...oldData, github: data.login }
+  const oldData = qclient.getQueryData(["whoami"]);
+  updateProfileToCache({ ...oldData, github: data.login });
+
+  const repoRes = await fetch("/api/github/fetchRepos", {
+    method: "POST",
+    body: JSON.stringify({ github_token: data.github_token }),
   });
-  return data;
+
+  const repoData = await repoRes.json();
+  return repoData;
 };

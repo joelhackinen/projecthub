@@ -7,6 +7,7 @@ import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
 import GithubButton from "./GithubButton";
 import { Suspense } from "react";
+import AppError from "./errorElements/AppError";
 
 
 
@@ -48,7 +49,7 @@ const PublicPage = () => {
 
   return (
     <Suspense fallback={<h2 style={{ color: "white" }}>Loading...</h2>}>
-      <Await resolve={data.user}>
+      <Await resolve={data.user} errorElement={<AppError message="page not found" />}>
         <PublicPageContent />
       </Await>
     </Suspense>
