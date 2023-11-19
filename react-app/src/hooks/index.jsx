@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryMeFn } from "../services/auth";
-import { addReposToCache, updateProfileToCache } from "../services/cacheUpdaters";
+import { addReposToCache, deleteRepoFromCache, updateProfileToCache } from "../services/cacheUpdaters";
 
 export const useUser = () => {
   const { data } = useQuery({
@@ -35,6 +35,30 @@ export const useUpdateProfile = () => {
   return mutate;
 };
 
+export const useDeleteRepo = () => {
+  const { mutate } = useMutation({
+    mutationFn: (repoToDelete) => deleteRepo(repoToDelete),
+    onSuccess: (deletedRepo) => deleteRepoFromCache(deletedRepo),
+    onError: (error) => {
+      console.error(error);
+      console.error("Error deleting repos");
+    },
+  });
+  return mutate;
+};
+
+const deleteRepo = async (repoToDelete) => {
+  const res = await fetch("/api/repos", {
+    method: "DELETE",
+    body: JSON.stringify(repoToDelete),
+  });
+  if (!res.ok) {
+    throw new Error("error deleting repos");
+  }
+  const deletedRepo = await res.json();
+  return deletedRepo;
+};
+
 const addRepos = async (reposToAdd) => {
   const res = await fetch("/api/repos", {
     method: "POST",
@@ -52,8 +76,10 @@ const updateProfile = async (updatedProfile) => {
     body: JSON.stringify(updatedProfile),
   });
   const newData = await res.json();
-  if (!res.ok) {
-    throw new Error(newData?.error ?? "updating the profile failed");
+  const { error, ...userData } = newData;
+  if (res.status === 207 && error) {
+    console.error(error?.user);
+    console.error(error?.repos);
   }
-  return newData;
+  return userData;
 };

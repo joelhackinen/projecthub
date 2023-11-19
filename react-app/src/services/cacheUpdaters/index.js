@@ -29,22 +29,18 @@ export const updateProfileToCache = (updatedProfile) => {
   }
 };
 
-export const deleteReposFromCache = (arrayOfIDs) => {
-  let reposToDelete = arrayOfIDs;
-  if (!Array.isArray(reposToDelete)) {
-    reposToDelete = [arrayOfIDs];
-  }
+export const deleteRepoFromCache = (deletedRepo) => {
   let user_url;
   qclient.setQueryData(["whoami"], (oldData) => {
     user_url = oldData?.url_name ?? null;
-    return { ...oldData, repos: oldData.repos.filter(r => arrayOfIDs.includes(r.id)) };
-  })
+    return { ...oldData, repos: oldData.repos.filter(r => r.id !== deletedRepo.id) };
+  });
   if (user_url) {
     qclient.setQueryData(
       ["profile", user_url],
       (oldData) => ({
         ...oldData,
-        repos: oldData.repos.filter(r => arrayOfIDs.includes(r.id))
+        repos: oldData.repos.filter(r => r.id !== deletedRepo.id)
       })
     );
   }

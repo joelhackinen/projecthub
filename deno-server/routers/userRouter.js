@@ -17,17 +17,23 @@ const setJWT = async (user, cookies) => {
 
 router.put("/users", async ({ request, response, state, cookies }) => {
   if (!state.email) {
-    response.status = 401;
-    return response.body = { error: "unauthorized" };
+    return response.status = 401;
   }
 
   const body = request.body({ type: "json" });
   const data = await body.value;
-  const { firstname, lastname, email, url_name, repos } = data;
+  const { repos, ...user } = data;
+  const { firstname, lastname, email, url_name } = user;
 
-  let updatedUserRow;
+  const error = {
+    flag: false,
+    user: "",
+    repos: [],
+  };
+
+  let updatedUser;
   try {
-    updatedUserRow = await sql`
+    const [{ _pwhash, _pwsalt, ...u }] = await sql`
       UPDATE 
         users
       SET
@@ -39,46 +45,51 @@ router.put("/users", async ({ request, response, state, cookies }) => {
         email = ${state.email}
       RETURNING
         *;`;
+    updatedUser = u;
   } catch (error) {
     console.log(error);
-    response.status = 500;
-    return response.body = { error: "email or url name might already be in use" };
+    error.flag = true;
+    error.user = "email or url name might already be in use";
+    updatedUser = user;
   }
-  const { _pwhash, _pwsalt, ...updatedUser } = updatedUserRow[0];
+
   state.email = updatedUser.email;
 
-  try {
-    await setJWT({ email: state.email }, cookies);//in case user changed their email
-  } catch (_e) {
-    response.status = 500;
-    return response.body = { error: "JWT creation error" };
-  }
+  await setJWT({ email: state.email }, cookies);//in case user changed their email
 
-  let updatedRepos;
-  try {
-    updatedRepos = await Promise.all(
-      repos.map(({ id, owner, name, full_name, description, languages, html_url, created_at, visible }) => sql`
-        UPDATE
-          projects
-        SET
-          owner = ${owner},
-          name = ${name},
-          full_name = ${full_name},
-          description = ${description},
-          languages = ${languages},
-          html_url = ${html_url},
-          created_at = ${created_at},
-          visible = ${visible}
-        WHERE
-          id = ${id}
-        RETURNING
-          *;`
-      )
-    );
-  } catch (error) {
-    console.log(error);
-    response.status = 500;
-    return response.body = { error: "error updating projects" };
+  const newRepos = await Promise.all(
+    repos.map(r => {
+      try {
+        const [result] = sql`
+          UPDATE
+            projects
+          SET
+            owner = ${r.owner},
+            name = ${r.name},
+            full_name = ${r.full_name},
+            description = ${r.description},
+            languages = ${r.languages},
+            html_url = ${r.html_url},
+            created_at = ${r.created_at},
+            visible = ${r.visible}
+          WHERE
+            id = ${r.id}
+          RETURNING
+            *;`;
+        return result;
+      } catch (error) {
+        console.log(error);
+        error.flag = true;
+        error.repos.push(r);
+        return null;
+      }
+    })
+  );
+  const updatedRepos = newRepos.filter(r => r !== null);
+
+  if (error.flag) {
+    response.status = 207;
+    return response.body = { ...updatedUser, repos: updatedRepos, error };
   }
 
   response.status = 200;

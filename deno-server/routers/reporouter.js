@@ -47,5 +47,35 @@ router.post("/repos", async ({ request, response, state }) => {
   response.body = items;
 });
 
+router.delete("/repos", async ({ request, response, state }) => {
+  if (!state.email) {
+    return response.status = 401;
+  }
+
+  const body = request.body({ type: "json" });
+  const repoToDelete = await body.value;
+
+  let deletedRepo;
+  try {
+    const row = await sql`
+      DELETE FROM
+        projects
+      WHERE
+        id = ${repoToDelete.id}
+      AND
+        user_email = ${state.email}
+      RETURNING
+        *;`;
+    deletedRepo = row[0];
+  } catch (error) {
+    console.log(error);
+    response.status = 500;
+    return response.body = { error: "error deleting project" };
+  }
+  console.log(deletedRepo);
+  response.status = 200;
+  response.body = deletedRepo;
+});
+
 
 export default router;

@@ -5,7 +5,7 @@ import Col from "react-bootstrap/Col"
 import Dropdown from "react-bootstrap/Dropdown"
 import GithubButton from "./GithubButton"
 import EditIcon from "@mui/icons-material/Edit"
-import { useUser } from "../hooks";
+import { useDeleteRepo, useUser } from "../hooks";
 
 import "./../css/UserDashboard.css"
 
@@ -77,13 +77,19 @@ const PersonalInformation = ({ user }) => {
 }
 
 const Projects = ({ projects }) => {
+  const deleteRepo = useDeleteRepo();
   const ProjectList_ = () => (
     projects.map((project, idx) => {
       return (
         <Row key={idx}>
-          {project.name} {idx}<br />
-          created: {project.created_at}<br/>
-          {project.visible ? "public" : "private"}
+          <Col>{project.name}</Col>
+          <Col>created: {project.created_at}</Col>
+          <Col>{project.visible ? "public" : "private"}</Col>
+          <Col>
+            <button onClick={() => deleteRepo(project)}>
+              Delete
+            </button>
+          </Col>
         </Row>
       )
     })
