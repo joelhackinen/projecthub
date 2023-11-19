@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryMeFn } from "../services/auth";
-import { addReposToCache, deleteRepoFromCache, updateProfileToCache } from "../services/cacheUpdaters";
+import { addReposToCache, deleteRepoFromCache, updateProfileToCache, updateRepoToCache } from "../services/cacheUpdaters";
 
 export const useUser = () => {
   const { data } = useQuery({
@@ -25,7 +25,7 @@ export const useAddRepos = () => {
 
 export const useUpdateProfile = () => {
   const { mutate } = useMutation({
-    mutationFn: (updatedProfile) => updateProfile(updatedProfile),
+    mutationFn: (profileToUpdate) => updateProfile(profileToUpdate),
     onSuccess: (updatedProfile) => updateProfileToCache(updatedProfile),
     onError: (error) => {
       console.error(error);
@@ -35,9 +35,33 @@ export const useUpdateProfile = () => {
   return mutate;
 };
 
+export const useUpdateRepo = () => {
+  const { mutate } = useMutation({
+    mutationFn: (repoToUpdate) => updateRepo(repoToUpdate),
+    onSuccess: (updatedRepo) => updateRepoToCache(updatedRepo),
+    onError: () => {
+      console.log(error);
+      alert("error updating repo:", error.message ?? "unknown error");
+    }
+  });
+  return mutate;
+};
+
+const updateRepo = async (repoToUpdate) => {
+  const res = await fetch(`/api/repos/${repoToUpdate.id}`, {
+    method: "PUT",
+    body: JSON.stringify(repoToUpdate),
+  });
+  if (!res.ok) {
+    throw new Error("error updating repo");
+  }
+  const updatedRepo = await res.json();
+  return updatedRepo;
+};
+
 export const useDeleteRepo = () => {
   const { mutate } = useMutation({
-    mutationFn: (repoToDelete) => deleteRepo(repoToDelete),
+    mutationFn: (repoId) => deleteRepo(repoId),
     onSuccess: (deletedRepo) => deleteRepoFromCache(deletedRepo),
     onError: (error) => {
       console.error(error);
@@ -47,10 +71,9 @@ export const useDeleteRepo = () => {
   return mutate;
 };
 
-const deleteRepo = async (repoToDelete) => {
-  const res = await fetch("/api/repos", {
+const deleteRepo = async (id) => {
+  const res = await fetch(`/api/repos/${id}`, {
     method: "DELETE",
-    body: JSON.stringify(repoToDelete),
   });
   if (!res.ok) {
     throw new Error("error deleting repos");
@@ -70,16 +93,14 @@ const addRepos = async (reposToAdd) => {
   return await res.json();
 };
 
-const updateProfile = async (updatedProfile) => {
+const updateProfile = async (profileToUpdate) => {
   const res = await fetch("/api/users/", {
     method: "PUT",
-    body: JSON.stringify(updatedProfile),
+    body: JSON.stringify(profileToUpdate),
   });
-  const newData = await res.json();
-  const { error, ...userData } = newData;
-  if (res.status === 207 && error) {
-    console.error(error?.user);
-    console.error(error?.repos);
+  if (!res.ok) {
+    throw new Error("error updating profile");
   }
+  const userData = await res.json();
   return userData;
 };

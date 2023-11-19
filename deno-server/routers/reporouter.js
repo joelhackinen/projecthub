@@ -47,13 +47,10 @@ router.post("/repos", async ({ request, response, state }) => {
   response.body = items;
 });
 
-router.delete("/repos", async ({ request, response, state }) => {
+router.delete("/repos/:id", async ({ response, state, params }) => {
   if (!state.email) {
     return response.status = 401;
   }
-
-  const body = request.body({ type: "json" });
-  const repoToDelete = await body.value;
 
   let deletedRepo;
   try {
@@ -61,7 +58,7 @@ router.delete("/repos", async ({ request, response, state }) => {
       DELETE FROM
         projects
       WHERE
-        id = ${repoToDelete.id}
+        id = ${params.id}
       AND
         user_email = ${state.email}
       RETURNING
@@ -75,6 +72,48 @@ router.delete("/repos", async ({ request, response, state }) => {
   console.log(deletedRepo);
   response.status = 200;
   response.body = deletedRepo;
+});
+
+router.put("/repos/:id", async ({ request, response, state, params }) => {
+  if (!state.email) {
+    return response.status = 401;
+  }
+
+  const body = request.body({ type: "json" });
+  const r = await body.value;
+
+  let updatedRepo;
+  try {
+    const row = await sql`
+      UPDATE 
+        projects
+      SET
+        owner = ${r.owner},
+        name = ${r.name},
+        full_name = ${r.full_name},
+        description = ${r.description},
+        languages = ${r.languages},
+        html_url = ${r.html_url},
+        created_at = ${r.created_at},
+        visible = ${r.visible}
+      WHERE
+        id = ${params.id}
+      AND
+        user_email = ${state.email}
+      RETURNING
+        *;`;
+      updatedRepo = row[0];
+  } catch (error) {
+    console.log(error);
+    return response.status = 500;
+  }
+  if (!updatedRepo) {
+    response.status = 400;
+    return response.body = { error: "project to be updated wasn't found"};
+  }
+
+  response.status = 200;
+  return response.body = updatedRepo;
 });
 
 

@@ -21,12 +21,13 @@ CREATE TABLE users (
 email: test@test.com
 password: password
 */
-INSERT INTO users (firstname, lastname, email, pwhash, pwsalt) VALUES (
+INSERT INTO users (firstname, lastname, email, pwhash, pwsalt, url_name) VALUES (
   'test',
   'test',
   'test@test.com',
   'c2NyeXB0AA4AAAAIAAAAAeMrpefBPiPMdWqpnIAmJJOVi7K6eV7fxV0rQel9bpYcrwcBxTMGJowmzV74XL+zrvmlsLFegzsLwXtvqhDkSRPOvO6paHHr6cnbVp3KFVj7',
-  '416941844475d76a'
+  '416941844475d76a',
+  'test'
 );
 
 CREATE TABLE projects (

@@ -20,12 +20,39 @@ export const addReposToCache = (reposToAdd) => {
 };
 
 export const updateProfileToCache = (updatedProfile) => {
-  qclient.setQueryData(["whoami"], updatedProfile);
+  qclient.setQueryData(["whoami"], (oldData) => ({ ...updatedProfile, repos: oldData.repos }));
   if (updatedProfile.url_name) {
     qclient.setQueryData(
       ["profile", updatedProfile.url_name],
-      { ...updatedProfile, repos: updatedProfile.repos.filter(r => r.visible)}
+      (oldData) => ({ ...updatedProfile, repos: oldData.repos }),
     );
+  }
+};
+
+export const updateRepoToCache = (updatedRepo) => {
+  let user_url;
+  console.log(updatedRepo);
+  qclient.setQueryData(["whoami"], (oldData) => {
+    user_url = oldData?.url_name ?? null;
+    return {
+      ...oldData,
+      repos: oldData.repos.map(r => r.id === updatedRepo.id ? updatedRepo : r)
+    };
+  });
+  if (user_url) {
+    qclient.setQueryData(["profile", user_url], (oldData) => {
+      const oldRepo = oldData.repos.find(r => updatedRepo.id === r.id);
+      if (oldRepo) {
+        return {
+          ...oldData,
+          repos: oldData.repos.map(r => r.id === updatedRepo.id ? updatedRepo : r).filter(r => r.visible),
+        };
+      }
+      return {
+        ...oldData,
+        repos: oldData.repos.concat(updatedRepo).filter(r => r.visible),
+      };
+    });
   }
 };
 

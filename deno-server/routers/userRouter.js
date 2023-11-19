@@ -21,15 +21,7 @@ router.put("/users", async ({ request, response, state, cookies }) => {
   }
 
   const body = request.body({ type: "json" });
-  const data = await body.value;
-  const { repos, ...user } = data;
-  const { firstname, lastname, email, url_name } = user;
-
-  const error = {
-    flag: false,
-    user: "",
-    repos: [],
-  };
+  const { firstname, lastname, email, url_name } = await body.value;
 
   let updatedUser;
   try {
@@ -48,52 +40,19 @@ router.put("/users", async ({ request, response, state, cookies }) => {
     updatedUser = u;
   } catch (error) {
     console.log(error);
-    error.flag = true;
-    error.user = "email or url name might already be in use";
-    updatedUser = user;
+    return response.status = 500;
+  }
+
+  if (!updatedUser) {
+    return response.status = 400;
   }
 
   state.email = updatedUser.email;
 
   await setJWT({ email: state.email }, cookies);//in case user changed their email
-
-  const newRepos = await Promise.all(
-    repos.map(r => {
-      try {
-        const [result] = sql`
-          UPDATE
-            projects
-          SET
-            owner = ${r.owner},
-            name = ${r.name},
-            full_name = ${r.full_name},
-            description = ${r.description},
-            languages = ${r.languages},
-            html_url = ${r.html_url},
-            created_at = ${r.created_at},
-            visible = ${r.visible}
-          WHERE
-            id = ${r.id}
-          RETURNING
-            *;`;
-        return result;
-      } catch (error) {
-        console.log(error);
-        error.flag = true;
-        error.repos.push(r);
-        return null;
-      }
-    })
-  );
-  const updatedRepos = newRepos.filter(r => r !== null);
-
-  if (error.flag) {
-    response.status = 207;
-    return response.body = { ...updatedUser, repos: updatedRepos, error };
-  }
-
+  
   response.status = 200;
-  response.body = { ...updatedUser, repos: updatedRepos };
+  response.body = updatedUser;
 });
 
 
