@@ -19,6 +19,16 @@ export const addReposToCache = (reposToAdd) => {
   }
 };
 
+export const updateFullProfileToCache = (updatedProfile) => {
+  qclient.setQueryData(["whoami"], updatedProfile);
+  if (updatedProfile.url_name) {
+    qclient.setQueryData(
+      ["profile", updatedProfile.url_name],
+      { ...updatedProfile, repos: updatedProfile.repos.filter(r => r.visible)}
+    );
+  }
+};
+
 export const updateProfileToCache = (updatedProfile) => {
   qclient.setQueryData(["whoami"], (oldData) => ({ ...updatedProfile, repos: oldData.repos }));
   if (updatedProfile.url_name) {
@@ -62,6 +72,7 @@ export const deleteRepoFromCache = (deletedRepo) => {
     user_url = oldData?.url_name ?? null;
     return { ...oldData, repos: oldData.repos.filter(r => r.id !== deletedRepo.id) };
   });
+  console.log(user_url);
   if (user_url) {
     qclient.setQueryData(
       ["profile", user_url],
