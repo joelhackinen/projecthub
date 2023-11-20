@@ -1,5 +1,5 @@
 import { qclient } from "../queryClient";
-import { updateProfileToCache, updateFullProfileToCache } from "./cacheUpdaters";
+import { setUserToCache, updateUserToCache } from "./cacheUpdaters";
 
 export const whoAmI = async () => {
   return await qclient.fetchQuery({
@@ -26,7 +26,7 @@ export const login = async (email, password) => {
   if (!res.ok) {
     throw new Error(data?.errors);
   }
-  updateFullProfileToCache(data);
+  setUserToCache(data);
   return data;
 };
 
@@ -54,7 +54,7 @@ export const register = async (firstname, lastname, email, password) => {
   if (!res.ok) {
     throw new Error(data?.errors);
   }
-  updateFullProfileToCache(data)
+  setUserToCache(data);
   return data;
 };
 
@@ -68,7 +68,7 @@ export const verifyGithubUser = async (code) => {
     throw new Error(data?.error);
   }
   const oldData = qclient.getQueryData(["whoami"]);
-  updateFullProfileToCache({ ...oldData, github: data.login });
+  updateUserToCache({ ...oldData, github: data.login });
 
   const repoRes = await fetch("/api/github/fetchRepos", {
     method: "POST",
