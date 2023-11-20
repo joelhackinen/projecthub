@@ -47,9 +47,10 @@ const Header = () => {
 }
 
 const PersonalInformation = ({ user }) => {
-  const conditionalInput = (field, placeholder) => (
-    <>{field ? <span>{field}</span> : <input placeholder={placeholder} />}</>
+  const conditionalInfo = ( field, placeholder ) => (
+    <>{(!field || field==='') ? <span style={{ color: "red" }}>{placeholder}</span> : field}</>
   )
+
   return user ? (
     <>
       <h2>Your information</h2>
@@ -65,11 +66,11 @@ const PersonalInformation = ({ user }) => {
         </Row>
         <Row>
           <Col sm={2} md={3}>Url:</Col>
-          <Col>{conditionalInput(user.url_name, "Set url")}</Col>
+          <Col>{conditionalInfo(user.url_name, `you haven't chosen url yet`) }</Col>
         </Row>
         <Row>
           <Col sm={2} md={3}>Github:</Col>
-          <Col>{conditionalInput(user.github, "Github")}</Col>
+          <Col>{conditionalInfo(user.github, "You haven't connected your github account")}</Col>
         </Row>
       </Container>
     </>
