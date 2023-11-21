@@ -17,6 +17,8 @@ router.get("/whoami", async ({ response, state }) => {
     return response.status = 401;
   }
 
+  if (!user) return response.status = 401;
+
   let repos;
   try {
     repos = await sql`SELECT * FROM projects WHERE user_email = ${state.email};`;

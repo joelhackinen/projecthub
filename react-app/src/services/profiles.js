@@ -12,9 +12,9 @@ export const updateProfile = async (profileToUpdate) => {
     method: "PUT",
     body: JSON.stringify(profileToUpdate),
   });
+  const data = await res.json();
   if (!res.ok) {
-    throw new Error("error updating profile");
+    throw new Error(data?.error ?? "error updating profile");
   }
-  const userData = await res.json();
-  return userData;
+  return data;
 };

@@ -1,4 +1,15 @@
-import { Router, scrypt, create, getNumericDate } from "../deps.js";
+import {
+  Router,
+  scrypt,
+  create,
+  getNumericDate,
+  isEmail,
+  isString,
+  required,
+  match,
+  validate,
+  lengthBetween
+} from "../deps.js";
 import { sql } from "../database.js";
 import { key } from "../app.js";
 
@@ -10,7 +21,6 @@ const setJWT = async (user, cookies) => {
     { email: user.email, exp: getNumericDate(60 * 60 * 24) },
     key
   );
-
   cookies.set("token", jwt, { httpOnly: true })
 };
 
@@ -21,7 +31,24 @@ router.put("/users", async ({ request, response, state, cookies }) => {
   }
 
   const body = request.body({ type: "json" });
-  const { firstname, lastname, email, url_name } = await body.value;
+  const userData = await body.value;
+
+  const validationRules = {
+    firstname: [required, isString, lengthBetween(2, 30)],
+    lastname: [required, isString, lengthBetween(2, 30)],
+    email: [required, isEmail],
+    url_name: [required, match("^[a-zA-Z0-9]*$"), isString, lengthBetween(3, 30)],
+  };
+
+  const [ passes, errors ] = await validate(userData, validationRules);
+
+  if (!passes) {
+    console.log(errors);
+    response.status = 400;
+    return response.body = { error: errors };
+  }
+
+  const { firstname, lastname, email, url_name } = userData;
 
   let updatedUser;
   try {
@@ -40,6 +67,16 @@ router.put("/users", async ({ request, response, state, cookies }) => {
     updatedUser = u;
   } catch (error) {
     console.log(error);
+
+    if (error.code == "23505") {
+      if (error.constraint_name.includes("email")) {
+        response.body = { error: { email: { unique: "email already in use" } } };
+      }
+      if (error.constraint_name.includes("url_name")) {
+        response.body = { error: { url_name: { unique: "url already in use" } } };
+      }
+      return response.status = 400;
+    }
     return response.status = 500;
   }
 
@@ -90,31 +127,28 @@ router.get("/users/:urlName", async ({ response, params }) => {
 router.post("/users", async ({ request, response, state, cookies }) => {
   if (state.email) {
     response.status = 409;
-    return response.body = { errors: ["already logged in"] };
+    return response.body = { error: "already logged in" };
   }
 
   const body = request.body({ type: "json" });
-  const data = await body.value;
-  const { firstname, lastname, email, password } = data;
+  const userData = await body.value;
 
-  const errors = [];
-  if (firstname === undefined || typeof(firstname) !== "string" || firstname.length < 2) {
-    errors.push("invalid or missing first name");
-  }
-  if (lastname === undefined || typeof(lastname) !== "string" || lastname.length < 2) {
-    errors.push("invalid or missing last name");
-  }
-  if (email === undefined || typeof(email) !== "string" || email.length < 6) {
-    errors.push("invalid or missing email");
-  }
-  if (password === undefined || typeof(password) !== "string" || password.length < 6) {
-    errors.push("invalid or missing password");
+  const validationRules = {
+    firstname: [required, isString, lengthBetween(2, 30)],
+    lastname: [required, isString, lengthBetween(2, 30)],
+    email: [required, isEmail],
+    password: [required, isString, lengthBetween(6, 30)],
+  };
+
+  const [ passes, errors ] = await validate(userData, validationRules);
+
+  if (!passes) {
+    console.log(errors);
+    response.status = 400;
+    return response.body = { error: errors };
   }
 
-  if (errors.length > 0) {
-    response.body = { errors };
-    return response.status = 400;
-  }
+  const { firstname, lastname, email, password } = userData;
 
   const uint8salt = scrypt.genSalt(8, "Uint8Array");
   const passwordsalt = Array.from(uint8salt).map(byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
@@ -123,16 +157,19 @@ router.post("/users", async ({ request, response, state, cookies }) => {
   let userRow;
 
   try {
-    userRow = await sql`INSERT INTO users (firstname, lastname, email, pwhash, pwsalt) VALUES (
-      ${firstname},
-      ${lastname},
-      ${email},
-      ${passwordhash},
-      ${passwordsalt}
-    ) RETURNING *;`;
+    userRow = await sql`
+      INSERT INTO
+        users (firstname, lastname, email, pwhash, pwsalt)
+      VALUES (
+        ${firstname},
+        ${lastname},
+        ${email},
+        ${passwordhash},
+        ${passwordsalt}
+      ) RETURNING *;`;
   } catch (_e) {
     response.status = 400;
-    return response.body = { errors: ["email already in use"] };
+    return response.body = { error: { email: { unique: "email already in use" } } };
   }
   const { _pwhash, _pwsalt, ...user } = userRow[0];
 
@@ -140,7 +177,7 @@ router.post("/users", async ({ request, response, state, cookies }) => {
     await setJWT(user, cookies);
   } catch (_e) {
     response.status = 500;
-    return response.body = { errors: ["JWT creation error"] };
+    return response.body = { error: "JWT creation error" };
   }
 
   response.status = 200;
@@ -153,22 +190,23 @@ router.post("/login", async ({ request, response, cookies }) => {
   const data = await body.value;
   const { email, password } = data;
 
-  const errors = [];
+  const validationRules = {
+    email: [required],
+    password: [required],
+  };
 
-  if (!email) {
-    errors.push("email missing");
-  }
-  if (!password) {
-    errors.push("password missing")
-  }
+  const [ passes, errors ] = await validate(data, validationRules);
 
-  if (errors.length > 0) {
+  if (!passes) {
+    console.log(errors);
     response.status = 400;
-    return response.body = { errors };
+    return response.body = { error: errors };
   }
+
   let rows;
   try {
-    rows = await sql`SELECT firstname, pwsalt, pwhash, lastname, email, github, url_name FROM users WHERE email = ${email};`;
+    rows = await sql`
+      SELECT * FROM users WHERE email = ${email};`;
   } catch (error) {
     console.log(error);
     return response.status = 500;
@@ -176,22 +214,23 @@ router.post("/login", async ({ request, response, cookies }) => {
 
   if (!rows[0]) {
     response.status = 401;
-    return response.body = { errors: ["invalid credentials"] };
+    return response.body = { error: "invalid credentials" };
   }
 
-  const { pwsalt, pwhash, ...user } = rows[0];
+  const { _id, pwsalt, pwhash, ...user } = rows[0];
   const match = scrypt.verify(password + pwsalt, pwhash, "scrypt");
 
   if (!match) {
     response.status = 401;
-    return response.body = { errors: ["invalid credentials"] };
+    return response.body = { error: "invalid credentials" };
   }
 
   try {
     await setJWT(user, cookies);
-  } catch (_e) {
+  } catch (error) {
+    console.log(error);
     response.status = 500;
-    return response.body = { errors: ["JWT creation error"] };
+    return response.body = { errors: "JWT creation error" };
   }
 
   let repos;
@@ -202,7 +241,7 @@ router.post("/login", async ({ request, response, cookies }) => {
     return response.status = 403;
   }
 
-  response.status = 201;
+  response.status = 200;
   response.body = { ...user, repos };
 });
 
