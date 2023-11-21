@@ -1,11 +1,13 @@
 import { Link, Outlet, useSubmit } from "react-router-dom";
+import { useDeleteRepo, useUpdateRepo, useAddRepos, useUser } from "../hooks";
 import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Dropdown from "react-bootstrap/Dropdown"
 import GithubButton from "./GithubButton"
+import { Button  } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit"
-import { useDeleteRepo, useUpdateRepo, useUser } from "../hooks";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import "./../css/UserDashboard.css"
 
@@ -54,7 +56,7 @@ const PersonalInformation = ({ user }) => {
   return user ? (
     <>
       <h2>Your information</h2>
-      <EditButton to="/dashboard/edit/information"/>
+      <EditButton to="edit/information"/>
       <Container className="info-container">
         <Row>
           <Col sm={2} md={3}>Email:</Col>
@@ -80,6 +82,7 @@ const PersonalInformation = ({ user }) => {
 const Projects = ({ projects }) => {
   const deleteRepo = useDeleteRepo();
   const updateRepo = useUpdateRepo();
+
   const ProjectList_ = () => (
     projects.map((project, idx) => {
       return (
@@ -106,13 +109,23 @@ const Projects = ({ projects }) => {
   return (
     <>
       <h2>Projects</h2>
-      <EditButton to="/dashboard/edit/projects" />
+      <EditButton to="edit/projects" />
       <Container className="projects-container">
+        <Row>
+          <GithubButton />
+        </Row>
         {projects
         ?
           <ProjectList_ />
         :
           <div>You dont have any visible projects</div>}
+        <Row>
+          <Link to="edit/addNewProject" style={{ width: "fit-content" }}>
+            <Button sx={{ border: "1px solid black", color: "black" }} variant="outlined" component="label" startIcon={<AddCircleOutlineIcon />}>
+              Add new project
+            </Button>
+          </Link>
+        </Row>
       </Container>
     </>
   ) 
@@ -131,8 +144,8 @@ const UserDashboard = () => {
         <PersonalInformation user={user}/>
       </Row>
 
-      <GithubButton />
       <Row className="p-3">
+        
         <Projects projects={user?.repos}/>
       </Row>
       <Outlet />

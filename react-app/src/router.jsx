@@ -126,7 +126,7 @@ const router = createBrowserRouter([
           {
             path: "/dashboard/edit/:formParam",
             element: <UserEditLayout />,
-          },
+          }
         ],
       },
       {

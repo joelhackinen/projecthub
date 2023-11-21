@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState } from 'react'
 import UserEditProjects from "./UserEditProjects"
 import UserEditInformation from "./UserEditInformation"
+import UserEditAddNewProject from "./UserEditAddNewProject"
 
 const style = {
   // eslint-disable-next-line
@@ -33,6 +34,8 @@ const UserEditLayout = () => {
       return <UserEditInformation open={open} handleClose={handleClose} />
     case "projects":
       return <UserEditProjects open={open} handleClose={handleClose} />
+    case "addNewProject":
+      return <UserEditAddNewProject open={open} handleClose={handleClose}/>
     default:
       return <div>Incorrect params</div>
   }
