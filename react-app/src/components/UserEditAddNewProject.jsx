@@ -1,11 +1,11 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField, Radio, RadioGroup, FormControlLabel, List, ListItem, Checkbox, ListItemText, IconButton, FormControl, FormGroup } from "@mui/material"
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { useUser, useAddRepos } from "../hooks"
+import { useUser, useAddRepo } from "../hooks"
 import { useState } from "react";
 
 const UserEditAddNewProject = ({ open, handleClose }) => {
   const user = useUser();
-  const addRepos = useAddRepos();
+  const addRepo = useAddRepo();
   const [nameError, setNameError] = useState(false)
 
   const [listOfLanguages, setListOfLanguages] = useState(['Python', 'Javascript', 'React', 'C++'])
@@ -13,11 +13,13 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
   const [customLanguage, setCustomLanguage] = useState('');
 
   const [newProject, setNewProject] = useState({
-    user_email: user.email,
+    //user_email: user.email, ---- ei tarvita, backendissä käyttäjä luetaan keksin tokenista
     owner: "",
     name: "",
     full_name: "",
+    description: "",
     html_url: "",
+    visible: true,
     created_at: 0
   })
   const handleChange = e => {
@@ -60,14 +62,11 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
     const visibility = newProject.visible
     const languages = selectedLanguages
 
-    addRepos([{
-      user_email: user.email,
-      owner: "",
-      name: projectName,
-      full_name: "",
-      html_url: "",
-      created_at: created_at
-    }])
+    addRepo({
+      ...newProject,
+      visible: newProject.visible === "false" ? false : true,
+      created_at: newProject.created_at.toString(), //pitää olla string toistaseks
+    });
     handleClose()
   }
 

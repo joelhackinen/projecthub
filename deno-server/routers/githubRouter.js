@@ -96,18 +96,40 @@ router.post("/github/fetchRepos", async ({ request, response, state }) => {
     return response.status = 500;
   }
 
-  const repos = repoData.map(({ owner, name, full_name, html_url, created_at }) => ({
+  const existingRepoNames = existingRepos.map(r => r.name);
+  const newRepos = repoData.filter(r => !existingRepoNames.includes(r.name));
+
+  const requests = newRepos.map(({ languages_url }) => 
+    fetch(languages_url, {
+      method: "GET",
+      headers: {
+        "Accept": "application/vnd.github+json",
+        "Authorization": `Bearer ${github_token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    }).then(res => res.json())
+  );
+
+  let languages = [];
+  try {
+    languages = await Promise.all(requests);
+  } catch (error) {
+    console.log(error);
+    return response.status = 500;
+  }
+
+  const repos = newRepos.map(({ owner, name, full_name, html_url, created_at }, i) => ({
     owner: owner.login,
     name,
     full_name,
     html_url,
     created_at,
+    github: true,
+    languages: languages[i],
   }));
 
-  const existingRepoNames = existingRepos.map(r => r.name);
-
   response.status = 200;
-  response.body = repos.filter(r => !existingRepoNames.includes(r.name));
+  response.body = repos;
 });
 
 export default router;

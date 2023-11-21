@@ -19,9 +19,9 @@ const setJWT = async (user, cookies) => {
   const jwt = await create(
     { alg: "HS512", typ: "JWT" },
     { email: user.email, exp: getNumericDate(60 * 60 * 24) },
-    key
+    key,
   );
-  cookies.set("token", jwt, { httpOnly: true })
+  cookies.set("token", jwt, { httpOnly: true });
 };
 
 

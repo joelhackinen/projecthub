@@ -41,6 +41,7 @@ CREATE TABLE projects (
   html_url TEXT,
   created_at TIMESTAMPTZ,
   visible BOOLEAN DEFAULT true NOT NULL,
+  github BOOLEAN DEFAULT false NOT NULL,
   CONSTRAINT unique_user_project UNIQUE(user_email, name)
 );
 

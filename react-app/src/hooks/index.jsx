@@ -2,11 +2,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryMeFn } from "../services/auth";
 import {
   addReposToCache,
+  addRepoToCache,
   deleteRepoFromCache,
   updateUserToCache,
   updateRepoToCache,
 } from "../services/cacheUpdaters";
-import { addRepos, deleteRepo, updateRepo } from "../services/repos";
+import { addRepo, addRepos, deleteRepo, updateRepo } from "../services/repos";
 import { updateProfile } from "../services/profiles";
 
 export const useUser = () => {
@@ -20,8 +21,11 @@ export const useUser = () => {
 
 export const useAddRepos = () => {
   const { mutate } = useMutation({
-    mutationFn: (repos) => addRepos(repos),
-    onSuccess: (repos) => addReposToCache(repos),
+    mutationFn: (reposToAdd) => addRepos(reposToAdd),
+    onSuccess: (repos) => {
+      addReposToCache(repos.added);
+      console.log(repos.errors);
+    },
     onError: (error) => {
       console.error(error);
     },
@@ -57,6 +61,17 @@ export const useDeleteRepo = () => {
     onSuccess: (deletedRepo) => deleteRepoFromCache(deletedRepo),
     onError: (error) => {
       console.error(error);
+    },
+  });
+  return mutate;
+};
+
+export const useAddRepo = () => {
+  const { mutate } = useMutation({
+    mutationFn: (repoToAdd) => addRepo(repoToAdd),
+    onSuccess: (addedRepo) => addRepoToCache(addedRepo),
+    onError: (error) => {
+      console.log(error);
     },
   });
   return mutate;

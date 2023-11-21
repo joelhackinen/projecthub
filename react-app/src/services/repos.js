@@ -20,12 +20,25 @@ export const deleteRepo = async (id) => {
 };
 
 export const addRepos = async (reposToAdd) => {
-  const res = await fetch("/api/repos", {
+  const res = await fetch("/api/repos/many", {
     method: "POST",
     body: JSON.stringify(reposToAdd),
   });
+  const data = await res.json();
   if (!res.ok) {
-    throw new Error("error adding repos");
+    throw new Error(data?.error ?? "error adding repos");
   }
-  return await res.json();
+  return data;
 };
+
+export const addRepo = async (repoToAdd) => {
+  const res = await fetch("/api/repos", {
+    method: "POST",
+    body: JSON.stringify(repoToAdd),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data?.error ?? "error adding repo");
+  }
+  return data;
+}
