@@ -34,7 +34,7 @@ const UserEditProjects = ({ open, handleClose }) => {
       <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle>Edit your personal information</DialogTitle>
         
-        <DialogContent>
+        <DialogContent> {/* Email */}
           <DialogContentText>Email</DialogContentText>
           { <input
               defaultValue={user.email}
@@ -45,7 +45,7 @@ const UserEditProjects = ({ open, handleClose }) => {
               id="email"
             />}
         </DialogContent>
-        <DialogContent>
+        <DialogContent> {/* First Name */}
           <DialogContentText>First Name</DialogContentText>
           { <input
               defaultValue={user.firstname}
@@ -56,7 +56,7 @@ const UserEditProjects = ({ open, handleClose }) => {
               id="firstname"
             />}
         </DialogContent>
-        <DialogContent>
+        <DialogContent> {/* Last Name */}
           <DialogContentText>Last Name</DialogContentText>
           { <input
               defaultValue={user.lastname}
@@ -67,7 +67,7 @@ const UserEditProjects = ({ open, handleClose }) => {
               id="lastname"
             />}
         </DialogContent>
-        <DialogContent>
+        <DialogContent> {/* Url */}
           <DialogContentText>Url</DialogContentText>
           { <input
               defaultValue={user.url_name}
@@ -79,7 +79,7 @@ const UserEditProjects = ({ open, handleClose }) => {
             />}
         </DialogContent>
         <DialogActions>
-          <Button onClick={saveAndClose}>Save and close</Button>
+          <Button variant="contained" onClick={saveAndClose}>Save and close</Button>
           <Button onClick={handleClose}>cancel</Button>
         </DialogActions>
       </Dialog>

@@ -1,10 +1,9 @@
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField, Radio, RadioGroup, FormControlLabel, List, ListItem, Checkbox, ListItemText, IconButton, FormControl, FormGroup } from "@mui/material"
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField, Radio, RadioGroup, FormControlLabel, List, ListItem, Checkbox, ListItemText, IconButton } from "@mui/material"
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { useUser, useAddRepo } from "../hooks"
+import { useAddRepo } from "../hooks"
 import { useState } from "react";
 
 const UserEditAddNewProject = ({ open, handleClose }) => {
-  const user = useUser();
   const addRepo = useAddRepo();
   const [nameError, setNameError] = useState(false)
 
@@ -56,11 +55,11 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
       return
     }
 
-    const projectName = newProject.name
-    const description = newProject.description
-    const created_at = newProject.created_at
-    const visibility = newProject.visible
-    const languages = selectedLanguages
+    // const projectName = newProject.name
+    // const description = newProject.description
+    // const created_at = newProject.created_at
+    // const visibility = newProject.visible
+    // const languages = selectedLanguages
 
     addRepo({
       ...newProject,
@@ -150,7 +149,7 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
           </DialogContent>
 
           <DialogActions>
-            <Button type="submit">Add</Button>
+            <Button variant="contained" type="submit">Add</Button>
             <Button onClick={handleClose}>cancel</Button>
           </DialogActions>
         </form>

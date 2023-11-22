@@ -1,5 +1,5 @@
 import { Link, Outlet, useSubmit } from "react-router-dom";
-import { useDeleteRepo, useUpdateRepo, useAddRepos, useUser } from "../hooks";
+import { useDeleteRepo, useUpdateRepo, useUser } from "../hooks";
 import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
@@ -97,10 +97,13 @@ const Projects = ({ projects }) => {
               </button>
             </Row>
           </Col>
-          <Col>
+          <Col className="align-self-center">
             <button onClick={() => deleteRepo(project.id)}>
               Delete
             </button>
+          </Col>
+          <Col className="align-self-center">
+            <Link to={`edit/project/${project.id}`} ><EditIcon sx={{ color: "black" }} /></Link>
           </Col>
         </Row>
       )

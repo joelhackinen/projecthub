@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from 'react'
 import UserEditProjects from "./UserEditProjects"
+import UserEditEditProject from "./UserEditEditProject"
 import UserEditInformation from "./UserEditInformation"
 import UserEditAddNewProject from "./UserEditAddNewProject"
 
@@ -19,6 +20,7 @@ const style = {
 
 const UserEditLayout = () => {
   const { formParam } = useParams();
+
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(true);
@@ -36,8 +38,11 @@ const UserEditLayout = () => {
       return <UserEditProjects open={open} handleClose={handleClose} />
     case "addNewProject":
       return <UserEditAddNewProject open={open} handleClose={handleClose}/>
+    case "project":
+      return <UserEditEditProject open={open} handleClose={handleClose}/>
     default:
       return <div>Incorrect params</div>
+      
   }
 };
 
