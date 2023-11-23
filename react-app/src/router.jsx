@@ -101,6 +101,7 @@ const githubCallbackLoader = async ({ request }) => {
 
 const profileLoader = ({ params }) => {
   const urlName = params.url_name;
+  document.body.style.backgroundColor = "#C3C5C3";
   return defer({ user: fetchProfile(urlName) });
 };
 

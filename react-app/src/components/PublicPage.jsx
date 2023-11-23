@@ -1,61 +1,76 @@
 // import { useState } from "react";
 import "./../css/PublicPage.css";
-import { Await, useAsyncValue, useLoaderData, useSubmit } from "react-router-dom";
+import { Await, useAsyncValue, useLoaderData } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Dropdown from "react-bootstrap/Dropdown";
-import GithubButton from "./GithubButton";
 import { Suspense } from "react";
 import AppError from "./errorElements/AppError";
 
+const Line = () => (<div className="line"></div>)
 
+const Project = ({ data, idx }) => {
+  
+  const languagePercentages = (languages) => {
+    const getRepoLanguagePercentage = (languages) => {
+      const totalPtsArr = Object.values(languages);
+      var sumTotalPts = 0;
+      totalPtsArr.forEach((pts) => {
+        sumTotalPts += pts;
+      });
+    
+      const languagesPercentage = {};
+      Object.keys(languages).forEach((lang) => {
+        languagesPercentage[lang] = ((languages[lang] * 100) / sumTotalPts).toFixed(1);
+      });
+    
+      return languagesPercentage;
+    }
+    const languagesInPercentages = Object.entries(getRepoLanguagePercentage(languages)).sort((b, a) => a[1] - b[1])
+    return languagesInPercentages.map(([key, value]) => (
+      <div key={key}>
+        <strong>{key}:</strong> {value}%
+      </div>
+    ))
+  }
 
-const Project = ({ idx }) => {
   return (
-    <Row className="public-project pt-4">
-      <Col className="text-center" sm={12} md={4} lg={3}>
-        <div className="public-proj-img-placeholder"></div>
-      </Col>
-      <Col md={{ order: idx % 2 ? "last" : "first" }}>
-        <h4>Project {idx}</h4>
-        <p>
-          Longer description of the project. Lorem ipsum dolor sit amet,
-          consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-          exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-          dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-          proident, sunt in culpa qui officia deserunt mollit anim id est
-          laborum.
-        </p>
-      </Col>
-    </Row>
+    <>
+      {idx !== 0 ? <Line /> : <></>}
+      <Row className="public-project pt-4">
+        <Col sm={12} md={4} lg={4}>
+          <div className="mx-auto public-proj-img-placeholder" />
+        </Col>
+        <Col md={{ order: idx % 2 ? "last" : "first" }}>
+          <h2>{data?.name}</h2>
+          <p>
+            {data?.description}
+          </p>
+        </Col>
+      </Row>
+      <Row className="pt-3" >
+        <Col sm={12} md={5} lg={4}>
+          <h4>Languages used:</h4>
+        </Col>
+        <Col>
+          <div className="pb-3">
+            {data?.github ? languagePercentages(data.languages) : <p>not from git</p>}
+          </div> 
+        </Col>
+      </Row>
+    
+    </>
   );
 };
 const Projects = ({ projects }) => {
   return (
     <Container>
-      <Project idx={1} />
-      <Project idx={2} />
-      <Project idx={3} />
-      <Project idx={4} />
+      {
+        projects?.map((project, idx) => <Project key={project.id} data={project} idx={idx}/>)
+      }
     </Container>
   );
 };
-
-const PublicPage = () => {
-  const data = useLoaderData();
-
-  return (
-    <Suspense fallback={<h2 style={{ color: "white" }}>Loading...</h2>}>
-      <Await resolve={data.user} errorElement={<AppError message="page not found" />}>
-        <PublicPageContent />
-      </Await>
-    </Suspense>
-  );
-};
-
 
 const PublicPageContent = () => {
   const user = useAsyncValue();
@@ -63,7 +78,7 @@ const PublicPageContent = () => {
   const firstName = user.firstname;
   const lastName = user.lastname
   const email = user.email;
-
+  
   const mainInfo = (
     <>
       <Row className="text-center">
@@ -80,12 +95,11 @@ const PublicPageContent = () => {
         
       </Row>
       <Row>
-        <h5>About me:</h5>
+        <h4>About me:</h4>
         <p>
           A short introduction about who I am and any extra text I want to
           display that is not directly related to the projects.
         </p>
-        <GithubButton />
       </Row>
     </>
   );
@@ -97,10 +111,22 @@ const PublicPageContent = () => {
           {mainInfo}
         </Col>
         <Col className="public-projects-container">
-          <Projects></Projects>
+          <Projects projects={user.repos}/>
         </Col>
       </Row>
     </Container>
+  );
+};
+
+const PublicPage = () => {
+  const data = useLoaderData();
+
+  return (
+    <Suspense fallback={<h2 style={{ color: "white" }}>Loading...</h2>}>
+      <Await resolve={data.user} errorElement={<AppError message="page not found" />}>
+        <PublicPageContent />
+      </Await>
+    </Suspense>
   );
 };
 
