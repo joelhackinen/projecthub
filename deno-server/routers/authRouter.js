@@ -1,5 +1,6 @@
 import { sql } from "../database.js";
 import { Router } from "../deps.js";
+import { omit } from "../utils.js";
 
 const router = new Router();
 
@@ -10,8 +11,8 @@ router.get("/whoami", async ({ response, state }) => {
 
   let user;
   try {
-    const userRow = await sql`SELECT firstname, lastname, email, github, url_name FROM users WHERE email = ${state.email};`;
-    user = userRow[0];
+    const [u] = await sql`SELECT * FROM users WHERE email = ${state.email};`;
+    user = omit(u, "id", "pwhash", "pwsalt");
   } catch(error) {
     console.log(error);
     return response.status = 401;

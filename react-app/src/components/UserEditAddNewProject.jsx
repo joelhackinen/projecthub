@@ -18,8 +18,9 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
     full_name: "",
     description: "",
     html_url: "",
-    visible: true,
-    created_at: 0
+    visible: "true",
+    created_at: "",
+    languages: [],
   })
   const handleChange = e => {
     setNewProject({
@@ -55,6 +56,9 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
       return
     }
 
+    const languagesObj = {};
+    selectedLanguages.forEach(lang => languagesObj[lang] = 0);
+
     // const projectName = newProject.name
     // const description = newProject.description
     // const created_at = newProject.created_at
@@ -63,8 +67,9 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
 
     addRepo({
       ...newProject,
-      visible: newProject.visible === "false" ? false : true,
-      created_at: newProject.created_at.toString(), //pitää olla string toistaseks
+      visible: JSON.parse(newProject.visible),
+      created_at: newProject.created_at,
+      languages: languagesObj,
     });
     handleClose()
   }

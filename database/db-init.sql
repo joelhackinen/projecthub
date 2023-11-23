@@ -39,15 +39,16 @@ CREATE TABLE projects (
   description TEXT,
   languages JSONB,
   html_url TEXT,
-  created_at TIMESTAMPTZ,
+  created_at TEXT,
   visible BOOLEAN DEFAULT true NOT NULL,
   github BOOLEAN DEFAULT false NOT NULL,
   CONSTRAINT unique_user_project UNIQUE(user_email, name)
 );
 
-INSERT INTO projects (user_email, name, description, html_url) VALUES (
+INSERT INTO projects (user_email, name, description, html_url, created_at) VALUES (
   'test@test.com',
   'test project',
   'test description for test project',
-  'https://github.com/joelhackinen/projecthub'
+  'https://github.com/joelhackinen/projecthub',
+  '2023-02-11'
 );

@@ -10,6 +10,7 @@ import {
   validate,
   lengthBetween
 } from "../deps.js";
+import { omit } from "../utils.js";
 import { sql } from "../database.js";
 import { key } from "../app.js";
 
@@ -21,7 +22,7 @@ const setJWT = async (user, cookies) => {
     { email: user.email, exp: getNumericDate(60 * 60 * 24) },
     key,
   );
-  cookies.set("token", jwt, { httpOnly: true });
+  await cookies.set("token", jwt, { httpOnly: true });
 };
 
 
@@ -52,7 +53,7 @@ router.put("/users", async ({ request, response, state, cookies }) => {
 
   let updatedUser;
   try {
-    const [{ _pwhash, _pwsalt, ...u }] = await sql`
+    const [u] = await sql`
       UPDATE 
         users
       SET
@@ -64,7 +65,8 @@ router.put("/users", async ({ request, response, state, cookies }) => {
         email = ${state.email}
       RETURNING
         *;`;
-    updatedUser = u;
+
+    updatedUser = omit(u, "pwhash", "pwsalt", "id");
   } catch (error) {
     console.log(error);
 
@@ -97,23 +99,30 @@ router.get("/users/:urlName", async ({ response, params }) => {
   let userData;
   let repoData;
   try {
-    const userRows = await sql`
+    const [user] = await sql`
       SELECT
-        firstname, lastname, email, github, url_name
+        *
       FROM
         users
       WHERE
         url_name = ${params.urlName};`;
     
-    if (userRows.length === 0) {
+    if (!user) {
       response.status = 404;
       return response.body = { error: "user not found" };
     }
 
-    userData = userRows[0];
+    userData = omit(user, "id", "pwhash", "pwsalt");
 
     repoData = await sql`
-      SELECT * FROM projects WHERE user_email = ${userData.email} AND visible=true;`;
+      SELECT
+        *
+      FROM
+        projects
+      WHERE
+        user_email = ${userData.email}
+      AND
+        visible=true;`;
   } catch (error) {
     console.log(error);
     response.body = { error: "data fetch error" };
@@ -171,7 +180,7 @@ router.post("/users", async ({ request, response, state, cookies }) => {
     response.status = 400;
     return response.body = { error: { email: { unique: "email already in use" } } };
   }
-  const { _pwhash, _pwsalt, ...user } = userRow[0];
+  const user = omit(userRow[0], "id", "pwhash", "pwsalt");
 
   try {
     await setJWT(user, cookies);
@@ -203,21 +212,21 @@ router.post("/login", async ({ request, response, cookies }) => {
     return response.body = { error: errors };
   }
 
-  let rows;
+  let userData;
   try {
-    rows = await sql`
+    [userData] = await sql`
       SELECT * FROM users WHERE email = ${email};`;
   } catch (error) {
     console.log(error);
     return response.status = 500;
   }
 
-  if (!rows[0]) {
+  if (!userData) {
     response.status = 401;
     return response.body = { error: "invalid credentials" };
   }
 
-  const { _id, pwsalt, pwhash, ...user } = rows[0];
+  const { pwsalt, pwhash, ...user } = omit(userData, "id");
   const match = scrypt.verify(password + pwsalt, pwhash, "scrypt");
 
   if (!match) {
@@ -246,12 +255,12 @@ router.post("/login", async ({ request, response, cookies }) => {
 });
 
 
-router.post("/logout", ({ response, state, cookies }) => {
+router.post("/logout", async ({ response, state, cookies }) => {
   if (!state.email) {
     return response.status = 401;
   }
 
-  cookies.delete("token");
+  await cookies.delete("token");
   response.status = 204;
 });
 

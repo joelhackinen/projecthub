@@ -4,7 +4,6 @@ import "https://deno.land/std@0.206.0/dotenv/load.ts";
 
 export * as scrypt from "https://deno.land/x/scrypt@v4.2.1/mod.ts";
 
-
 export {
   Application,
   Router
@@ -19,6 +18,8 @@ export {
   match,
   lengthBetween,
   isArray,
+  invalid,
+  isDate,
 } from "https://deno.land/x/validasaur@v0.15.0/mod.ts";
 
 export {

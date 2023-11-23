@@ -6,8 +6,10 @@ import {
   validate,
   lengthBetween,
   isBool,
-  isArray
+  isArray,
+  isDate,
 } from "../deps.js";
+import { isLanguages } from "../utils.js";
 
 const router = new Router();
 
@@ -40,7 +42,8 @@ router.post("/repos/many", async ({ request, response, state }) => {
     name: [required, isString, lengthBetween(2, 30)],
     full_name: [required, isString],
     html_url: [required, isString],
-    created_at: [required, isString],
+    created_at: [required, isDate],
+    languages: [isLanguages],
     github: [required, isBool],
   };
 
@@ -59,16 +62,14 @@ router.post("/repos/many", async ({ request, response, state }) => {
 
     let addedRepo;
     try {
-      const repoRow = await sql`
+      [addedRepo] = await sql`
         INSERT INTO projects
           (user_email, owner, name, full_name, html_url, created_at, languages, github)
         VALUES
           (${state.email}, ${owner}, ${name}, ${full_name}, ${html_url}, ${created_at}, ${languages}, ${github})
         RETURNING *;`
-      addedRepo = repoRow[0];
     } catch (error) {
       if (error.code == "23505" || error.code == "23000" || error.code == "23001") {
-        console.log(error.code);
         repoErrors.push({ name: { unique: `you already have a project named ${name}` } });
       }
       response.status = 207;
@@ -78,9 +79,9 @@ router.post("/repos/many", async ({ request, response, state }) => {
   };
 
   const items = await Promise.all(data.map(repo => validateAndInsert(repo)));
-  console.log(repoErrors);
   response.body = { added: items.filter(r => r !== null), errors: repoErrors };
 });
+
 
 router.post("/repos", async ({ request, response, state }) => {
   if (!state.email) {
@@ -96,7 +97,8 @@ router.post("/repos", async ({ request, response, state }) => {
     full_name: [isString],
     description: [isString],
     html_url: [isString],
-    created_at: [isString],
+    created_at: [isDate],
+    languages: [isLanguages],
     visible: [isBool],
   };
 
@@ -108,13 +110,11 @@ router.post("/repos", async ({ request, response, state }) => {
     return response.body = { error: errors };
   }
 
-  const { owner, name, full_name, description, html_url, created_at, visible } = data;
-  console.log(data);
-  //console.log(owner, name, full_name, description, languages, html_url, created_at, visible);
+  const { owner, name, full_name, description, html_url, created_at, languages, visible } = data;
 
   let addedRepo;
   try {
-    const repoRow = await sql`
+    [addedRepo] = await sql`
       INSERT INTO
         projects (user_email, owner, name, full_name, description, languages, html_url, created_at, visible, github)
       VALUES (
@@ -123,13 +123,12 @@ router.post("/repos", async ({ request, response, state }) => {
         ${name},
         ${full_name},
         ${description},
-        ${"TODO"},
+        ${languages},
         ${html_url},
         ${created_at},
         ${visible},
         ${false}
       ) RETURNING *;`;
-    addedRepo = repoRow[0];
   } catch (error) {
     if (error.code == "23505") {
       response.body = { error: { name: { unique: `you already have a project named ${name}` }}};
@@ -142,6 +141,7 @@ router.post("/repos", async ({ request, response, state }) => {
   response.body = addedRepo;
 });
 
+
 router.delete("/repos/:id", async ({ response, state, params }) => {
   if (!state.email) {
     return response.status = 401;
@@ -149,7 +149,7 @@ router.delete("/repos/:id", async ({ response, state, params }) => {
 
   let deletedRepo;
   try {
-    const row = await sql`
+    [deletedRepo] = await sql`
       DELETE FROM
         projects
       WHERE
@@ -158,16 +158,15 @@ router.delete("/repos/:id", async ({ response, state, params }) => {
         user_email = ${state.email}
       RETURNING
         *;`;
-    deletedRepo = row[0];
   } catch (error) {
     console.log(error);
     response.status = 500;
     return response.body = { error: "error deleting project" };
   }
-  console.log(deletedRepo);
   response.status = 200;
   response.body = deletedRepo;
 });
+
 
 router.put("/repos/:id", async ({ request, response, state, params }) => {
   if (!state.email) {
@@ -183,7 +182,7 @@ router.put("/repos/:id", async ({ request, response, state, params }) => {
     full_name: [isString],
     description: [isString],
     html_url: [isString],
-    created_at: [isString],
+    created_at: [isDate],
     visible: [isBool],
   };
 
@@ -197,7 +196,7 @@ router.put("/repos/:id", async ({ request, response, state, params }) => {
 
   let updatedRepo;
   try {
-    const row = await sql`
+    [updatedRepo] = await sql`
       UPDATE 
         projects
       SET
@@ -215,7 +214,6 @@ router.put("/repos/:id", async ({ request, response, state, params }) => {
         user_email = ${state.email}
       RETURNING
         *;`;
-      updatedRepo = row[0];
   } catch (error) {
     if (error.code == "23505") {
       response.body = { error: { name: { unique: `you already have a project named ${name}` } } };
