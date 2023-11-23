@@ -15,14 +15,6 @@
     padding: 0.5em;
   }
 }
-.projects-container {
-  border: 1px solid black;
-  padding-top: 1em;
-  padding-bottom: 1em;
-  .row {
-    padding: 0.5em;
-  }
-}
 
 .edit-btn {
   position: absolute;

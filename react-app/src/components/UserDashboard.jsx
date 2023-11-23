@@ -17,9 +17,9 @@ const EditButton = ({ to }) => (
   </div>
 )
 
-const Header = () => {
+const Header = ({ user }) => {
   const submit = useSubmit();
-
+  
   const settings = () => (
     <Dropdown>
       <Dropdown.Toggle className="header-dropdown">Options</Dropdown.Toggle>
@@ -42,7 +42,7 @@ const Header = () => {
         {settings()}
       </Col>
       <Col xs={{span:9, end:0}} className="text-end">
-        <a className="btn btn-light" onClick={() => console.log('view profile!')}>View your public profile{"->"}</a>
+        {user ? <Link to={`/user/${user.url_name}`} target="_blank" className="btn btn-light">View your public profile{"->"}</Link> : <></>}
       </Col>
     </>   
   )
@@ -76,7 +76,7 @@ const PersonalInformation = ({ user }) => {
         </Row>
       </Container>
     </>
-  ) : <div>No user</div>
+  ) : <strong>Loading ...</strong>
 }
 
 const Projects = ({ projects }) => {
@@ -113,15 +113,14 @@ const Projects = ({ projects }) => {
     <>
       <h2>Projects</h2>
       <EditButton to="edit/projects" />
-      <Container className="projects-container">
+      <Container className="info-container">
         <Row>
           <GithubButton />
         </Row>
-        {projects
-        ?
-          <ProjectList_ />
-        :
-          <div>You dont have any visible projects</div>}
+        {
+        projects ?
+          <ProjectList_ /> : <div>You dont have any visible projects</div>
+        }
         <Row>
           <Link to="edit/addNewProject" style={{ width: "fit-content" }}>
             <Button sx={{ border: "1px solid black", color: "black" }} variant="outlined" component="label" startIcon={<AddCircleOutlineIcon />}>
@@ -134,13 +133,26 @@ const Projects = ({ projects }) => {
   ) 
 }
 
+const About = ({ user }) => {
+  return (
+    <>
+      <h2>About me</h2>
+      <EditButton to="edit/about" />
+      <Container className="info-container">
+        <Row>
+          <p>Insert info here about me</p>
+        </Row>
+      </Container>
+    </>
+  )
+}
+
 const UserDashboard = () => {
   const user = useUser();
-
   return (
     <Container>
       <Row className="pt-3 pb-3">
-        <Header />
+        <Header user={user}/>
       </Row>
       
       <Row className="p-3">
@@ -148,9 +160,13 @@ const UserDashboard = () => {
       </Row>
 
       <Row className="p-3">
-        
         <Projects projects={user?.repos}/>
       </Row>
+
+      <Row className="p-3 pb-5">
+        <About user={user}/>
+      </Row>
+      
       <Outlet />
     </Container>
   );

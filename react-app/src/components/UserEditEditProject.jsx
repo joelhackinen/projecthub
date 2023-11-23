@@ -128,7 +128,7 @@ const UserEditEditProject = ({ open, handleClose }) => {
           </DialogActions>
         </form>
       </>
-      : <p>asd</p>}
+      : <strong>Loading ...</strong>}
     </Dialog>
   )
 }
