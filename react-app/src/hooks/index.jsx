@@ -50,9 +50,7 @@ export const useAddRepos = () => {
 export const useUpdateProfile = () => {
   const setInfo = useSetInfo();
   const { mutate } = useMutation({
-    mutationFn: (profileToUpdate) => {
-      updateProfile(profileToUpdate)
-    },
+    mutationFn: (profileToUpdate) => updateProfile(profileToUpdate),
     onMutate: () => {
       const id = setInfo("updating profile", null, "info");
       return { id };
