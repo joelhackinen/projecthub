@@ -5,7 +5,7 @@ import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Dropdown from "react-bootstrap/Dropdown"
 import GithubButton from "./GithubButton"
-import { Button  } from "@mui/material";
+import { Button, withStyles  } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit"
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
@@ -19,7 +19,7 @@ const EditButton = ({ to }) => (
 
 const Header = ({ user }) => {
   const submit = useSubmit();
-  
+
   const settings = () => (
     <Dropdown>
       <Dropdown.Toggle className="header-dropdown">Options</Dropdown.Toggle>
@@ -42,7 +42,13 @@ const Header = ({ user }) => {
         {settings()}
       </Col>
       <Col xs={{span:9, end:0}} className="text-end">
-        {user ? <Link to={`/user/${user.url_name}`} target="_blank" className="btn btn-light">View your public profile{"->"}</Link> : <></>}
+        {user ?
+          (
+          user.url_name ?
+          <Link to={`/user/${user.url_name}`} target="_blank" className="btn btn-light">
+            View your public profile{"->"}
+          </Link> : <p>You can view your public profile once you've set an URL</p>)
+        : <></>}
       </Col>
     </>   
   )
@@ -68,7 +74,7 @@ const PersonalInformation = ({ user }) => {
         </Row>
         <Row>
           <Col sm={2} md={3}>Url:</Col>
-          <Col>{conditionalInfo(user.url_name, `you haven't chosen url yet`) }</Col>
+          <Col>{conditionalInfo(user.url_name, `you haven't chosen an url yet`) }</Col>
         </Row>
         <Row>
           <Col sm={2} md={3}>Github:</Col>
@@ -133,20 +139,6 @@ const Projects = ({ projects }) => {
   ) 
 }
 
-const About = ({ user }) => {
-  return (
-    <>
-      <h2>About me</h2>
-      <EditButton to="edit/about" />
-      <Container className="info-container">
-        <Row>
-          <p>Insert info here about me</p>
-        </Row>
-      </Container>
-    </>
-  )
-}
-
 const UserDashboard = () => {
   const user = useUser();
   return (
@@ -161,10 +153,6 @@ const UserDashboard = () => {
 
       <Row className="p-3">
         <Projects projects={user?.repos}/>
-      </Row>
-
-      <Row className="p-3 pb-5">
-        <About user={user}/>
       </Row>
       
       <Outlet />

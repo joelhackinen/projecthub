@@ -5,19 +5,6 @@ import UserEditEditProject from "./UserEditEditProject"
 import UserEditInformation from "./UserEditInformation"
 import UserEditAddNewProject from "./UserEditAddNewProject"
 
-const style = {
-  // eslint-disable-next-line
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 const UserEditLayout = () => {
   const { formParam } = useParams();
 
@@ -41,7 +28,7 @@ const UserEditLayout = () => {
     case "project":
       return <UserEditEditProject open={open} handleClose={handleClose}/>
     default:
-      return <div>Incorrect params</div>
+      return <></>
       
   }
 };

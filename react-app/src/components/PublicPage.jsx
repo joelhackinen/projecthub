@@ -37,7 +37,7 @@ const Project = ({ data, idx }) => {
   return (
     <>
       {idx !== 0 ? <Line /> : <></>}
-      <Row className="public-project pt-4">
+      <Row className="public-project pt-4"> {/* Name + description */}
         <Col sm={12} md={4} lg={4}>
           <div className="mx-auto public-proj-img-placeholder" />
         </Col>
@@ -48,17 +48,19 @@ const Project = ({ data, idx }) => {
           </p>
         </Col>
       </Row>
-      <Row className="pt-3" >
+      <Row className="pt-3" > {/* Languages */}
         <Col sm={12} md={5} lg={4}>
           <h4>Languages used:</h4>
         </Col>
         <Col>
-          <div className="pb-3">
+          <div>
             {data?.github ? languagePercentages(data.languages) : <p>not from git</p>}
           </div> 
         </Col>
       </Row>
-    
+      <Row className="pt-3" > {/* Link to github if applicable */}
+        <Col><p>{data?.github ? data.html_url : <></>}</p></Col>
+      </Row>
     </>
   );
 };
