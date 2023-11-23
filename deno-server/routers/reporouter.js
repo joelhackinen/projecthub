@@ -216,7 +216,7 @@ router.put("/repos/:id", async ({ request, response, state, params }) => {
         *;`;
   } catch (error) {
     if (error.code == "23505") {
-      response.body = { error: { name: { unique: `you already have a project named ${name}` } } };
+      response.body = { error: { name: { unique: `you already have a project named ${r.name}` } } };
       return response.status = 400;
     }
     response.body = { error: { unknown: { unknown: "unknown error" } } };
