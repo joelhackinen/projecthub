@@ -6,7 +6,7 @@ export * as scrypt from "https://deno.land/x/scrypt@v4.2.1/mod.ts";
 
 export {
   Application,
-  Router
+  Router,
 } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 export {
@@ -20,7 +20,10 @@ export {
   isArray,
   invalid,
   isDate,
+  firstMessages,
 } from "https://deno.land/x/validasaur@v0.15.0/mod.ts";
+
+export { SecureCookieMap } from "https://deno.land/x/oak@v12.6.1/deps.ts";
 
 export {
   create,

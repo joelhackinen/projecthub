@@ -1,7 +1,7 @@
 import { verify, decode } from "../deps.js";
 import { key } from "../app.js";
 
-export const checkAuth = async (context, next) => {
+export const checkAuth = async ({ response, cookies, state }, next) => {
   const getPayloadFromToken = async (token) => {
     try {
       if (Deno.env.get("MODE") === "production") {
@@ -14,13 +14,15 @@ export const checkAuth = async (context, next) => {
     }
   };
 
-  const token = await context.cookies.get("token");
-  const payload = await getPayloadFromToken(token)
+  const token = await cookies.get("token");
+  const payload = await getPayloadFromToken(token);
 
   console.log(payload);
-  if (payload && payload.exp * 1000 >= Date.now()) {
-    context.state.email = payload.email;
+  if (!payload || payload.exp * 1000 < Date.now()) {
+    response.body = { error: { auth: "not authorized" }  };
+    return response.status = 401;
   }
+  state.email = payload.email;
 
   await next();
 };

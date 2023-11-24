@@ -8,16 +8,13 @@ import {
   isBool,
   isArray,
   isDate,
+  firstMessages,
 } from "../deps.js";
-import { isLanguages } from "../utils.js";
+import { isLanguages } from "../utils.ts";
 
 const router = new Router();
 
 router.post("/repos/many", async ({ request, response, state }) => {
-  if (!state.email) {
-    return response.status = 401;
-  }
-
   const body = request.body({ type: "json" });
   const data = await body.value;
 
@@ -31,8 +28,8 @@ router.post("/repos/many", async ({ request, response, state }) => {
 
   if (!passes) {
     console.log(errors);
-    response.status = 400;
-    return response.body = { error: errors };
+    response.body = { error: firstMessages(errors) };
+    return response.status = 400;
   }
 
   response.status = 201;
@@ -54,7 +51,7 @@ router.post("/repos/many", async ({ request, response, state }) => {
 
     if (!passes) {
       response.status = 207;
-      repoErrors.push(errors);
+      repoErrors.push(firstMessages(errors));
       return null;
     }
 
@@ -70,7 +67,7 @@ router.post("/repos/many", async ({ request, response, state }) => {
         RETURNING *;`
     } catch (error) {
       if (error.code == "23505" || error.code == "23000" || error.code == "23001") {
-        repoErrors.push({ name: { unique: `you already have a project named ${name}` } });
+        repoErrors.push({ name: `you already have a project named ${name}` });
       }
       response.status = 207;
       return null;
@@ -84,10 +81,6 @@ router.post("/repos/many", async ({ request, response, state }) => {
 
 
 router.post("/repos", async ({ request, response, state }) => {
-  if (!state.email) {
-    return response.status = 401;
-  }
-
   const body = request.body({ type: "json" });
   const data = await body.value;
 
@@ -107,7 +100,7 @@ router.post("/repos", async ({ request, response, state }) => {
   if (!passes) {
     console.log(errors);
     response.status = 400;
-    return response.body = { error: errors };
+    return response.body = { error: firstMessages(errors) };
   }
 
   const { owner, name, full_name, description, html_url, created_at, languages, visible } = data;
@@ -130,11 +123,12 @@ router.post("/repos", async ({ request, response, state }) => {
         ${false}
       ) RETURNING *;`;
   } catch (error) {
+    console.log(error);
     if (error.code == "23505") {
-      response.body = { error: { name: { unique: `you already have a project named ${name}` }}};
+      response.body = { error: { name: `you already have a project named ${name}` } };
+      return response.status = 400;
     }
-    console.log(error)
-    return response.status = 400;
+    return response.status = 500;
   }
 
   response.status = 201;
@@ -143,10 +137,6 @@ router.post("/repos", async ({ request, response, state }) => {
 
 
 router.delete("/repos/:id", async ({ response, state, params }) => {
-  if (!state.email) {
-    return response.status = 401;
-  }
-
   let deletedRepo;
   try {
     [deletedRepo] = await sql`
@@ -160,8 +150,12 @@ router.delete("/repos/:id", async ({ response, state, params }) => {
         *;`;
   } catch (error) {
     console.log(error);
-    response.status = 500;
-    return response.body = { error: "error deleting project" };
+    response.body = { error: { unknown: "error deleting project" } };
+    return response.status = 500;
+  }
+  if (!deletedRepo) {
+    response.body = { error: { unknown: "project not found" } };
+    return response.status = 400;
   }
   response.status = 200;
   response.body = deletedRepo;
@@ -169,10 +163,6 @@ router.delete("/repos/:id", async ({ response, state, params }) => {
 
 
 router.put("/repos/:id", async ({ request, response, state, params }) => {
-  if (!state.email) {
-    return response.status = 401;
-  }
-
   const body = request.body({ type: "json" });
   const r = await body.value;
 
@@ -190,8 +180,8 @@ router.put("/repos/:id", async ({ request, response, state, params }) => {
 
   if (!passes) {
     console.log(errors);
-    response.status = 400;
-    return response.body = errors;
+    response.body = { error: firstMessages(errors) };
+    return response.status = 400;
   }
 
   let updatedRepo;
@@ -216,19 +206,19 @@ router.put("/repos/:id", async ({ request, response, state, params }) => {
         *;`;
   } catch (error) {
     if (error.code == "23505") {
-      response.body = { error: { name: { unique: `you already have a project named ${r.name}` } } };
+      response.body = { error: { name: `you already have a project named ${r.name}` } };
       return response.status = 400;
     }
-    response.body = { error: { unknown: { unknown: "unknown error" } } };
+    response.body = { error: { unknown: "unknown error" } };
     return response.status = 500;
   }
   if (!updatedRepo) {
-    response.status = 400;
-    return response.body = { error: { notfound: { notfound: "project not found" } } };
+    response.body = { error: { unknown: "project not found" } };
+    return response.status = 400;
   }
 
-  response.status = 200;
-  return response.body = updatedRepo;
+  response.body = updatedRepo;
+  return response.status = 200;
 });
 
 

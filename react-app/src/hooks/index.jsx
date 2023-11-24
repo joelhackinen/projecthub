@@ -61,7 +61,7 @@ export const useUpdateProfile = () => {
     },
     onError: (error, _, { id }) => {
       console.error(error);
-      setInfo("profile updating failed", id, "success");
+      setInfo("profile updating failed", id, "error");
     },
   });
   return mutate;
@@ -116,8 +116,8 @@ export const useAddRepo = () => {
       return { id };
     },
     onSuccess: (addedRepo, _, { id }) => {
-      setInfo(`${addedRepo.name} added`, id, "success");
       addRepoToCache(addedRepo);
+      setInfo(`${addedRepo.name} added`, id, "success");
     },
     onError: (error, _, { id }) => {
       console.error(error);

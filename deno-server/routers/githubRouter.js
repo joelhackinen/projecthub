@@ -1,6 +1,6 @@
 import { Router } from "../deps.js";
 import { sql } from "../database.js";
-import { isoToDate } from "../utils.js";
+import { isObject, isoToDate } from "../utils.ts";
 
 const CLIENT_ID = Deno.env.get("CLIENT_ID");
 const CLIENT_SECRET = Deno.env.get("CLIENT_SECRET");
@@ -8,15 +8,12 @@ const CLIENT_SECRET = Deno.env.get("CLIENT_SECRET");
 const router = new Router();
 
 router.post("/github/verifyUser", async ({ request, response, state }) => {
-  if (!state.email) {
-    return response.status = 401;
-  }
   const body = request.body({ type: "json" });
   const { code } = await body.value;
 
   if (!code) {
     response.status = 400;
-    return response.body = { error: "No auth code found" };
+    return response.body = { error: { auth: "Github authentication failed" } };
   }
 
   const params = "?client_id=" + CLIENT_ID +
@@ -31,9 +28,9 @@ router.post("/github/verifyUser", async ({ request, response, state }) => {
   });
 
   const data = await oauthRes.json();
-  if (typeof(data) !== "object" || !("access_token" in data)) {
-    response.status = 401;
-    return response.body = { error: "Authentication failed" };
+  if (!isObject(data) || !("access_token" in data)) {
+    response.body = { error: { auth: "Github authentication failed" } };
+    return response.status = 401;
   }
 
   const userResponse = await fetch("https://api.github.com/user", {
@@ -46,18 +43,17 @@ router.post("/github/verifyUser", async ({ request, response, state }) => {
   });
 
   if (!userResponse.ok) {
-    response.status = 401;
-    return response.body = { error: "Authentication failed" };
+    response.body = { error: { auth: "Github authentication failed" } };
+    return response.status = 500;
   }
 
   const userData = await userResponse.json();
 
   try {
     await sql`UPDATE users SET github = ${userData.login} WHERE email = ${state.email};`;
-  } catch(e) {
-    console.log(e);
-    response.status = 400;
-    return response.body = { error: "error updating the user" };
+  } catch (error) {
+    console.log(error);
+    return response.status = 500;
   }
 
   response.status = 200;
@@ -66,10 +62,6 @@ router.post("/github/verifyUser", async ({ request, response, state }) => {
 
 
 router.post("/github/fetchRepos", async ({ request, response, state }) => {
-  if (!state.email) {
-    return response.status = 401;
-  }
-
   const body = request.body({ type: "json" });
   const { github_token } = await body.value;
 
@@ -83,8 +75,8 @@ router.post("/github/fetchRepos", async ({ request, response, state }) => {
   });
 
   if (!repoResponse.ok) {
-    response.status = 400;
-    return response.body = { error: "error fetching repos from github" };
+    response.status = 500;
+    return response.body = { error: { unknown: "error fetching repos from github" } };
   }
 
   const repoData = await repoResponse.json();

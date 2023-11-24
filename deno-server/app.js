@@ -3,6 +3,7 @@ import githubRouter from "./routers/githubRouter.js";
 import userRouter from "./routers/userRouter.js";
 import authRouter from "./routers/authRouter.js";
 import repoRouter from "./routers/reporouter.js";
+import publicRouter from "./routers/publicRouter.js";
 import { checkAuth } from "./middleware/index.js";
 
 export const key = await crypto.subtle.generateKey(
@@ -13,6 +14,7 @@ export const key = await crypto.subtle.generateKey(
 
 const app = new Application();
 
+app.use(publicRouter.routes());
 app.use(checkAuth);
 app.use(userRouter.routes());
 app.use(authRouter.routes());

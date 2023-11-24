@@ -1,36 +1,19 @@
 import {
   Router,
-  scrypt,
-  create,
-  getNumericDate,
   isEmail,
   isString,
   required,
   match,
   validate,
-  lengthBetween
+  lengthBetween,
+  firstMessages,
 } from "../deps.js";
-import { omit } from "../utils.js";
+import { omit, setJWT } from "../utils.ts";
 import { sql } from "../database.js";
-import { key } from "../app.js";
 
 const router = new Router();
 
-const setJWT = async (user, cookies) => {
-  const jwt = await create(
-    { alg: "HS512", typ: "JWT" },
-    { email: user.email, exp: getNumericDate(60 * 60 * 24) },
-    key,
-  );
-  await cookies.set("token", jwt, { httpOnly: true });
-};
-
-
 router.put("/users", async ({ request, response, state, cookies }) => {
-  if (!state.email) {
-    return response.status = 401;
-  }
-
   const body = request.body({ type: "json" });
   const userData = await body.value;
 
@@ -44,9 +27,8 @@ router.put("/users", async ({ request, response, state, cookies }) => {
   const [ passes, errors ] = await validate(userData, validationRules);
 
   if (!passes) {
-    console.log(errors);
-    response.status = 400;
-    return response.body = { error: errors };
+    response.body = { error: firstMessages(errors) };
+    return response.status = 400;
   }
 
   const { firstname, lastname, email, url_name } = userData;
@@ -68,14 +50,12 @@ router.put("/users", async ({ request, response, state, cookies }) => {
 
     updatedUser = omit(u, "pwhash", "pwsalt", "id");
   } catch (error) {
-    console.log(error);
-
     if (error.code == "23505") {
       if (error.constraint_name.includes("email")) {
-        response.body = { error: { email: { unique: "email already in use" } } };
+        response.body = { error: { email: "email already in use" } };
       }
       if (error.constraint_name.includes("url_name")) {
-        response.body = { error: { url_name: { unique: "url already in use" } } };
+        response.body = { error: { url_name: "url already in use" } };
       }
       return response.status = 400;
     }
@@ -88,170 +68,16 @@ router.put("/users", async ({ request, response, state, cookies }) => {
 
   state.email = updatedUser.email;
 
-  await setJWT({ email: state.email }, cookies);//in case user changed their email
-  
+  try {
+    await setJWT(updatedUser.email, cookies);//in case user changed their email
+  } catch (error) {
+    console.log(error);
+    response.status = 500;
+    return response.body = { error: { unknown: "unknown error" } };
+  }
+
   response.status = 200;
   response.body = updatedUser;
-});
-
-
-router.get("/users/:urlName", async ({ response, params }) => {
-  let userData;
-  let repoData;
-  try {
-    const [user] = await sql`
-      SELECT
-        *
-      FROM
-        users
-      WHERE
-        url_name = ${params.urlName};`;
-    
-    if (!user) {
-      response.status = 404;
-      return response.body = { error: "user not found" };
-    }
-
-    userData = omit(user, "id", "pwhash", "pwsalt");
-
-    repoData = await sql`
-      SELECT
-        *
-      FROM
-        projects
-      WHERE
-        user_email = ${userData.email}
-      AND
-        visible=true;`;
-  } catch (error) {
-    console.log(error);
-    response.body = { error: "data fetch error" };
-    return response.status = 500;
-  }
-  response.status = 200;
-  response.body = { ...userData, repos: repoData };
-});
-
-
-router.post("/users", async ({ request, response, state, cookies }) => {
-  if (state.email) {
-    response.status = 409;
-    return response.body = { error: "already logged in" };
-  }
-
-  const body = request.body({ type: "json" });
-  const userData = await body.value;
-
-  const validationRules = {
-    firstname: [required, isString, lengthBetween(2, 30)],
-    lastname: [required, isString, lengthBetween(2, 30)],
-    email: [required, isEmail],
-    password: [required, isString, lengthBetween(6, 30)],
-  };
-
-  const [ passes, errors ] = await validate(userData, validationRules);
-
-  if (!passes) {
-    console.log(errors);
-    response.status = 400;
-    return response.body = { error: errors };
-  }
-
-  const { firstname, lastname, email, password } = userData;
-
-  const uint8salt = scrypt.genSalt(8, "Uint8Array");
-  const passwordsalt = Array.from(uint8salt).map(byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
-  const passwordhash = scrypt.hash(password + passwordsalt, "scrypt");
-
-  let userRow;
-
-  try {
-    userRow = await sql`
-      INSERT INTO
-        users (firstname, lastname, email, pwhash, pwsalt)
-      VALUES (
-        ${firstname},
-        ${lastname},
-        ${email},
-        ${passwordhash},
-        ${passwordsalt}
-      ) RETURNING *;`;
-  } catch (_e) {
-    response.status = 400;
-    return response.body = { error: { email: { unique: "email already in use" } } };
-  }
-  const user = omit(userRow[0], "id", "pwhash", "pwsalt");
-
-  try {
-    await setJWT(user, cookies);
-  } catch (_e) {
-    response.status = 500;
-    return response.body = { error: "JWT creation error" };
-  }
-
-  response.status = 200;
-  response.body = { ...user, repos: [] };
-});
-
-
-router.post("/login", async ({ request, response, cookies }) => {
-  const body = request.body({ type: "json" });
-  const data = await body.value;
-  const { email, password } = data;
-
-  const validationRules = {
-    email: [required],
-    password: [required],
-  };
-
-  const [ passes, errors ] = await validate(data, validationRules);
-
-  if (!passes) {
-    console.log(errors);
-    response.status = 400;
-    return response.body = { error: errors };
-  }
-
-  let userData;
-  try {
-    [userData] = await sql`
-      SELECT * FROM users WHERE email = ${email};`;
-  } catch (error) {
-    console.log(error);
-    return response.status = 500;
-  }
-
-  if (!userData) {
-    response.status = 401;
-    return response.body = { error: "invalid credentials" };
-  }
-
-  const { pwsalt, pwhash, ...user } = omit(userData, "id");
-  const match = scrypt.verify(password + pwsalt, pwhash, "scrypt");
-
-  if (!match) {
-    response.status = 401;
-    return response.body = { error: "invalid credentials" };
-  }
-
-  try {
-    await setJWT(user, cookies);
-  } catch (error) {
-    console.log(error);
-    response.status = 500;
-    return response.body = { errors: "JWT creation error" };
-  }
-
-  let repos;
-  try {
-    repos = await sql`SELECT * FROM projects WHERE user_email = ${user.email};`;
-  } catch (error) {
-    console.log(error);
-    return response.status = 403;
-  }
-
-  response.status = 200;
-  response.body = { ...user, repos };
 });
 
 
