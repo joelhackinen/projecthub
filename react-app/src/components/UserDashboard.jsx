@@ -86,7 +86,6 @@ const PersonalInformation = ({ user }) => {
 }
 
 const Projects = ({ projects }) => {
-  const [deleteRepo, isDeleteRepoPending] = useDeleteRepo();
   const [updateRepo, isUpdateRepoPending] = useUpdateRepo();
 
   const compareByName = (a, b) => {
@@ -108,11 +107,6 @@ const Projects = ({ projects }) => {
                 {project.visible ? "hide" : "show"}
               </button>
             </Row>
-          </Col>
-          <Col className="align-self-center">
-            <button onClick={() => deleteRepo(project.id)}>
-              Delete
-            </button>
           </Col>
           <Col className="align-self-center">
             <Link to={`edit/project/${project.id}`} ><EditIcon sx={{ color: "black" }} /></Link>

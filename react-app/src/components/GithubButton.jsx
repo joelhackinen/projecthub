@@ -14,7 +14,7 @@ const GithubButton = () => {
           submit(null, { method: "post", action: "/github" });
         }}
       >
-        Sync projects from your Github!
+        Import projects from your Github!
       </Button>
     </div>
   );

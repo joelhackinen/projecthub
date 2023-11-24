@@ -70,8 +70,7 @@ const Project = ({ data, idx }) => {
         <p>
           {data?.description}
         </p>
-      </Row>
-      
+      </Row> 
     </>
   );
 };

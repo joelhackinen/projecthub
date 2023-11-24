@@ -1,7 +1,11 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, DialogContentText, RadioGroup, FormControlLabel, Radio, List, ListItem } from "@mui/material"
-import { useParams } from "react-router-dom";
-import { useUpdateRepo, useUser } from "../hooks";
 import { useState } from 'react'
+import { useParams } from "react-router-dom";
+import { useUpdateRepo, useDeleteRepo, useUser } from "../hooks";
+
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, DialogContentText, RadioGroup, FormControlLabel, Radio, List, ListItem } from "@mui/material"
+import DeleteIcon from '@mui/icons-material/Delete';
+
+
 
 const getRepoLanguagePercentage = (languages) => {
   const totalPtsArr = Object.values(languages);
@@ -21,7 +25,9 @@ const getRepoLanguagePercentage = (languages) => {
 const UserEditEditProject = ({ open, handleClose }) => {
   const { projectId } = useParams()
   const [updateRepo, isUpdateRepoPending] = useUpdateRepo()
+  const [deleteRepo, isDeleteRepoPending] = useDeleteRepo()
   const user = useUser()
+
   const [newProject, setNewProject] = useState({})
   const [nameError, setNameError] = useState(false)
 
@@ -37,6 +43,14 @@ const UserEditEditProject = ({ open, handleClose }) => {
       ...newProject,
       [e.target.name]: value,
     })
+  }
+
+  const handleDelete = () => {
+    if (!confirm(`Are you sure you want to delete project ${repo.name}?`))
+      return
+
+    deleteRepo(projectId)
+    handleClose()
   }
 
   const save = (e) => {
@@ -129,8 +143,11 @@ const UserEditEditProject = ({ open, handleClose }) => {
               "Not from github. Show current languages and let them add/remove to/from the list" }
           </DialogContent>
           <DialogActions>
+            <Button color="error" variant="outlined" onClick={handleDelete} startIcon={<DeleteIcon />}>Delete</Button>
+            <div style={{flex: '0.9'}} />
             <Button variant="contained" type="submit">Save</Button>
             <Button onClick={handleClose}>Cancel</Button>
+            <div style={{flex: '0.05'}} />
           </DialogActions>
         </form>
       </>
