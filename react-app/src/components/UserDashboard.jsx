@@ -89,6 +89,12 @@ const Projects = ({ projects }) => {
   const [deleteRepo, isDeleteRepoPending] = useDeleteRepo();
   const [updateRepo, isUpdateRepoPending] = useUpdateRepo();
 
+  const compareByName = (a, b) => {
+    return a.name.localeCompare(b.name);
+  };
+
+  projects.sort(compareByName);
+
   const ProjectList_ = () => (
     projects.map((project, idx) => {
       return (
