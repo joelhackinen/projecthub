@@ -1,9 +1,8 @@
 import { Link, Outlet, useSubmit } from "react-router-dom";
-import { useDeleteRepo, useUpdateRepo, useUser } from "../hooks";
+import { useUpdateRepo, useUser } from "../hooks";
 import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
-import Dropdown from "react-bootstrap/Dropdown"
 import GithubButton from "./GithubButton"
 import { Button, withStyles  } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit"
@@ -20,37 +19,19 @@ const EditButton = ({ to }) => (
 const Header = ({ user }) => {
   const submit = useSubmit();
 
-  const settings = () => (
-    <Dropdown>
-      <Dropdown.Toggle className="header-dropdown">Options</Dropdown.Toggle>
-      <Dropdown.Menu>
-        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-        <Dropdown.Item
-          onClick={() =>
-            submit(null, { method: "post", action: "/logout" })
-          }
-        >
-          Log out
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
-  )
   return (
-    <>
-      <Col xs={3} >
-        {settings()}
-      </Col>
-      <Col xs={{span:9, end:0}} className="text-end">
-        {user ?
-          (
-          user.url_name ?
-          <Link to={`/user/${user.url_name}`} target="_blank" className="btn btn-light">
-            View your public profile{"->"}
-          </Link> : <p>You can view your public profile once you've set an URL</p>)
-        : <></>}
-      </Col>
-    </>   
+    <div className="header" style={{display:"flex", justifyContent: "space-between"}}>
+      <Button variant="outlined" onClick={() => submit(null, { method: "post", action: "/logout" }) }>
+        Log out
+      </Button>
+      {user ?
+        (
+        user.url_name ?
+        <Link to={`/user/${user.url_name}`} target="_blank" >
+          <Button variant="contained">View your public profile{"->"}</Button>
+        </Link> : <p>You can view your public profile once you've set an URL</p>)
+      : <></>}
+    </div> 
   )
 }
 
@@ -118,7 +99,6 @@ const Projects = ({ projects }) => {
   return (
     <>
       <h2>Projects</h2>
-      <EditButton to="edit/projects" />
       <Container className="info-container">
         <Row>
           <GithubButton />

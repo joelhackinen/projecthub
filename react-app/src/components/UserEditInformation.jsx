@@ -2,7 +2,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } 
 import { useUser, useUpdateProfile } from "../hooks"
 import { useState } from "react";
 
-const UserEditProjects = ({ open, handleClose }) => {
+const UserEditInformation = ({ open, handleClose }) => {
   const user = useUser();
   const [updateUser, isUpdateUserPending] = useUpdateProfile()
   const [errors, setErrors] = useState(
@@ -140,4 +140,4 @@ const UserEditProjects = ({ open, handleClose }) => {
   )
 }
 
-export default UserEditProjects
+export default UserEditInformation

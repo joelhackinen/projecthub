@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from 'react'
-import UserEditProjects from "./UserEditProjects"
 import UserEditEditProject from "./UserEditEditProject"
 import UserEditInformation from "./UserEditInformation"
 import UserEditAddNewProject from "./UserEditAddNewProject"
@@ -21,8 +20,6 @@ const UserEditLayout = () => {
   switch (formParam) {
     case "information":
       return <UserEditInformation open={open} handleClose={handleClose} />
-    case "projects":
-      return <UserEditProjects open={open} handleClose={handleClose} />
     case "addNewProject":
       return <UserEditAddNewProject open={open} handleClose={handleClose}/>
     case "project":
