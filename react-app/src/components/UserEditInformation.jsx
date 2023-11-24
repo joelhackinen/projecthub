@@ -5,7 +5,12 @@ import { useState } from "react";
 const UserEditProjects = ({ open, handleClose }) => {
   const user = useUser();
   const [updateUser, isUpdateUserPending] = useUpdateProfile()
-
+  const [errors, setErrors] = useState(
+    { email: false,
+      firstname: false,
+      lastname: false,
+      url_name: false 
+    })
   const [newUser, setNewUser] = useState({})
 
   const handleChange = e => {
@@ -14,10 +19,39 @@ const UserEditProjects = ({ open, handleClose }) => {
       [e.target.name]: e.target.value,
     })
   }
+  
+  const validateForm = () => {
+    let alertMsg = ""
+    // Email, firstname and lastname are valid if they haven't been touched or they are between 2-30 chars
+    const validEmail = (newUser.email===undefined || newUser.email.length > 0)
+    const validFirstname = newUser.firstname===undefined || (newUser.firstname.length <= 30 && newUser.firstname.length >= 2)
+    const validLastname = newUser.lastname===undefined || (newUser.lastname.length <= 30 && newUser.lastname.length >= 2)
+    // Url is valid if server has a value and it hasn't been touched, or if the new value is between 3-30 chars
+    const validUrl = (newUser.url_name===undefined && user?.url_name ) || (newUser?.url_name?.length >= 3 && newUser?.url_name?.length <= 30)
 
+    !validEmail ? alertMsg += "Email can't be empty.\n" : null
+    !validFirstname ? alertMsg += "First name must be between 2 and 30 characters long.\n" : null
+    !validLastname ? alertMsg += "Last  name must be between 2 and 30 characters long.\n" : null
+    !validUrl ? alertMsg += "Url must be between 3 and 30 characters long.\n" : null
+
+    setErrors({
+      email: !validEmail,
+      firstname: !validFirstname,
+      lastname: !validLastname,
+      url_name: !validUrl 
+    })
+    
+    return alertMsg
+  }
   const saveAndClose = (e) => {
     e.preventDefault()
     
+    const alertMessage = validateForm()
+    if (alertMessage !==  ""){
+      alert(alertMessage)
+      return
+    }
+
     updateUser({
       ...user,
       ...newUser
@@ -41,6 +75,7 @@ const UserEditProjects = ({ open, handleClose }) => {
                 fullWidth
                 onChange={handleChange}
                 margin="dense"
+                error={errors.email}
               />}
           </DialogContent>
           <DialogContent> {/* First Name */}
@@ -53,6 +88,7 @@ const UserEditProjects = ({ open, handleClose }) => {
                 required
                 fullWidth
                 onChange={handleChange}
+                error={errors.firstname}
               />}
           </DialogContent>
           <DialogContent> {/* Last Name */}
@@ -65,6 +101,7 @@ const UserEditProjects = ({ open, handleClose }) => {
                 required
                 fullWidth
                 onChange={handleChange}
+                error={errors.lastname}
               />}
           </DialogContent>
           <DialogContent> {/* Url */}
@@ -79,6 +116,7 @@ const UserEditProjects = ({ open, handleClose }) => {
                 fullWidth
                 onChange={handleChange}
                 helperText={user.url_name ? `Your public profiles URL is: /user/${user.url_name}` : `Your public profiles URL will be: /user/<URL>`}
+                error={errors.url_name}
               />}
           </DialogContent>
           <DialogContent> {/* About */}

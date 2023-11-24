@@ -12,14 +12,14 @@ body {
 .public-main-info-container {
   background-color: var(--color-dark);
   color: white;
-  h2{
-    color: var(--color-accent);
-  }
+}
+.public-main-info-container h2{
+  color: var(--color-accent);
 }
 
 .line {
   border: 1px solid var(--color-dark);
-  margin-inline: auto;
+  margin: 1em auto;
   width: 80%;
 }
 

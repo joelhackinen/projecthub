@@ -23,9 +23,9 @@ const UserEditEditProject = ({ open, handleClose }) => {
   const [updateRepo, isUpdateRepoPending] = useUpdateRepo()
   const user = useUser()
   const [newProject, setNewProject] = useState({})
+  const [nameError, setNameError] = useState(false)
 
   const repo = user.repos.find( repo => repo.id === Number(projectId) )
-
 
   const handleChange = e => {
     let value;
@@ -41,6 +41,11 @@ const UserEditEditProject = ({ open, handleClose }) => {
 
   const save = (e) => {
     e.preventDefault()
+    if (!(newProject.name===undefined || newProject.name.length > 0)) {
+      alert("Name can't be empty!")
+      setNameError(true)
+      return
+    }
     updateRepo({
       ...repo,
       ...newProject
@@ -62,6 +67,7 @@ const UserEditEditProject = ({ open, handleClose }) => {
               required
               fullWidth
               onChange={handleChange}
+              error={nameError}
             />
           </DialogContent>
           <DialogContent> {/* created_at */}

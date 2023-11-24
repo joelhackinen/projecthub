@@ -37,39 +37,48 @@ const Project = ({ data, idx }) => {
   return (
     <>
       {idx !== 0 ? <Line /> : <></>}
-      <Row className="public-project pt-4"> {/* Name + description */}
+      <Row className="public-project pt-4"> {/* Name + languages + created */}
         <Col sm={12} md={4} lg={4}>
           <div className="mx-auto public-proj-img-placeholder" />
         </Col>
-        <Col md={{ order: idx % 2 ? "last" : "first" }}>
-          <h2>{data?.name}</h2>
-          <p>
-            {data?.description}
-          </p>
+        <Col md={{ order: idx % 2 ? "last" : "first" }}> 
+          <h1>{data?.name}</h1>
+          <i>{data?.github ? data.html_url : <></>}</i>
+          <Row className="pt-3" > {/* Languages */}
+            <Col sm={12} md={6} >
+              <h5>Languages used:</h5>
+            </Col>
+            <Col>
+              <div>
+                {data?.github ? languagePercentages(data.languages) : <p>not from git</p>}
+              </div> 
+            </Col>
+          </Row>
+          <Row className="pt-3 pb-3" > {/* Created */}
+            <Col sm={12} md={6} >
+              <h5>Created:</h5>
+            </Col>
+            <Col>
+              <div>
+                {data.created_at}
+              </div> 
+            </Col>
+          </Row>
         </Col>
       </Row>
-      <Row className="pt-3" > {/* Languages */}
-        <Col sm={12} md={5} lg={4}>
-          <h4>Languages used:</h4>
-        </Col>
-        <Col>
-          <div>
-            {data?.github ? languagePercentages(data.languages) : <p>not from git</p>}
-          </div> 
-        </Col>
+      <Row>{/* Description */}
+        <p>
+          {data?.description}
+        </p>
       </Row>
-      <Row className="pt-3" > {/* Link to github if applicable */}
-        <Col><p>{data?.github ? data.html_url : <></>}</p></Col>
-      </Row>
+      
     </>
   );
 };
 const Projects = ({ projects }) => {
   return (
     <Container>
-      {
-        projects?.map((project, idx) => <Project key={project.id} data={project} idx={idx}/>)
-      }
+      { projects?.map((project, idx) => <Project key={project.id} data={project} idx={idx} />) }
     </Container>
   );
 };
@@ -92,9 +101,7 @@ const PublicPageContent = () => {
         <div className="public-image-placeholder"></div>
       </Row>
       <Row className="text-center">
-        <span>{email}</span>
-        
-        
+        <div className="pb-4">{email}</div>
       </Row>
       <Row>
         <h4>About me:</h4>
