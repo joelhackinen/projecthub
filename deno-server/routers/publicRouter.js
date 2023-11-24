@@ -43,7 +43,6 @@ router.get("/users/:urlName", async ({ response, params }) => {
         visible=true;`;
   } catch (error) {
     console.log(error);
-    response.body = { error: { unknown: "data fetch error" } };
     return response.status = 500;
   }
   response.status = 200;
@@ -102,8 +101,7 @@ router.post("/users", async ({ request, response, cookies }) => {
   try {
     await setJWT(user.email, cookies);
   } catch (_e) {
-    response.status = 500;
-    return response.body = { error: { unknown: "unexpected error" } };
+    return response.status = 500;
   }
 
   response.status = 200;
@@ -125,8 +123,8 @@ router.post("/login", async ({ request, response, cookies }) => {
 
   if (!passes) {
     console.log(errors);
-    response.status = 400;
-    return response.body = { error: firstMessages(errors) };
+    response.body = { error: firstMessages(errors) };
+    return response.status = 400;
   }
 
   let userData;
@@ -155,7 +153,6 @@ router.post("/login", async ({ request, response, cookies }) => {
     await setJWT(user.email, cookies);
   } catch (error) {
     console.log(error);
-    response.body = { error: { unknown: "unexpected error" } };
     return response.status = 500;
   }
 
@@ -170,5 +167,12 @@ router.post("/login", async ({ request, response, cookies }) => {
   response.status = 200;
   response.body = { ...user, repos };
 });
+
+
+router.post("/logout", async ({ response, cookies }) => {
+  await cookies.delete("token");
+  response.status = 204;
+});
+
 
 export default router;

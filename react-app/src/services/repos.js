@@ -1,22 +1,26 @@
+import { throwError } from "./errorHandler";
+
 export const updateRepo = async (repoToUpdate) => {
   const res = await fetch(`/api/repos/${repoToUpdate.id}`, {
     method: "PUT",
     body: JSON.stringify(repoToUpdate),
   });
+  const data = await res.json();
   if (!res.ok) {
-    throw new Error("error updating repo");
+    throwError(res, data.error);
   }
-  return await res.json();
+  return data;
 };
 
 export const deleteRepo = async (id) => {
   const res = await fetch(`/api/repos/${id}`, {
     method: "DELETE",
   });
+  const data = await res.json();
   if (!res.ok) {
-    throw new Error("error deleting repos");
+    throwError(res, data.error);
   }
-  return await res.json();
+  return data;
 };
 
 export const addRepos = async (reposToAdd) => {
@@ -26,7 +30,7 @@ export const addRepos = async (reposToAdd) => {
   });
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data?.error ?? "error adding repos");
+    throwError(res, data.error);
   }
   return data;
 };
@@ -38,7 +42,7 @@ export const addRepo = async (repoToAdd) => {
   });
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data?.error ?? "error adding repo");
+    throwError(res, data.error);
   }
   return data;
 }

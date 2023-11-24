@@ -5,6 +5,10 @@ import { omit } from "../utils.ts";
 const router = new Router();
 
 router.get("/whoami", async ({ response, state }) => {
+  if (!state.email) {
+    return response.status = 401;
+  }
+
   let user;
   try {
     [user] = await sql`SELECT * FROM users WHERE email = ${state.email};`;
@@ -14,7 +18,6 @@ router.get("/whoami", async ({ response, state }) => {
   }
 
   if (!user) {
-    response.body = { error: { auth: "not authorized" }  };
     return response.status = 401;
   }
 
@@ -25,7 +28,7 @@ router.get("/whoami", async ({ response, state }) => {
     repos = await sql`SELECT * FROM projects WHERE user_email = ${state.email};`;
   } catch (error) {
     console.log(error);
-    return response.status = 403;
+    return response.status = 500;
   }
   
   response.status = 200;

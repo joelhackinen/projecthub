@@ -14,6 +14,10 @@ import { sql } from "../database.js";
 const router = new Router();
 
 router.put("/users", async ({ request, response, state, cookies }) => {
+  if (!state.email) {
+    return response.status = 401;
+  }
+
   const body = request.body({ type: "json" });
   const userData = await body.value;
 
@@ -72,22 +76,11 @@ router.put("/users", async ({ request, response, state, cookies }) => {
     await setJWT(updatedUser.email, cookies);//in case user changed their email
   } catch (error) {
     console.log(error);
-    response.status = 500;
-    return response.body = { error: { unknown: "unknown error" } };
+    return response.status = 500;
   }
 
   response.status = 200;
   response.body = updatedUser;
-});
-
-
-router.post("/logout", async ({ response, state, cookies }) => {
-  if (!state.email) {
-    return response.status = 401;
-  }
-
-  await cookies.delete("token");
-  response.status = 204;
 });
 
 

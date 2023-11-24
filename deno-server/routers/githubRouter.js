@@ -8,12 +8,16 @@ const CLIENT_SECRET = Deno.env.get("CLIENT_SECRET");
 const router = new Router();
 
 router.post("/github/verifyUser", async ({ request, response, state }) => {
+  if (!state.email) {
+    return response.status = 401;
+  }
+
   const body = request.body({ type: "json" });
   const { code } = await body.value;
 
   if (!code) {
-    response.status = 400;
-    return response.body = { error: { auth: "Github authentication failed" } };
+    response.body = { error: { auth: "Github authentication failed" } };
+    return response.status = 400;
   }
 
   const params = "?client_id=" + CLIENT_ID +
@@ -30,7 +34,7 @@ router.post("/github/verifyUser", async ({ request, response, state }) => {
   const data = await oauthRes.json();
   if (!isObject(data) || !("access_token" in data)) {
     response.body = { error: { auth: "Github authentication failed" } };
-    return response.status = 401;
+    return response.status = 400;
   }
 
   const userResponse = await fetch("https://api.github.com/user", {
@@ -44,7 +48,7 @@ router.post("/github/verifyUser", async ({ request, response, state }) => {
 
   if (!userResponse.ok) {
     response.body = { error: { auth: "Github authentication failed" } };
-    return response.status = 500;
+    return response.status = 400;
   }
 
   const userData = await userResponse.json();
@@ -61,9 +65,12 @@ router.post("/github/verifyUser", async ({ request, response, state }) => {
 });
 
 
-router.post("/github/fetchRepos", async ({ request, response, state }) => {
-  const body = request.body({ type: "json" });
-  const { github_token } = await body.value;
+router.get("/github/fetchRepos", async ({ request, response, state }) => {
+  if (!state.email) {
+    return response.status = 401;
+  }
+
+  const github_token = request.url.searchParams.get("github_token");
 
   const repoResponse = await fetch("https://api.github.com/user/repos?visibility=all", {
     method: "GET",
@@ -75,8 +82,8 @@ router.post("/github/fetchRepos", async ({ request, response, state }) => {
   });
 
   if (!repoResponse.ok) {
-    response.status = 500;
-    return response.body = { error: { unknown: "error fetching repos from github" } };
+    response.body = { error: { unknown: "error fetching repos from Github" } };
+    return response.status = 400;
   }
 
   const repoData = await repoResponse.json();

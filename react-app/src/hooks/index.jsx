@@ -11,6 +11,7 @@ import { addRepo, addRepos, deleteRepo, updateRepo } from "../services/repos";
 import { updateProfile } from "../services/profiles";
 import { useSetRecoilState } from "recoil";
 import { infoState } from "../infoAtom.js";
+import { useEffect } from "react";
 
 export const useUser = () => {
   const { data } = useQuery({
@@ -26,21 +27,21 @@ export const useAddRepos = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (reposToAdd) => addRepos(reposToAdd),
     onMutate: () => {
-      const id = setInfo("adding new projects");
+      const id = setInfo(["adding new projects"]);
       return { id };
     },
     onSettled: (repos, error, _, { id }) => {
       if (error) {
-        setInfo("unexpected error", id, "error");
+        setInfo(["unexpected error"], id, "error");
         return;
       }
       if (repos.added.length > 0) {
         addReposToCache(repos.added);
-        setInfo(`${repos.added.length} projects added`, id, "success");
+        setInfo([`${repos.added.length} projects added`], id, "success");
       }
       if (repos.errors.length > 0) {
         console.error(repos.errors);
-        setInfo(`importing of ${repos.errors.length} projects failed`, id, "warning");
+        setInfo([`importing of ${repos.errors.length} projects failed`], id, "warning");
       }
     },
   });
@@ -52,16 +53,15 @@ export const useUpdateProfile = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (profileToUpdate) => updateProfile(profileToUpdate),
     onMutate: () => {
-      const id = setInfo("updating profile");
+      const id = setInfo(["updating profile"]);
       return { id };
     },
     onSuccess: (updatedProfile, _, { id }) => {
       updateUserToCache(updatedProfile);
-      setInfo("profile updated", id, "success");
+      setInfo(["profile updated"], id, "success");
     },
     onError: (error, _, { id }) => {
-      console.error(error);
-      setInfo("profile updating failed", id, "error");
+      setInfo(error.messages, id, "error");
     },
   });
   return [mutate, isPending];
@@ -72,16 +72,15 @@ export const useUpdateRepo = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (repoToUpdate) => updateRepo(repoToUpdate),
     onMutate: () => {
-      const id = setInfo("updating");
+      const id = setInfo(["updating"]);
       return { id };
     },
     onSuccess: (updatedRepo, _, { id }) => {
       updateRepoToCache(updatedRepo);
-      setInfo(`${updatedRepo.name} updated`, id, "success");
+      setInfo([`${updatedRepo.name} updated`], id, "success");
     },
     onError: (error, _, { id }) => {
-      console.log(error);
-      setInfo("updating project failed", id, "error");
+      setInfo(error.message, id, "error");
     },
   });
   return [mutate, isPending];
@@ -92,16 +91,15 @@ export const useDeleteRepo = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (repoId) => deleteRepo(repoId),
     onMutate: () => {
-      const id = setInfo("deleting project");
+      const id = setInfo(["deleting project"]);
       return { id };
     },
     onSuccess: (deletedRepo, _, { id }) => {
       deleteRepoFromCache(deletedRepo);
-      setInfo(`${deletedRepo.name} deleted`, id, "success");
+      setInfo([`${deletedRepo.name} deleted`], id, "success");
     },
     onError: (error, _, { id }) => {
-      console.error(error);
-      setInfo("deleting project failed", id, "error");
+      setInfo(error.messages, id, "error");
     },
   });
   return [mutate, isPending];
@@ -112,16 +110,15 @@ export const useAddRepo = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (repoToAdd) => addRepo(repoToAdd),
     onMutate: () => {
-      const id = setInfo("adding new project");
+      const id = setInfo(["adding new project"]);
       return { id };
     },
     onSuccess: (addedRepo, _, { id }) => {
       addRepoToCache(addedRepo);
-      setInfo(`${addedRepo.name} added`, id, "success");
+      setInfo([`${addedRepo.name} added`], id, "success");
     },
     onError: (error, _, { id }) => {
-      console.error(error);
-      setInfo("adding project failed", id, "error");
+      setInfo(error.messages, id, "error");
     },
   });
   return [mutate, isPending];
@@ -130,12 +127,13 @@ export const useAddRepo = () => {
 const useSetInfo = () => {
   const setState = useSetRecoilState(infoState);
 
-  const setMessage = (message, id=null, severity="info") => {
+  // messages: Array<string>, id: uuid | null, severity = "info" | "warning" | "success"
+  const setMessage = (messages, id=null, severity="info") => {
     if (id) {
       setState(state => state.filter(s => s.id !== id));
     }
     const newId = self.crypto.randomUUID();
-    setState(state => [...state, { message, severity, id: newId }]);
+    setState(state => [...state, { messages, severity, id: newId }]);
 
     setTimeout(() => {
       setState(state => state.filter(s => s.id !== newId));
