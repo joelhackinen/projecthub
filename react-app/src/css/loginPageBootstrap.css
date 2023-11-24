@@ -2,13 +2,13 @@
   margin: 15% auto;
 }
 .login-title {
-  color: white;
+  color: #E5E0D8;
   text-align: center;
   font-size: 32px;
 }
 
 .form {
-  background-color: #d2e4d6;
+  background-color: #C5C6C7;
   padding-top: 16px;
   padding-bottom: 5px;
 }
@@ -22,7 +22,7 @@
 .form-navbar .not-visible {
   width: 45%;
   height: 80%;
-  background-color: #5bc067;
+  background-color: #45A29E;
   border: none;
   transition-duration: 0.1s;
 }
@@ -35,7 +35,7 @@
 .form-navbar .visible {
   width: 50%;
   height: 100%;
-  background-color: #d2e4d6;
+  background-color: #C5C6C7;
   border: none;
   font-size: 20px;
   margin-bottom: -1px; /* hides the gap */
@@ -59,7 +59,7 @@
   color: lightgray;
 }
 .submit-button {
-  background-color: #5bc067;
+  background-color: #45A29E;
   border: none;
   font-weight: bold;
   display: block;
@@ -71,11 +71,11 @@
   transition-duration: 0.1s;
 }
 .submit-button:hover {
-  background-color: #24ad34;
+  background-color: #66FCF1;
 }
 
 .info {
-  color: white;
+  color: #E5E0D8;
   font-size: larger;
   margin: auto;
 }

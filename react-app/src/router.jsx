@@ -34,7 +34,7 @@ const dashboardLoader = () => {
 };
 
 const loginLoader = () => {
-  document.body.style.backgroundColor = "#053929";
+  document.body.style.backgroundColor = "#1F2833";
   return {};
 };
 
