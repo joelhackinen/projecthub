@@ -20,7 +20,7 @@ const getRepoLanguagePercentage = (languages) => {
 
 const UserEditEditProject = ({ open, handleClose }) => {
   const { projectId } = useParams()
-  const updateRepo = useUpdateRepo()
+  const [updateRepo, isUpdateRepoPending] = useUpdateRepo()
   const user = useUser()
   const [newProject, setNewProject] = useState({})
 

@@ -8,7 +8,7 @@ const GithubRepos = () => {
   const repos = useAsyncValue();
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
-  const addRepos = useAddRepos();
+  const [addRepos, isAddReposPending] = useAddRepos();
 
   const handleClick = (r) => {
     if (selected.includes(r)) {

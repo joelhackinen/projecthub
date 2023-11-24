@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const UserEditProjects = ({ open, handleClose }) => {
   const user = useUser();
-  const updateUser = useUpdateProfile()
+  const [updateUser, isUpdateUserPending] = useUpdateProfile()
 
   const [newUser, setNewUser] = useState({})
 

@@ -86,8 +86,8 @@ const PersonalInformation = ({ user }) => {
 }
 
 const Projects = ({ projects }) => {
-  const deleteRepo = useDeleteRepo();
-  const updateRepo = useUpdateRepo();
+  const [deleteRepo, isDeleteRepoPending] = useDeleteRepo();
+  const [updateRepo, isUpdateRepoPending] = useUpdateRepo();
 
   const ProjectList_ = () => (
     projects.map((project, idx) => {

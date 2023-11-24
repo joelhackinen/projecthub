@@ -23,10 +23,10 @@ export const useUser = () => {
 
 export const useAddRepos = () => {
   const setInfo = useSetInfo();
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (reposToAdd) => addRepos(reposToAdd),
     onMutate: () => {
-      const id = setInfo("adding new projects", null, "info");
+      const id = setInfo("adding new projects");
       return { id };
     },
     onSettled: (repos, error, _, { id }) => {
@@ -44,15 +44,15 @@ export const useAddRepos = () => {
       }
     },
   });
-  return mutate;
+  return [mutate, isPending];
 };
 
 export const useUpdateProfile = () => {
   const setInfo = useSetInfo();
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (profileToUpdate) => updateProfile(profileToUpdate),
     onMutate: () => {
-      const id = setInfo("updating profile", null, "info");
+      const id = setInfo("updating profile");
       return { id };
     },
     onSuccess: (updatedProfile, _, { id }) => {
@@ -64,15 +64,15 @@ export const useUpdateProfile = () => {
       setInfo("profile updating failed", id, "error");
     },
   });
-  return mutate;
+  return [mutate, isPending];
 };
 
 export const useUpdateRepo = () => {
   const setInfo = useSetInfo();
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (repoToUpdate) => updateRepo(repoToUpdate),
     onMutate: () => {
-      const id = setInfo("updating", null, "info");
+      const id = setInfo("updating");
       return { id };
     },
     onSuccess: (updatedRepo, _, { id }) => {
@@ -84,15 +84,15 @@ export const useUpdateRepo = () => {
       setInfo("updating project failed", id, "error");
     },
   });
-  return mutate;
+  return [mutate, isPending];
 };
 
 export const useDeleteRepo = () => {
   const setInfo = useSetInfo();
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (repoId) => deleteRepo(repoId),
     onMutate: () => {
-      const id = setInfo("deleting project", null, "info");
+      const id = setInfo("deleting project");
       return { id };
     },
     onSuccess: (deletedRepo, _, { id }) => {
@@ -104,15 +104,15 @@ export const useDeleteRepo = () => {
       setInfo("deleting project failed", id, "error");
     },
   });
-  return mutate;
+  return [mutate, isPending];
 };
 
 export const useAddRepo = () => {
   const setInfo = useSetInfo();
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (repoToAdd) => addRepo(repoToAdd),
     onMutate: () => {
-      const id = setInfo("adding new project", null, "info");
+      const id = setInfo("adding new project");
       return { id };
     },
     onSuccess: (addedRepo, _, { id }) => {
@@ -124,21 +124,21 @@ export const useAddRepo = () => {
       setInfo("adding project failed", id, "error");
     },
   });
-  return mutate;
+  return [mutate, isPending];
 };
 
 const useSetInfo = () => {
   const setState = useSetRecoilState(infoState);
 
-  const setMessage = (message, id, severity = "success") => {
+  const setMessage = (message, id=null, severity="info") => {
     if (id) {
       setState(state => state.filter(s => s.id !== id));
     }
     const newId = self.crypto.randomUUID();
-    setState((state) => [...state, { message, severity, id: newId }]);
+    setState(state => [...state, { message, severity, id: newId }]);
 
     setTimeout(() => {
-      setState((state) => state.filter((s) => s.id !== newId));
+      setState(state => state.filter(s => s.id !== newId));
     }, 3000);
     return newId;
   };

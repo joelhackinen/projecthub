@@ -4,7 +4,7 @@ import { useAddRepo } from "../hooks"
 import { useState } from "react";
 
 const UserEditAddNewProject = ({ open, handleClose }) => {
-  const addRepo = useAddRepo();
+  const [addRepo, isAddRepoPending] = useAddRepo();
   const [nameError, setNameError] = useState(false)
 
   const [listOfLanguages, setListOfLanguages] = useState(['Python', 'Javascript', 'React', 'C++'])
