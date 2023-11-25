@@ -11,7 +11,8 @@ import { addRepo, addRepos, deleteRepo, updateRepo } from "../services/repos";
 import { updateProfile } from "../services/profiles";
 import { useSetRecoilState } from "recoil";
 import { infoState } from "../infoAtom.js";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { v4 as uuid } from "uuid";
 
 export const useUser = () => {
   const { data } = useQuery({
@@ -40,7 +41,6 @@ export const useAddRepos = () => {
         setInfo([`${repos.added.length} projects added`], id, "success");
       }
       if (repos.errors.length > 0) {
-        console.error(repos.errors);
         setInfo([`importing of ${repos.errors.length} projects failed`], id, "warning");
       }
     },
@@ -126,19 +126,33 @@ export const useAddRepo = () => {
 
 const useSetInfo = () => {
   const setState = useSetRecoilState(infoState);
+  const timeoutRef = useRef({});
 
-  // messages: Array<string>, id: uuid | null, severity = "info" | "warning" | "success"
-  const setMessage = (messages, id=null, severity="info") => {
-    if (id) {
-      setState(state => state.filter(s => s.id !== id));
+  // messages: string[] --- message(s) to show
+  // id: string         --- identifier of the action that triggered the notification chain
+  const setMessage = (messages, id=uuid(), severity="info") => {
+    setState((state) => {
+      const newState = state.filter((s) => s.id !== id);
+      return newState.concat({ messages, severity, id });
+    });
+    
+    if (timeoutRef.current[id]) {
+      clearTimeout(timeoutRef.current[id]);
     }
-    const newId = self.crypto.randomUUID();
-    setState(state => [...state, { messages, severity, id: newId }]);
 
-    setTimeout(() => {
-      setState(state => state.filter(s => s.id !== newId));
+    timeoutRef.current[id] = setTimeout(() => {
+      setState(state => state.filter(s => s.id !== id));
+      timeoutRef.current[id] = null;
     }, 3000);
-    return newId;
+    return id;
   };
+
+  useEffect(() => {
+    return () => {
+      Object.values(timeoutRef.current).forEach(timeoutId => {
+        clearTimeout(timeoutId);
+      });
+    };
+  }, []);
   return setMessage;
 };

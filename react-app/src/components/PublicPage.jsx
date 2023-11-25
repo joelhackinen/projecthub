@@ -91,6 +91,7 @@ const PublicPageContent = () => {
   const firstName = user.firstname;
   const lastName = user.lastname
   const email = user.email;
+  const about = user.about;
   
   const mainInfo = (
     <>
@@ -107,10 +108,7 @@ const PublicPageContent = () => {
       </Row>
       <Row>
         <h4>About me:</h4>
-        <p>
-          A short introduction about who I am and any extra text I want to
-          display that is not directly related to the projects.
-        </p>
+        <p>{about}</p>
       </Row>
     </>
   );
