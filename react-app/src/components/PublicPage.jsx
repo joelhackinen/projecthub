@@ -12,7 +12,7 @@ const Line = () => (<div className="line"></div>)
 const Project = ({ data, idx }) => {
   
   const plainLanguageList = (languages) => {
-    return Object.keys(languages).join(', ')
+    return languages ? Object.keys(languages).join(', ') : ''
   }
   const languagePercentages = (languages) => {
     const getRepoLanguagePercentage = (languages) => {
