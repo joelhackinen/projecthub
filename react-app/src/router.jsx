@@ -29,7 +29,6 @@ const appLoader = async () => {
 };
 
 const dashboardLoader = () => {
-  document.body.style.backgroundColor = "#C3C5C3";
   return {};
 };
 

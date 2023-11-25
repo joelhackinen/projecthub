@@ -8,6 +8,8 @@
 }
 
 .info-container {
+  background-color: var(--color-light);
+  border-radius: 1em;
   border: 1px solid black;
   padding-top: 1em;
   padding-bottom: 1em;
@@ -17,6 +19,8 @@
 }
 
 .projects-container {
+  background-color: var(--color-light);
+  border-radius: 1em;
   border: 1px solid black;
   padding-top: 1em;
   padding-bottom: 1em;
@@ -28,7 +32,8 @@
 .edit-btn {
   position: absolute;
   width:fit-content;
-  right: 10px;
+  right: 20px;
+  top: 30px;
 }
 
 .thin-line {

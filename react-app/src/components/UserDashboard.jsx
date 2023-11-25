@@ -23,14 +23,14 @@ const Header = ({ user }) => {
 
   return (
     <div className="header" style={{display:"flex", justifyContent: "space-between"}}>
-      <Button variant="outlined" onClick={() => submit(null, { method: "post", action: "/logout" }) }>
+      <Button sx={{borderColor: "var(--color-accent)", color:"var(--color-accent)"}} variant="outlined" onClick={() => submit(null, { method: "post", action: "/logout" }) }>
         Log out
       </Button>
       {user ?
         (
         user.url_name ?
         <Link to={`/user/${user.url_name}`} target="_blank" >
-          <Button variant="contained">View your public profile{"->"}</Button>
+          <Button sx={{backgroundColor: "var(--color-accent)" ,borderColor: "var(--color-accent)", color:"black"}} variant="contained">View your public profile{"->"}</Button>
         </Link> : <p>You can view your public profile once you've set an URL</p>)
       : <></>}
     </div> 
@@ -44,9 +44,12 @@ const PersonalInformation = ({ user }) => {
 
   return user ? (
     <>
-      <h2>Your information</h2>
+      
       <EditButton to="edit/information"/>
       <Container className="info-container">
+        <Row>
+          <h1>Your information</h1>
+        </Row>
         <Row>
           <Col sm={2} md={3}>Email:</Col>
           <Col><span>{user.email}</span> </Col>
@@ -104,12 +107,18 @@ const Projects = ({ projects }) => {
   )
   return (
     <>
-      <div className="pb-2">
-        <GithubButton/>
-      </div>
-
-      <h2>Projects</h2>
       <Container className="projects-container">
+        <Row>
+          <Col>
+            <h1>Projects</h1>
+          </Col>
+          <Col>
+            <div className="pb-2">
+              <GithubButton/>
+            </div>
+          </Col>
+        </Row>
+        <br />
         <Row>
           <Col xs="6" sm="3">Visibility</Col>
           <Col xs="6" sm="4">Name</Col>
@@ -123,7 +132,7 @@ const Projects = ({ projects }) => {
         }
         <Row>
           <Link to="edit/addNewProject" style={{ width: "fit-content" }}>
-            <Button sx={{ border: "1px solid black", color: "black" }} variant="outlined" component="label" startIcon={<AddCircleOutlineIcon />}>
+            <Button sx={{ border: "1px solid black", color: "black", boxShadow:"2px 2px 3px gray" }} variant="outlined" component="label" startIcon={<AddCircleOutlineIcon />}>
               Add new project
             </Button>
           </Link>
