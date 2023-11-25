@@ -1,15 +1,10 @@
 import {
   Router,
-  isEmail,
-  isString,
-  required,
-  match,
-  validate,
-  lengthBetween,
   firstMessages,
 } from "../deps.js";
-import { omit, setJWT } from "../utils.ts";
+import { omit, setJWT } from "../utils/index.ts";
 import { sql } from "../database.js";
+import { validateUserEdit } from "../utils/validations.js";
 
 const router = new Router();
 
@@ -21,15 +16,7 @@ router.put("/users", async ({ request, response, state, cookies }) => {
   const body = request.body({ type: "json" });
   const userData = await body.value;
 
-  const validationRules = {
-    firstname: [required, isString, lengthBetween(2, 30)],
-    lastname: [required, isString, lengthBetween(2, 30)],
-    email: [required, isEmail],
-    url_name: [required, match("^[a-zA-Z0-9]*$"), isString, lengthBetween(3, 30)],
-    about: [isString],
-  };
-
-  const [ passes, errors ] = await validate(userData, validationRules);
+  const [ passes, errors ] = await validateUserEdit(userData);
 
   if (!passes) {
     response.body = { error: firstMessages(errors) };

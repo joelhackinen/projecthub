@@ -1,15 +1,11 @@
 import {
   Router,
   scrypt,
-  isEmail,
-  isString,
-  required,
-  validate,
-  lengthBetween,
   firstMessages,
 } from "../deps.js";
-import { omit, setJWT } from "../utils.ts";
+import { omit, setJWT } from "../utils/index.ts";
 import { sql } from "../database.js";
+import { validateLogin, validateRegistration } from "../utils/validations.js";
 
 const router = new Router();
 
@@ -54,14 +50,7 @@ router.post("/users", async ({ request, response, cookies }) => {
   const body = request.body({ type: "json" });
   const userData = await body.value;
 
-  const validationRules = {
-    firstname: [required, isString, lengthBetween(2, 30)],
-    lastname: [required, isString, lengthBetween(2, 30)],
-    email: [required, isEmail],
-    password: [required, isString, lengthBetween(6, 30)],
-  };
-
-  const [ passes, errors ] = await validate(userData, validationRules);
+  const [ passes, errors ] = await validateRegistration(userData);
 
   if (!passes) {
     console.log(errors);
@@ -114,12 +103,7 @@ router.post("/login", async ({ request, response, cookies }) => {
   const data = await body.value;
   const { email, password } = data;
 
-  const validationRules = {
-    email: [required],
-    password: [required],
-  };
-
-  const [ passes, errors ] = await validate(data, validationRules);
+  const [ passes, errors ] = await validateLogin(data);
 
   if (!passes) {
     console.log(errors);

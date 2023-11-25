@@ -1,16 +1,11 @@
 import { sql } from "../database.js";
 import {
   Router,
-  isString,
-  required,
   validate,
-  lengthBetween,
-  isBool,
   isArray,
-  isDate,
   firstMessages,
 } from "../deps.js";
-import { isLanguages } from "../utils.ts";
+import { validateRepo } from "../utils/validations.js";
 
 const router = new Router();
 
@@ -22,13 +17,7 @@ router.post("/repos/many", async ({ request, response, state }) => {
   const body = request.body({ type: "json" });
   const data = await body.value;
 
-  const repoData = { repos: data };
-
-  const validationRules = {
-    repos: [isArray],
-  };
-
-  const [passes, errors] = await validate(repoData, validationRules);
+  const [passes, errors] = await validate({ data }, { data: [isArray] });
 
   if (!passes) {
     console.log(errors);
@@ -38,20 +27,10 @@ router.post("/repos/many", async ({ request, response, state }) => {
 
   response.status = 201;
 
-  const repoValidationRules = {
-    owner: [required, isString],
-    name: [required, isString, lengthBetween(2, 30)],
-    full_name: [required, isString],
-    html_url: [required, isString],
-    created_at: [required, isDate],
-    languages: [isLanguages],
-    github: [required, isBool],
-  };
-
   const repoErrors = [];
 
   const validateAndInsert = async (repo) => {
-    const [passes, errors] = await validate(repo, repoValidationRules);
+    const [passes, errors] = await validateRepo(repo);
 
     if (!passes) {
       response.status = 207;
@@ -66,9 +45,16 @@ router.post("/repos/many", async ({ request, response, state }) => {
       [addedRepo] = await sql`
         INSERT INTO projects
           (user_email, owner, name, full_name, html_url, created_at, languages, github)
-        VALUES
-          (${state.email}, ${owner}, ${name}, ${full_name}, ${html_url}, ${created_at}, ${languages}, ${github})
-        RETURNING *;`
+        VALUES (
+          ${state.email},
+          ${owner},
+          ${name},
+          ${full_name},
+          ${html_url},
+          ${created_at},
+          ${languages},
+          ${github}
+        ) RETURNING *;`;
     } catch (error) {
       if (error.code == "23505" || error.code == "23000" || error.code == "23001") {
         repoErrors.push({ name: `you already have a project named ${name}` });
@@ -92,18 +78,7 @@ router.post("/repos", async ({ request, response, state }) => {
   const body = request.body({ type: "json" });
   const data = await body.value;
 
-  const validationRules = {
-    owner: [isString],
-    name: [required, isString, lengthBetween(2, 30)],
-    full_name: [isString],
-    description: [isString],
-    html_url: [isString],
-    created_at: [isDate],
-    languages: [isLanguages],
-    visible: [isBool],
-  };
-
-  const [ passes, errors ] = await validate(data, validationRules);
+  const [ passes, errors ] = await validateRepo(data);
 
   if (!passes) {
     console.log(errors);
@@ -179,19 +154,9 @@ router.put("/repos/:id", async ({ request, response, state, params }) => {
   }
 
   const body = request.body({ type: "json" });
-  const r = await body.value;
+  const repoData = await body.value;
 
-  const validationRules = {
-    owner: [isString],
-    name: [required, isString, lengthBetween(2, 30)],
-    full_name: [isString],
-    description: [isString],
-    html_url: [isString],
-    created_at: [isDate],
-    visible: [isBool],
-  };
-
-  const [passes, errors] = await validate(r, validationRules);
+  const [passes, errors] = await validateRepo(repoData);
 
   if (!passes) {
     console.log(errors);
@@ -199,20 +164,22 @@ router.put("/repos/:id", async ({ request, response, state, params }) => {
     return response.status = 400;
   }
 
+  const { owner, name, full_name, description, languages, html_url, created_at, visible } = repoData;
+
   let updatedRepo;
   try {
     [updatedRepo] = await sql`
       UPDATE 
         projects
       SET
-        owner = ${r.owner},
-        name = ${r.name},
-        full_name = ${r.full_name},
-        description = ${r.description},
-        languages = ${r.languages},
-        html_url = ${r.html_url},
-        created_at = ${r.created_at},
-        visible = ${r.visible}
+        owner = ${owner},
+        name = ${name},
+        full_name = ${full_name},
+        description = ${description},
+        languages = ${languages},
+        html_url = ${html_url},
+        created_at = ${created_at},
+        visible = ${visible}
       WHERE
         id = ${params.id}
       AND
@@ -221,7 +188,7 @@ router.put("/repos/:id", async ({ request, response, state, params }) => {
         *;`;
   } catch (error) {
     if (error.code == "23505") {
-      response.body = { error: { name: `you already have a project named ${r.name}` } };
+      response.body = { error: { name: `you already have a project named ${name}` } };
       return response.status = 400;
     }
     return response.status = 500;

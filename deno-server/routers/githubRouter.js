@@ -1,6 +1,6 @@
 import { Router } from "../deps.js";
 import { sql } from "../database.js";
-import { isObject, isoToDate } from "../utils.ts";
+import { isObject, isoToDate } from "../utils/index.ts";
 
 const CLIENT_ID = Deno.env.get("CLIENT_ID");
 const CLIENT_SECRET = Deno.env.get("CLIENT_SECRET");
@@ -126,6 +126,7 @@ router.get("/github/fetchRepos", async ({ request, response, state }) => {
     created_at: isoToDate(created_at),
     github: true,
     languages: languages[i],
+    visible: true,
   }));
 
   response.status = 200;

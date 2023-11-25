@@ -1,6 +1,6 @@
 import { sql } from "../database.js";
 import { Router } from "../deps.js";
-import { omit } from "../utils.ts";
+import { omit } from "../utils/index.ts";
 
 const router = new Router();
 

@@ -1,5 +1,10 @@
-import { invalid, SecureCookieMap, create, getNumericDate } from "./deps.js";
-import { key } from "./app.js";
+import {
+  invalid,
+  SecureCookieMap,
+  create,
+  getNumericDate,
+} from "../deps.js";
+import { key } from "../app.js";
 
 // omit keys from object
 export const omit = <T, K extends keyof T>(obj: T, ...keys: K[]): Omit<T, K> => {

@@ -45,11 +45,3 @@ CREATE TABLE projects (
   github BOOLEAN DEFAULT false NOT NULL,
   CONSTRAINT unique_user_project UNIQUE(user_email, name)
 );
-
-INSERT INTO projects (user_email, name, description, html_url, created_at) VALUES (
-  'test@test.com',
-  'test project',
-  'test description for test project',
-  'https://github.com/joelhackinen/projecthub',
-  '2023-02-11'
-);

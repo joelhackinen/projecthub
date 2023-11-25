@@ -21,6 +21,7 @@ export {
   invalid,
   isDate,
   firstMessages,
+  maxLength,
 } from "https://deno.land/x/validasaur@v0.15.0/mod.ts";
 
 export { SecureCookieMap } from "https://deno.land/x/oak@v12.6.1/deps.ts";

@@ -28,20 +28,32 @@ export const useAddRepos = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (reposToAdd) => addRepos(reposToAdd),
     onMutate: () => {
-      const id = setInfo(["adding new projects"]);
+      const id = setInfo({ nessages: ["adding new projects"] });
       return { id };
     },
     onSettled: (repos, error, _, { id }) => {
       if (error) {
-        setInfo(["unexpected error"], id, "error");
+        setInfo({
+          messages: ["unexpected error"],
+          id,
+          severity: "error"
+        });
         return;
       }
       if (repos.added.length > 0) {
         addReposToCache(repos.added);
-        setInfo([`${repos.added.length} projects added`], id, "success");
+        setInfo({
+          messages: [`${repos.added.length} projects added`],
+          id,
+          severity: "success",
+        });
       }
       if (repos.errors.length > 0) {
-        setInfo([`importing of ${repos.errors.length} projects failed`], id, "warning");
+        setInfo({
+          messages: [`importing of ${repos.errors.length} projects failed`],
+          id,
+          severity: "warning",
+        });
       }
     },
   });
@@ -53,15 +65,23 @@ export const useUpdateProfile = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (profileToUpdate) => updateProfile(profileToUpdate),
     onMutate: () => {
-      const id = setInfo(["updating profile"]);
+      const id = setInfo({ messages: ["updating profile"] });
       return { id };
     },
     onSuccess: (updatedProfile, _, { id }) => {
       updateUserToCache(updatedProfile);
-      setInfo(["profile updated"], id, "success");
+      setInfo({
+        messages: ["profile updated"],
+        id,
+        severity: "success",
+      });
     },
     onError: (error, _, { id }) => {
-      setInfo(error.messages, id, "error");
+      setInfo({
+        messages: error.messages,
+        id,
+        severity: "error",
+      });
     },
   });
   return [mutate, isPending];
@@ -72,15 +92,23 @@ export const useUpdateRepo = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (repoToUpdate) => updateRepo(repoToUpdate),
     onMutate: () => {
-      const id = setInfo(["updating"]);
+      const id = setInfo({ messages: ["updating"] });
       return { id };
     },
     onSuccess: (updatedRepo, _, { id }) => {
       updateRepoToCache(updatedRepo);
-      setInfo([`${updatedRepo.name} updated`], id, "success");
+      setInfo({
+        messages: [`${updatedRepo.name} updated`],
+        id,
+        severity: "success",
+      });
     },
     onError: (error, _, { id }) => {
-      setInfo(error.message, id, "error");
+      setInfo({
+        messages: error.message,
+        id,
+        severity: "error"
+      });
     },
   });
   return [mutate, isPending];
@@ -91,12 +119,16 @@ export const useDeleteRepo = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (repoId) => deleteRepo(repoId),
     onMutate: () => {
-      const id = setInfo(["deleting project"]);
+      const id = setInfo({ messages: ["deleting project"] });
       return { id };
     },
     onSuccess: (deletedRepo, _, { id }) => {
       deleteRepoFromCache(deletedRepo);
-      setInfo([`${deletedRepo.name} deleted`], id, "success");
+      setInfo({
+        messages:[`${deletedRepo.name} deleted`],
+        id,
+        severity: "success"},
+      );
     },
     onError: (error, _, { id }) => {
       setInfo(error.messages, id, "error");
@@ -110,27 +142,35 @@ export const useAddRepo = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (repoToAdd) => addRepo(repoToAdd),
     onMutate: () => {
-      const id = setInfo(["adding new project"]);
+      const id = setInfo({ messages: ["adding new project"] });
       return { id };
     },
     onSuccess: (addedRepo, _, { id }) => {
       addRepoToCache(addedRepo);
-      setInfo([`${addedRepo.name} added`], id, "success");
+      setInfo({
+        messages: [`${addedRepo.name} added`],
+        id,
+        severity: "success",
+      });
     },
     onError: (error, _, { id }) => {
-      setInfo(error.messages, id, "error");
+      setInfo({
+        messages: error.messages,
+        id,
+        severity: "error",
+      });
     },
   });
   return [mutate, isPending];
 };
 
-const useSetInfo = () => {
+export const useSetInfo = () => {
   const setState = useSetRecoilState(infoState);
   const timeoutRef = useRef({});
 
   // messages: string[] --- message(s) to show
   // id: string         --- identifier of the action that triggered the notification chain
-  const setMessage = (messages, id=uuid(), severity="info") => {
+  const setMessage = ({ messages, id=uuid(), severity="info" }) => {
     setState((state) => {
       const newState = state.filter((s) => s.id !== id);
       return newState.concat({ messages, severity, id });
