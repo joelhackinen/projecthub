@@ -104,8 +104,8 @@ const Projects = ({ projects }) => {
           <GithubButton />
         </Row>
         {
-        projects ?
-          <ProjectList_ /> : <div>You dont have any visible projects</div>
+        projects.length > 0 ?
+          <ProjectList_ /> : <div style={{ color: "red" }}>You dont have any visible projects</div>
         }
         <Row>
           <Link to="edit/addNewProject" style={{ width: "fit-content" }}>

@@ -11,6 +11,9 @@ const Line = () => (<div className="line"></div>)
 
 const Project = ({ data, idx }) => {
   
+  const plainLanguageList = (languages) => {
+    return Object.keys(languages).join(', ')
+  }
   const languagePercentages = (languages) => {
     const getRepoLanguagePercentage = (languages) => {
       const totalPtsArr = Object.values(languages);
@@ -50,7 +53,7 @@ const Project = ({ data, idx }) => {
             </Col>
             <Col>
               <div>
-                {data?.github ? languagePercentages(data.languages) : <p>not from git</p>}
+                {data?.github ? languagePercentages(data.languages) : plainLanguageList(data.languages)}
               </div> 
             </Col>
           </Row>

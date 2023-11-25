@@ -1,12 +1,13 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField, Radio, RadioGroup, FormControlLabel, List, ListItem, Checkbox, ListItemText, IconButton } from "@mui/material"
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useAddRepo } from "../hooks"
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const UserEditAddNewProject = ({ open, handleClose }) => {
   const [addRepo, isAddRepoPending] = useAddRepo();
   const [nameError, setNameError] = useState(false)
-
+  const [nameErrorText, setNameErrorText] = useState("")
+  const nameRef = useRef()
   const [listOfLanguages, setListOfLanguages] = useState(['Python', 'Javascript', 'React', 'C++'])
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [customLanguage, setCustomLanguage] = useState('');
@@ -50,20 +51,16 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
   const addNewProject = (e) => {
     e.preventDefault()
 
-    if (!newProject.name || newProject.name=='') {
-      alert("Name can not be empty")
+    const invalidName = !(newProject.name===undefined || (newProject.name.length <= 30 && newProject.name.length >= 2))
+    if (invalidName) {
       setNameError(true)
+      setNameErrorText(invalidName ? "Name must be between 2 and 30 characters long." : "")
+      nameRef.current.focus()
       return
     }
 
     const languagesObj = {};
     selectedLanguages.forEach(lang => languagesObj[lang] = 0);
-
-    // const projectName = newProject.name
-    // const description = newProject.description
-    // const created_at = newProject.created_at
-    // const visibility = newProject.visible
-    // const languages = selectedLanguages
 
     addRepo({
       ...newProject,
@@ -87,8 +84,10 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
               type="text"
               required
               error={nameError}
+              helperText={nameErrorText}
               fullWidth
               onChange={handleChange}
+              inputRef={nameRef}
             />
           </DialogContent>
           <DialogContent> {/* created_at */}

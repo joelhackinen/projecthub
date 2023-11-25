@@ -1,16 +1,28 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material"
 import { useUser, useUpdateProfile } from "../hooks"
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const UserEditInformation = ({ open, handleClose }) => {
   const user = useUser();
   const [updateUser, isUpdateUserPending] = useUpdateProfile()
+  const emailRef = useRef();
+  const firstnameRef = useRef();
+  const lastnameRef = useRef();
+  const urlRef = useRef();
+  
   const [errors, setErrors] = useState(
     { email: false,
       firstname: false,
       lastname: false,
       url_name: false 
     })
+  const [errorTexts, setErrorTexts] = useState(
+    { email: "",
+      firstname: "",
+      lastname: "",
+      url_name: "" 
+    })
+      
   const [newUser, setNewUser] = useState({})
 
   const handleChange = e => {
@@ -21,36 +33,51 @@ const UserEditInformation = ({ open, handleClose }) => {
   }
   
   const validateForm = () => {
-    let alertMsg = ""
-    // Email, firstname and lastname are valid if they haven't been touched or they are between 2-30 chars
-    const validEmail = (newUser.email===undefined || newUser.email.length > 0)
+    const validateEmail = (email) => {
+      return email.match(
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+    };
+    const focusInputs = (validEmail, validFirstname, validLastname, validUrl) => {
+      if (!validEmail) emailRef.current.focus()
+      else if (!validFirstname) firstnameRef.current.focus()
+      else if (!validLastname) lastnameRef.current.focus()
+      else if (!validUrl) urlRef.current.focus()
+    };
+
+    let isError = false
+    const validEmail = newUser.email===undefined || validateEmail(newUser.email)
+    // firstname and lastname are valid if they haven't been touched or they are between 2-30 chars
     const validFirstname = newUser.firstname===undefined || (newUser.firstname.length <= 30 && newUser.firstname.length >= 2)
     const validLastname = newUser.lastname===undefined || (newUser.lastname.length <= 30 && newUser.lastname.length >= 2)
     // Url is valid if server has a value and it hasn't been touched, or if the new value is between 3-30 chars
     const validUrl = (newUser.url_name===undefined && user?.url_name ) || (newUser?.url_name?.length >= 3 && newUser?.url_name?.length <= 30)
 
-    !validEmail ? alertMsg += "Email can't be empty.\n" : null
-    !validFirstname ? alertMsg += "First name must be between 2 and 30 characters long.\n" : null
-    !validLastname ? alertMsg += "Last  name must be between 2 and 30 characters long.\n" : null
-    !validUrl ? alertMsg += "Url must be between 3 and 30 characters long.\n" : null
+    isError = validEmail && validFirstname && validLastname && validUrl
+
+    focusInputs(validEmail, validFirstname, validLastname, validUrl)
 
     setErrors({
       email: !validEmail,
       firstname: !validFirstname,
       lastname: !validLastname,
-      url_name: !validUrl 
+      url_name: !validUrl
     })
-    
-    return alertMsg
+    setErrorTexts({
+      email: validEmail ? "" : "Invalid email.",
+      firstname: validFirstname ? "" : "First name must be between 2 and 30 characters long.",
+      lastname: validLastname ? "" : "Last  name must be between 2 and 30 characters long.",
+      url_name: validUrl ? "" : "Url must be between 3 and 30 characters long."
+    })
+
+    return isError
   }
+
   const saveAndClose = (e) => {
     e.preventDefault()
-    
-    const alertMessage = validateForm()
-    if (alertMessage !==  ""){
-      alert(alertMessage)
+
+    if (!validateForm())
       return
-    }
 
     updateUser({
       ...user,
@@ -76,6 +103,8 @@ const UserEditInformation = ({ open, handleClose }) => {
                 onChange={handleChange}
                 margin="dense"
                 error={errors.email}
+                helperText={errorTexts.email}
+                inputRef={emailRef}
               />}
           </DialogContent>
           <DialogContent> {/* First Name */}
@@ -89,6 +118,8 @@ const UserEditInformation = ({ open, handleClose }) => {
                 fullWidth
                 onChange={handleChange}
                 error={errors.firstname}
+                helperText={errorTexts.firstname}
+                inputRef={firstnameRef}
               />}
           </DialogContent>
           <DialogContent> {/* Last Name */}
@@ -102,6 +133,8 @@ const UserEditInformation = ({ open, handleClose }) => {
                 fullWidth
                 onChange={handleChange}
                 error={errors.lastname}
+                helperText={errorTexts.lastname}
+                inputRef={lastnameRef}
               />}
           </DialogContent>
           <DialogContent> {/* Url */}
@@ -115,8 +148,14 @@ const UserEditInformation = ({ open, handleClose }) => {
                 required
                 fullWidth
                 onChange={handleChange}
-                helperText={user.url_name ? `Your public profiles URL is: /user/${user.url_name}` : `Your public profiles URL will be: /user/<URL>`}
+                helperText={
+                  errors.url_name ? errorTexts.url_name :
+                    (user.url_name ?
+                      `Your public profiles URL is: /user/${user.url_name}`
+                    :
+                      `Your public profiles URL will be: /user/<URL>`)}
                 error={errors.url_name}
+                inputRef={urlRef}
               />}
           </DialogContent>
           <DialogContent> {/* About */}

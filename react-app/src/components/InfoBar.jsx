@@ -25,7 +25,7 @@ const InfoBar = () => {
       <ul>
         {value.map(({ messages, severity }, i) =>
           <Alert severity={severity} key={i}>
-            {messages.map((m, i) => <div key={i}>{m}</div>)}
+            {messages ? messages.map((m, i) => <div key={i}>{m}</div>) : "no message"}
           </Alert>)}
       </ul>
     </div>

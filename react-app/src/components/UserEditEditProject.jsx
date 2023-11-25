@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useParams } from "react-router-dom";
 import { useUpdateRepo, useDeleteRepo, useUser } from "../hooks";
 
@@ -30,6 +30,8 @@ const UserEditEditProject = ({ open, handleClose }) => {
 
   const [newProject, setNewProject] = useState({})
   const [nameError, setNameError] = useState(false)
+  const [nameErrorText, setNameErrorText] = useState("")
+  const nameRef = useRef()
 
   const repo = user.repos.find( repo => repo.id === Number(projectId) )
 
@@ -55,20 +57,25 @@ const UserEditEditProject = ({ open, handleClose }) => {
 
   const save = (e) => {
     e.preventDefault()
-    if (!(newProject.name===undefined || newProject.name.length > 0)) {
-      alert("Name can't be empty!")
+
+    const invalidName = !(newProject.name===undefined || (newProject.name.length <= 30 && newProject.name.length >= 2))
+    if (invalidName) {
       setNameError(true)
+      setNameErrorText(invalidName ? "Name must be between 2 and 30 characters long." : "")
+      nameRef.current.focus()
       return
     }
+
     updateRepo({
       ...repo,
       ...newProject
     })
     handleClose()
   }
+
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>
-      {repo ? <> 
+      {repo ? <>
         <DialogTitle>Edit project {repo.name}</DialogTitle>
         <form noValidate onSubmit={save}>
           <DialogContent> {/* Name */}
@@ -82,6 +89,8 @@ const UserEditEditProject = ({ open, handleClose }) => {
               fullWidth
               onChange={handleChange}
               error={nameError}
+              inputRef={nameRef}
+              helperText={nameErrorText}
             />
           </DialogContent>
           <DialogContent> {/* created_at */}
@@ -144,10 +153,9 @@ const UserEditEditProject = ({ open, handleClose }) => {
           </DialogContent>
           <DialogActions>
             <Button color="error" variant="outlined" onClick={handleDelete} startIcon={<DeleteIcon />}>Delete</Button>
-            <div style={{flex: '0.9'}} />
+            <div style={{flex: '1'}} />
             <Button variant="contained" type="submit">Save</Button>
             <Button onClick={handleClose}>Cancel</Button>
-            <div style={{flex: '0.05'}} />
           </DialogActions>
         </form>
       </>
