@@ -12,12 +12,6 @@ import "./../css/UserDashboard.css"
 
 const Line = () => (<div className="thin-line"></div>)
 
-const EditButton = ({ to }) => (
-  <div className="edit-btn">
-    <Link to={to} ><EditIcon sx={{ color: "black" }} /></Link>
-  </div>
-)
-
 const Header = ({ user }) => {
   const submit = useSubmit();
 
@@ -45,10 +39,16 @@ const PersonalInformation = ({ user }) => {
   return user ? (
     <>
       
-      <EditButton to="edit/information"/>
       <Container className="info-container">
         <Row>
-          <h1>Your information</h1>
+          <Col xs="10" >
+            <h1>Your information</h1>
+          </Col>
+          <Col xs="2" sm={{ span: 1, offset: 1 }}>
+            <Link to="edit/information" style={{ display:"inline-block",height:"calc(1.375rem + 1.5vw)", width:"calc(1.375rem + 1.5vw)" }}>
+              <EditIcon sx={{ color: "black", height:"calc(1.375rem + 1vw)", width:"calc(1.375rem + 1vw)" }} />
+            </Link>
+          </Col>
         </Row>
         <Row>
           <Col sm={2} md={3}>Email:</Col>
@@ -109,7 +109,7 @@ const Projects = ({ projects }) => {
     <>
       <Container className="projects-container">
         <Row>
-          <Col>
+          <Col xs="12" sm="4" md="4" lg="6">
             <h1>Projects</h1>
           </Col>
           <Col>
