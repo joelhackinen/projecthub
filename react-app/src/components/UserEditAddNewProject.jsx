@@ -44,13 +44,13 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
   const handleAddCustomLanguage = () => {
     if (customLanguage.trim() !== '' && listOfLanguages.indexOf(customLanguage) === -1) {
       setListOfLanguages([...listOfLanguages, customLanguage]);
+      setSelectedLanguages([...selectedLanguages, customLanguage])
       setCustomLanguage('');
     }
   };
   
   const addNewProject = (e) => {
     e.preventDefault()
-
     const invalidName = !(newProject.name===undefined || (newProject.name.length <= 30 && newProject.name.length >= 2))
     if (invalidName) {
       setNameError(true)

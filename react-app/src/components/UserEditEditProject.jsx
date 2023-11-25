@@ -1,11 +1,10 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from "react-router-dom";
 import { useUpdateRepo, useDeleteRepo, useUser } from "../hooks";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, DialogContentText, RadioGroup, FormControlLabel, Radio, List, ListItem } from "@mui/material"
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, DialogContentText, RadioGroup, FormControlLabel, Radio, List, ListItem, Checkbox, ListItemText, IconButton } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete';
-
-
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const getRepoLanguagePercentage = (languages) => {
   const totalPtsArr = Object.values(languages);
@@ -33,11 +32,38 @@ const UserEditEditProject = ({ open, handleClose }) => {
   const [nameErrorText, setNameErrorText] = useState("")
   const nameRef = useRef()
 
+  const [listOfLanguages, setListOfLanguages] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [customLanguage, setCustomLanguage] = useState('');
+
   const repo = user.repos.find( repo => repo.id === Number(projectId) )
+
+  useEffect(() => {
+    setListOfLanguages(Object.keys(repo.languages))
+    setSelectedLanguages(Object.keys(repo.languages))
+  }, [])
+
+  const handleToggleLanguage = (value) => {
+    const currentIndex = selectedLanguages.indexOf(value);
+    const newSelectedLanguages = [...selectedLanguages];
+
+    if (currentIndex === -1) {
+      newSelectedLanguages.push(value);
+    } else {
+      newSelectedLanguages.splice(currentIndex, 1);
+    }
+    setSelectedLanguages(newSelectedLanguages);
+  }
+  const handleAddCustomLanguage = () => {
+    if (customLanguage.trim() !== '' && listOfLanguages.indexOf(customLanguage) === -1) {
+      setListOfLanguages([...listOfLanguages, customLanguage])
+      setSelectedLanguages([...selectedLanguages, customLanguage])
+      setCustomLanguage('');
+    }
+  }
 
   const handleChange = e => {
     let value;
-
     //boolean values are turned into strings in onChange functions.. so change "true"->true
     e.target.name==="visible" ? value = e.target.value==="true" : value = e.target.value
     
@@ -66,9 +92,13 @@ const UserEditEditProject = ({ open, handleClose }) => {
       return
     }
 
+    const languagesObj = {};
+    selectedLanguages.forEach(lang => languagesObj[lang] = 0);
+
     updateRepo({
       ...repo,
-      ...newProject
+      ...newProject,
+      languages: languagesObj
     })
     handleClose()
   }
@@ -140,19 +170,46 @@ const UserEditEditProject = ({ open, handleClose }) => {
           <DialogContent> {/* Languages */}
             <DialogContentText>Languages</DialogContentText>
             { repo.github ?
-              <List>
-                From github, just show languages and their percentages
+              <List>  
                 {Object.entries(getRepoLanguagePercentage(repo.languages)).map(([key, value]) => (
-                    <ListItem key={key}>
-                      <p><strong>{key}:</strong> {value}%</p>
-                    </ListItem>
-                  ))}
+                  <ListItem key={key}>
+                    <p><strong>{key}:</strong> {value}%</p>
+                  </ListItem>
+                ))}
               </List>
               :
-              "Not from github. Show current languages and let them add/remove to/from the list" }
+              <>
+                <List>
+                  {
+                    listOfLanguages.map((item) => (
+                      <ListItem key={item} dense button onClick={() => handleToggleLanguage(item)}>
+                        <Checkbox
+                          size="small"
+                          checked={selectedLanguages.indexOf(item) !== -1}
+                          tabIndex={-1}
+                          disableRipple
+                        />
+                        <ListItemText primary={item} />
+                      </ListItem>
+                    ))
+                  }
+                </List>
+                <TextField
+                  size="small"
+                  variant="standard"
+                  label="Add another language"
+                  value={customLanguage}
+                  onChange={(e) => setCustomLanguage(e.target.value)}
+                />
+                <IconButton onClick={handleAddCustomLanguage}>
+                  <AddCircleOutlineIcon color="red"/>
+                </IconButton>
+              </>
+            }
           </DialogContent>
+          <br />
           <DialogActions>
-            <Button color="error" variant="outlined" onClick={handleDelete} startIcon={<DeleteIcon />}>Delete</Button>
+            <Button color="error" variant="outlined" onClick={handleDelete} startIcon={<DeleteIcon />}>Delete Project</Button>
             <div style={{flex: '1'}} />
             <Button variant="contained" type="submit">Save</Button>
             <Button onClick={handleClose}>Cancel</Button>

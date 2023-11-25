@@ -7,7 +7,7 @@ import Col from "react-bootstrap/Col";
 import { Suspense } from "react";
 import AppError from "./errorElements/AppError";
 
-const Line = () => (<div className="line"></div>)
+const Line = () => (<div className="thin-line"></div>)
 
 const Project = ({ data, idx }) => {
   
@@ -44,7 +44,7 @@ const Project = ({ data, idx }) => {
         <Col sm={12} md={4} lg={4}>
           <div className="mx-auto public-proj-img-placeholder" />
         </Col>
-        <Col md={{ order: idx % 2 ? "last" : "first" }}> 
+        <Col> {/* md={{ order: idx % 2 ? "last" : "first" }} */}
           <h1>{data?.name}</h1>
           <i>{data?.github ? data.html_url : <></>}</i>
           <Row className="pt-3" > {/* Languages */}

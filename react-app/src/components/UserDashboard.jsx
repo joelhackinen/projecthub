@@ -4,11 +4,13 @@ import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import GithubButton from "./GithubButton"
-import { Button, withStyles  } from "@mui/material";
+import { Button, FormControlLabel, Switch  } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit"
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import "./../css/UserDashboard.css"
+
+const Line = () => (<div className="thin-line"></div>)
 
 const EditButton = ({ to }) => (
   <div className="edit-btn">
@@ -76,35 +78,47 @@ const Projects = ({ projects }) => {
   projects.sort(compareByName);
 
   const ProjectList_ = () => (
-    projects.map((project, idx) => {
-      return (
+    projects.map((project, idx) =>
+      (
         <Row key={idx}>
-          <Col>{project.name}</Col>
-          <Col>created: {project.created_at}</Col>
-          <Col>
-            <Row>{project.visible ? "public" : "private"}</Row>
+          <Col xs="6" sm="3">
             <Row>
-              <button onClick={() => updateRepo({ ...project, visible: !project.visible })}>
-                {project.visible ? "hide" : "show"}
-              </button>
+              <FormControlLabel
+                checked={ project.visible }
+                control={ <Switch onChange={ () => updateRepo({ ...project, visible: !project.visible  }) }/> }
+                label={project.visible ? "public" : "private"}
+              />
             </Row>
           </Col>
-          <Col className="align-self-center">
-            <Link to={`edit/project/${project.id}`} ><EditIcon sx={{ color: "black" }} /></Link>
+          <Col xs="6" sm="4" className="align-self-center">{project.name}</Col>
+          <Col xs="6" sm="3" className="align-self-center">{project.created_at}</Col>
+          <Col xs="6" sm="2" className="align-self-center">
+            <Link to={`edit/project/${project.id}`} >
+              <EditIcon sx={{ color: "black" }} />
+            </Link>
           </Col>
+          <Line />
         </Row>
       )
-    })
+    )
   )
   return (
     <>
+      <div className="pb-2">
+        <GithubButton/>
+      </div>
+
       <h2>Projects</h2>
-      <Container className="info-container">
+      <Container className="projects-container">
         <Row>
-          <GithubButton />
+          <Col xs="6" sm="3">Visibility</Col>
+          <Col xs="6" sm="4">Name</Col>
+          <Col xs="6" sm="3">Created</Col>
+          <Col xs="6" sm="2">Edit</Col>
+          <Line />
         </Row>
-        {
-        projects.length > 0 ?
+
+        { projects.length > 0 ?
           <ProjectList_ /> : <div style={{ color: "red" }}>You dont have any visible projects</div>
         }
         <Row>

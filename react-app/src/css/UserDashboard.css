@@ -11,13 +11,27 @@
   border: 1px solid black;
   padding-top: 1em;
   padding-bottom: 1em;
-  .row {
-    padding: 0.5em;
-  }
+}
+.info-container .row {
+  padding: 0.5em;
+}
+
+.projects-container {
+  border: 1px solid black;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.projects-container .row {
+  padding: 0.1em;
 }
 
 .edit-btn {
   position: absolute;
   width:fit-content;
   right: 10px;
+}
+
+.thin-line {
+  border-top: 1px solid var(--color-dark);
+  margin: 1em auto;
 }
