@@ -26,6 +26,7 @@ router.put("/users", async ({ request, response, state, cookies }) => {
     lastname: [required, isString, lengthBetween(2, 30)],
     email: [required, isEmail],
     url_name: [required, match("^[a-zA-Z0-9]*$"), isString, lengthBetween(3, 30)],
+    about: [isString],
   };
 
   const [ passes, errors ] = await validate(userData, validationRules);
@@ -35,7 +36,7 @@ router.put("/users", async ({ request, response, state, cookies }) => {
     return response.status = 400;
   }
 
-  const { firstname, lastname, email, url_name } = userData;
+  const { firstname, lastname, email, url_name, about } = userData;
 
   let updatedUser;
   try {
@@ -46,7 +47,8 @@ router.put("/users", async ({ request, response, state, cookies }) => {
         firstname = ${firstname},
         lastname = ${lastname},
         email = ${email},
-        url_name = ${url_name}
+        url_name = ${url_name},
+        about = ${about}
       WHERE
         email = ${state.email}
       RETURNING

@@ -14,7 +14,8 @@ CREATE TABLE users (
   pwhash TEXT NOT NULL,
   pwsalt TEXT NOT NULL,
   github TEXT,
-  url_name TEXT UNIQUE
+  url_name TEXT UNIQUE,
+  about TEXT
 );
 
 /*
