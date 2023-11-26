@@ -72,96 +72,91 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
   }
 
   return (
-    <div>
-      <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle>Add a new project</DialogTitle>
-        <form noValidate onSubmit={addNewProject}>
-          <DialogContent> {/* Name */}
-            <TextField
-              id="name"
-              name="name"
-              label="Name"
-              type="text"
-              required
-              error={nameError}
-              helperText={nameErrorText}
-              fullWidth
-              onChange={handleChange}
-              inputRef={nameRef}
-            />
-          </DialogContent>
-          <DialogContent> {/* created_at */}
-            <DialogContentText>When did you create this project?</DialogContentText>
-            <TextField
-              id="created_at"
-              name="created_at"
-              type="date"
-              fullWidth
-              onChange={handleChange}
-            />
-          </DialogContent>
-          <DialogContent> {/* Description */}
-            <TextField
-              id="description"
-              name="description"
-              type="text"
-              label="Write a description of the project"
-              multiline
-              minRows={4}
-              fullWidth
-              onChange={handleChange}
-            />
-          </DialogContent>
-          <DialogContent> {/* Visibility */}
-            <DialogContentText>Visibility</DialogContentText>
-            <RadioGroup
-              id="visible"
-              defaultValue={true}
-              name="visible"
-              onChange={handleChange}
-            >
-              <FormControlLabel value={true} control={<Radio />} label="Visible" />
-              <FormControlLabel value={false} control={<Radio />} label="Hidden" />
-            </RadioGroup>
-          </DialogContent>
-          <DialogContent> {/* Languages */}
-            <DialogContentText>What languages/technologies did you use on this project?</DialogContentText>
-            <List>
-              {listOfLanguages.map((item) => (
-                <ListItem key={item} dense button onClick={() => handleToggleLanguage(item)}>
-                  <Checkbox
-                    // edge="start"
-                    size="small"
-                    checked={selectedLanguages.indexOf(item) !== -1}
-                    tabIndex={-1}
-                    disableRipple
-                  />
-                  <ListItemText primary={item} />
-                </ListItem>
-              ))}
-            </List>
-            <TextField
-              size="small"
-              variant="standard"
-              label="Add another language"
-              value={customLanguage}
-              onChange={(e) => setCustomLanguage(e.target.value)}
-            />
-            <IconButton onClick={handleAddCustomLanguage}>
-              <AddCircleOutlineIcon color="red"/>
-            </IconButton>
-          </DialogContent>
+    <Dialog open={open} onClose={handleClose} fullWidth>
+      <DialogTitle>Add a new project</DialogTitle>
+      <form noValidate onSubmit={addNewProject}>
+        <DialogContent> {/* Name */}
+          <TextField
+            id="name"
+            name="name"
+            label="Name"
+            type="text"
+            required
+            error={nameError}
+            helperText={nameErrorText}
+            fullWidth
+            onChange={handleChange}
+            inputRef={nameRef}
+          />
+        </DialogContent>
+        <DialogContent> {/* created_at */}
+          <DialogContentText>When did you create this project?</DialogContentText>
+          <TextField
+            id="created_at"
+            name="created_at"
+            type="date"
+            fullWidth
+            onChange={handleChange}
+          />
+        </DialogContent>
+        <DialogContent> {/* Description */}
+          <TextField
+            id="description"
+            name="description"
+            type="text"
+            label="Write a description of the project"
+            multiline
+            minRows={4}
+            fullWidth
+            onChange={handleChange}
+          />
+        </DialogContent>
+        <DialogContent> {/* Visibility */}
+          <DialogContentText>Visibility</DialogContentText>
+          <RadioGroup
+            id="visible"
+            defaultValue={true}
+            name="visible"
+            onChange={handleChange}
+          >
+            <FormControlLabel value={true} control={<Radio />} label="Visible" />
+            <FormControlLabel value={false} control={<Radio />} label="Hidden" />
+          </RadioGroup>
+        </DialogContent>
+        <DialogContent> {/* Languages */}
+          <DialogContentText>What languages/technologies did you use on this project?</DialogContentText>
+          <List>
+            {listOfLanguages.map((item) => (
+              <ListItem key={item} dense button onClick={() => handleToggleLanguage(item)}>
+                <Checkbox
+                  // edge="start"
+                  size="small"
+                  checked={selectedLanguages.indexOf(item) !== -1}
+                  tabIndex={-1}
+                  disableRipple
+                />
+                <ListItemText primary={item} />
+              </ListItem>
+            ))}
+          </List>
+          <TextField
+            size="small"
+            variant="standard"
+            label="Add another language"
+            value={customLanguage}
+            onChange={(e) => setCustomLanguage(e.target.value)}
+          />
+          <IconButton onClick={handleAddCustomLanguage}>
+            <AddCircleOutlineIcon color="red"/>
+          </IconButton>
+        </DialogContent>
 
-          <DialogActions>
-            <Button variant="contained" type="submit">Add</Button>
-            <Button onClick={handleClose}>cancel</Button>
-          </DialogActions>
-        </form>
-        
-
-        
-      </Dialog>
-    </div>
+        <DialogActions>
+          <Button variant="contained" type="submit">Add</Button>
+          <Button onClick={handleClose}>cancel</Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   )
 }
 

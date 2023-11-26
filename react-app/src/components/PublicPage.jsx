@@ -1,11 +1,12 @@
 // import { useState } from "react";
 import "./../css/PublicPage.css";
-import { Await, useAsyncValue, useLoaderData } from "react-router-dom";
+import { Await, useAsyncValue, useLoaderData, Outlet, Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Suspense } from "react";
 import AppError from "./errorElements/AppError";
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 
 const Line = () => (<div className="thin-line"></div>)
 
@@ -39,13 +40,19 @@ const Project = ({ data, idx }) => {
 
   return (
     <>
-      {idx !== 0 ? <Line /> : <></>}
-      <Row className="public-project pt-4"> {/* Name + languages + created */}
+    {idx !== 0 ? <Line /> : <></>}
+    <div className="public-project">
+      <Row> {/* Name + languages + created */}
         <Col sm={12} md={4} lg={4}>
           <div className="mx-auto public-proj-img-placeholder" />
         </Col>
         <Col> {/* md={{ order: idx % 2 ? "last" : "first" }} */}
           <h1>{data?.name}</h1>
+          <div style={{ position:"absolute", top:"2%", right:"2%"}}>
+            <Link to={`${data.id}`}>
+              <OpenInFullIcon sx={{color: "black"}}/>
+            </Link>
+          </div>
           <i>{data?.github ? data.html_url : <></>}</i>
           <Row className="pt-3" > {/* Languages */}
             <Col sm={12} md={6} >
@@ -73,7 +80,8 @@ const Project = ({ data, idx }) => {
         <p>
           {data?.description}
         </p>
-      </Row> 
+      </Row>
+    </div>
     </>
   );
 };
@@ -123,6 +131,7 @@ const PublicPageContent = () => {
           <Projects projects={user.repos}/>
         </Col>
       </Row>
+      <Outlet context={user.repos} />
     </Container>
   );
 };

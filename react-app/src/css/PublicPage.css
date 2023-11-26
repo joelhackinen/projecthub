@@ -20,6 +20,9 @@ body {
 .public-projects-container {
   background: var(--color-light);
 }
+.public-project {
+  padding-top: 2em;
+}
 .public-image-placeholder {
   width: 150px;
   height: 150px;

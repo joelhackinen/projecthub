@@ -14,6 +14,7 @@ import {
 import GithubCallback from "./components/GithubCallback.jsx";
 import UserEditLayout from "./components/UserEditLayout.jsx";
 import PublicPage from "./components/PublicPage.jsx";
+import PublicPageProject from "./components/PublicPageProject.jsx";
 import { fetchProfile } from "./services/profiles.js";
 
 let redirectFlag = false;
@@ -150,6 +151,12 @@ const router = createBrowserRouter([
     loader: profileLoader,
     element: <PublicPage />,
     error: <AppError />,
+    children: [
+      {
+        path: ":id",
+        element: <PublicPageProject />,
+      },
+    ],
   },
   {
     path: "/logout",
