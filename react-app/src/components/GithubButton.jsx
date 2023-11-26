@@ -8,7 +8,7 @@ const GithubButton = () => {
   return (
     <div>
       <Button
-        sx={{ border: "1px solid black", color: "black", boxShadow:"2px 2px 3px gray" }}
+        sx={{ border: "1px solid white", color: "white", boxShadow:"1px 1px 2px grey" }}
         variant="outlined" component="label" startIcon={<GitHubIcon />}
         onClick={() => {
           submit(null, { method: "post", action: "/github" });

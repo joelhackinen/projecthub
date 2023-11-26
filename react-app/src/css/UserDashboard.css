@@ -8,9 +8,9 @@
 }
 
 .info-container {
-  background-color: var(--color-light);
   border-radius: 1em;
-  border: 1px solid black;
+  color: white;
+  border: 1px solid var(--color-accent);
   padding-top: 1em;
   padding-bottom: 1em;
 }
@@ -19,9 +19,9 @@
 }
 
 .projects-container {
-  background-color: var(--color-light);
   border-radius: 1em;
-  border: 1px solid black;
+  color: white;
+  border: 1px solid var(--color-accent);
   padding-top: 1em;
   padding-bottom: 1em;
 }
@@ -30,6 +30,6 @@
 }
 
 .thin-line {
-  border-top: 1px solid var(--color-dark);
+  border-top: 1px solid var(--color-light);
   margin: 1em auto;
 }

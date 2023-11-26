@@ -4,11 +4,13 @@ import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import GithubButton from "./GithubButton"
-import { Button, FormControlLabel, Switch  } from "@mui/material";
+import { Button, Checkbox, FormControlLabel  } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit"
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
-import "./../css/UserDashboard.css"
+import EastIcon from '@mui/icons-material/East';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import "./../css/UserDashboard.css";
 
 const Line = () => (<div className="thin-line"></div>)
 
@@ -17,14 +19,23 @@ const Header = ({ user }) => {
 
   return (
     <div className="header" style={{display:"flex", justifyContent: "space-between"}}>
-      <Button sx={{borderColor: "var(--color-accent)", color:"var(--color-accent)"}} variant="outlined" onClick={() => submit(null, { method: "post", action: "/logout" }) }>
+      <Button 
+        sx={{ borderColor: "var(--color-accent)", color:"var(--color-accent)" }}
+        variant="outlined"
+        onClick={() => submit(null, { method: "post", action: "/logout" }) }>
         Log out
       </Button>
       {user ?
         (
         user.url_name ?
         <Link to={`/user/${user.url_name}`} target="_blank" >
-          <Button sx={{backgroundColor: "var(--color-accent)" ,borderColor: "var(--color-accent)", color:"black"}} variant="contained">View your public profile{"->"}</Button>
+          <Button
+            sx={{backgroundColor: "var(--color-accent)" ,borderColor: "var(--color-accent)", color:"black"}}
+            variant="contained"
+            endIcon={<EastIcon />}
+            >
+            View your public profile
+          </Button>
         </Link> : <p>You can view your public profile once you've set an URL</p>)
       : <></>}
     </div> 
@@ -46,7 +57,7 @@ const PersonalInformation = ({ user }) => {
           </Col>
           <Col xs="2" sm={{ span: 1, offset: 1 }}>
             <Link to="edit/information" style={{ display:"inline-block",height:"calc(1.375rem + 1.5vw)", width:"calc(1.375rem + 1.5vw)" }}>
-              <EditIcon sx={{ color: "black", height:"calc(1.375rem + 1vw)", width:"calc(1.375rem + 1vw)" }} />
+              <EditIcon sx={{ color: "white", height:"calc(1.375rem + 1vw)", width:"calc(1.375rem + 1vw)" }} />
             </Link>
           </Col>
         </Row>
@@ -92,7 +103,13 @@ const Projects = ({ projects }) => {
             <Row>
               <FormControlLabel
                 checked={ project.visible }
-                control={ <Switch onChange={ () => updateRepo({ ...project, visible: !project.visible  }) }/> }
+                control={
+                  <Checkbox
+                    icon={<VisibilityOffOutlinedIcon />}
+                    checkedIcon={<VisibilityOutlinedIcon sx={{color:"white"}}/>}
+                    sx={{color:"white"}}
+                    onChange={ () => updateRepo({ ...project, visible: !project.visible  }) }
+                  /> }
                 label={project.visible ? "public" : "private"}
               />
             </Row>
@@ -101,7 +118,7 @@ const Projects = ({ projects }) => {
           <Col xs="6" sm="3" className="align-self-center">{project.created_at}</Col>
           <Col xs="6" sm="2" className="align-self-center">
             <Link to={`edit/project/${project.id}`} >
-              <EditIcon sx={{ color: "black" }} />
+              <EditIcon sx={{ color: "white" }} />
             </Link>
           </Col>
           <Line />
@@ -136,7 +153,7 @@ const Projects = ({ projects }) => {
         }
         <Row>
           <Link to="edit/addNewProject" style={{ width: "fit-content" }}>
-            <Button sx={{ border: "1px solid black", color: "black", boxShadow:"2px 2px 3px gray" }} variant="outlined" component="label" startIcon={<AddCircleOutlineIcon />}>
+            <Button sx={{ border: "1px solid white", color: "white", boxShadow:"1px 1px 2px grey" }} variant="outlined" component="label" startIcon={<AddCircleOutlineIcon />}>
               Add new project
             </Button>
           </Link>
