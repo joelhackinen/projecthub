@@ -32,10 +32,9 @@ const InfoBar = () => {
 
   return (
     <div style={style}>
-      {[...state]
-        .reverse()
+      {state
         .slice(0, 5)
-        .map(({ messages, severity, id }, idx) => (
+        .map(({ messages, severity, id }) => (
           <SlimAlert
             sx={{ boxShadow: 10 }}
             key={id}

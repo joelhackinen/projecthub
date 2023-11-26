@@ -4,7 +4,7 @@ import { key } from "../app.js";
 export const checkAuth = async ({ cookies, state }, next) => {
   const getPayloadFromToken = async (token) => {
     try {
-      if (Deno.env.get("MODE") === "production") {
+      if (Deno.args[0] === "production") {
         return await verify(token, key);
       }
       const [_header, _payload, _signature] = decode(token);

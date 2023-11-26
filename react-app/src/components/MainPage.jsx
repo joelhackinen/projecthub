@@ -7,7 +7,7 @@ const MainPage = () => {
   const user = useRouteLoaderData("root");
   const navigate = useNavigate();
   const errorMessages = useActionData();
-  const setInfo = useSetInfo();
+  const [setInfo] = useSetInfo();
   
   useEffect(() => {
     if (errorMessages) {

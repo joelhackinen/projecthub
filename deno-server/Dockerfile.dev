@@ -2,8 +2,6 @@ FROM denoland/deno:alpine-1.36.4
 
 EXPOSE 4000
 
-ENV MODE="development"
-
 WORKDIR /usr/src/app
 
 COPY deps.js .
@@ -11,5 +9,7 @@ COPY deps.js .
 RUN deno cache deps.js
 
 COPY . .
+
+RUN rm ./prod.env
 
 CMD [ "run", "--unstable", "--watch", "--allow-net", "--allow-read", "--allow-env", "app.js" ]

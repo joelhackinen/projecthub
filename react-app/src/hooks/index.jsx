@@ -24,7 +24,7 @@ export const useUser = () => {
 };
 
 export const useAddRepos = () => {
-  const setInfo = useSetInfo();
+  const [setInfo, clearInfo] = useSetInfo(false);
   const { mutate, isPending } = useMutation({
     mutationFn: (reposToAdd) => addRepos(reposToAdd),
     onMutate: () => {
@@ -32,10 +32,10 @@ export const useAddRepos = () => {
       return { id };
     },
     onSettled: (repos, error, _, { id }) => {
+      clearInfo(id);
       if (error) {
         setInfo({
           messages: ["unexpected error"],
-          id,
           severity: "error",
         });
         return;
@@ -44,14 +44,12 @@ export const useAddRepos = () => {
         addReposToCache(repos.added);
         setInfo({
           messages: [`${repos.added.length} projects added`],
-          id,
           severity: "success",
         });
       }
       if (repos.errors.length > 0) {
         setInfo({
           messages: [`importing of ${repos.errors.length} projects failed`],
-          id,
           severity: "warning",
         });
       }
@@ -61,7 +59,7 @@ export const useAddRepos = () => {
 };
 
 export const useUpdateProfile = () => {
-  const setInfo = useSetInfo();
+  const [setInfo] = useSetInfo();
   const { mutate, isPending } = useMutation({
     mutationFn: (profileToUpdate) => updateProfile(profileToUpdate),
     onMutate: () => {
@@ -88,7 +86,7 @@ export const useUpdateProfile = () => {
 };
 
 export const useUpdateRepo = () => {
-  const setInfo = useSetInfo();
+  const [setInfo] = useSetInfo();
   const { mutate, isPending } = useMutation({
     mutationFn: (repoToUpdate) => updateRepo(repoToUpdate),
     onMutate: () => {
@@ -115,7 +113,7 @@ export const useUpdateRepo = () => {
 };
 
 export const useDeleteRepo = () => {
-  const setInfo = useSetInfo();
+  const [setInfo] = useSetInfo();
   const { mutate, isPending } = useMutation({
     mutationFn: (repoId) => deleteRepo(repoId),
     onMutate: () => {
@@ -138,7 +136,7 @@ export const useDeleteRepo = () => {
 };
 
 export const useAddRepo = () => {
-  const setInfo = useSetInfo();
+  const [setInfo] = useSetInfo();
   const { mutate, isPending } = useMutation({
     mutationFn: (repoToAdd) => addRepo(repoToAdd),
     onMutate: () => {
@@ -164,7 +162,7 @@ export const useAddRepo = () => {
   return [mutate, isPending];
 };
 
-export const useSetInfo = () => {
+export const useSetInfo = (clearOnUnMount = true) => {
   const setState = useSetRecoilState(infoState);
   const timeoutRef = useRef({});
 
@@ -173,7 +171,7 @@ export const useSetInfo = () => {
   const setMessage = ({ messages, id = uuid(), severity = "info" }) => {
     setState((state) => {
       const newState = state.filter((s) => s.id !== id);
-      return newState.concat({ messages, severity, id });
+      return [{ messages, severity, id }, ...newState];
     });
 
     if (timeoutRef.current[id]) {
@@ -187,13 +185,22 @@ export const useSetInfo = () => {
     return id;
   };
 
+  const clearMessage = (id) => {
+    setState((state) => state.filter((s) => s.id !== id));
+    timeoutRef.current[id] = null;
+    clearTimeout(timeoutRef.current[id]);
+  };
+
   useEffect(() => {
     return () => {
-      Object.values(timeoutRef.current).forEach((timeoutId) => {
-        clearTimeout(timeoutId);
+      if (clearOnUnMount) {
+        Object.values(timeoutRef.current).forEach((timeoutId) => {
+          clearTimeout(timeoutId);
+        });
         setState([]);
-      });
+      }
     };
   }, []);
-  return setMessage;
+
+  return [setMessage, clearMessage];
 };
