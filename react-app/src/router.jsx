@@ -63,7 +63,7 @@ const enterAction = async ({ request }) => {
     } catch (error) {
       return error.messages;
     }
-    return "/dashboard";
+    return redirect("/dashboard");
   }
   return redirect("/");
 };

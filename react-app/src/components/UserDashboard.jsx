@@ -128,7 +128,7 @@ const Projects = ({ projects }) => {
         </Row>
 
         { projects.length > 0 ?
-          <ProjectList_ /> : <div style={{ color: "red" }}>You dont have any visible projects</div>
+          <ProjectList_ /> : <div style={{ color: "red", paddingBottom:"1em", paddingLeft:"2em" }}>You dont have any projects</div>
         }
         <Row>
           <Link to="edit/addNewProject" style={{ width: "fit-content" }}>
