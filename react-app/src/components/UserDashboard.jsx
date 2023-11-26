@@ -66,6 +66,10 @@ const PersonalInformation = ({ user }) => {
           <Col sm={2} md={3}>Github:</Col>
           <Col>{conditionalInfo(user.github, "You haven't connected your github account")}</Col>
         </Row>
+        <Row>
+          <Col sm={2} md={3}>About me:</Col>
+          <Col><div style={{ whiteSpace: 'pre-line' }}>{user.about}</div></Col>
+        </Row>
       </Container>
     </>
   ) : <strong>Loading ...</strong>

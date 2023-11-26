@@ -162,7 +162,9 @@ const UserEditInformation = ({ open, handleClose }) => {
             { <TextField
                 id="about"
                 name="about"
-                label="About"
+                label="About me"
+                multiline
+                minRows={2}
                 defaultValue={user.about}
                 type="text"
                 fullWidth

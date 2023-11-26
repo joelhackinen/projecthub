@@ -91,15 +91,19 @@ const UserEditEditProject = ({ open, handleClose }) => {
       nameRef.current.focus()
       return
     }
-
-    const languagesObj = {};
-    selectedLanguages.forEach(lang => languagesObj[lang] = 0);
-
-    updateRepo({
-      ...repo,
-      ...newProject,
-      languages: languagesObj
-    })
+    
+    if (repo.github){
+      updateRepo({ ...repo, ...newProject })
+    } else {
+      const languagesObj = {};
+      selectedLanguages.forEach(lang => languagesObj[lang] = 0);
+      updateRepo({
+        ...repo,
+        ...newProject,
+        languages: languagesObj
+      })
+    }
+    
     handleClose()
   }
 

@@ -108,7 +108,7 @@ const PublicPageContent = () => {
       </Row>
       <Row>
         <h4>About me:</h4>
-        <p>{about}</p>
+        <div style={{ whiteSpace: 'pre-line' }}>{about}</div>
       </Row>
     </>
   );
