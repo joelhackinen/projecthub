@@ -8,7 +8,7 @@ import { Suspense } from "react";
 import AppError from "./errorElements/AppError";
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 
-const Line = () => (<div className="thin-line"></div>)
+const Line = () => (<div className="thin-line-dark"></div>)
 
 const Project = ({ data, idx }) => {
   
