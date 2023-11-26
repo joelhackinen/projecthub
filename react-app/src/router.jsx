@@ -4,7 +4,13 @@ import MainPage from "./components/MainPage.jsx";
 import UserDashboard from "./components/UserDashboard.jsx";
 import AppError from "./components/errorElements/AppError.jsx";
 import GithubError from "./components/errorElements/GithubError.jsx";
-import { whoAmI, login, register, logout, verifyGithubUser } from "./services/auth";
+import {
+  whoAmI,
+  login,
+  register,
+  logout,
+  verifyGithubUser,
+} from "./services/auth";
 import GithubCallback from "./components/GithubCallback.jsx";
 import UserEditLayout from "./components/UserEditLayout.jsx";
 import PublicPage from "./components/PublicPage.jsx";
@@ -28,28 +34,38 @@ const appLoader = async () => {
   return userData;
 };
 
-const dashboardLoader = () => {
-  return {};
-};
-
 const loginLoader = () => {
   document.body.style.backgroundColor = "#1F2833";
   return {};
 };
 
-const loginAction = async ({ request }) => {
+const enterAction = async ({ request }) => {
   const data = await request.formData();
-  const email = data.get("loginEmail");
-  const password = data.get("loginPassword");
+  const intent = data.get("intent");
 
-  try {
-    await login(email, password);
-  } catch (e) {
-    console.error(e);
-    return redirect("/");
+  if (intent === "login") {
+    try {
+      await login(data.get("loginEmail"), data.get("loginPassword"));
+    } catch (error) {
+      return error.messages;
+    }
+    return redirect("/dashboard");
   }
 
-  return redirect("/dashboard");
+  if (intent === "register") {
+    try {
+      await register(
+        data.get("firstName"),
+        data.get("lastName"),
+        data.get("email"),
+        data.get("password"),
+      );
+    } catch (error) {
+      return error.messages;
+    }
+    return "/dashboard";
+  }
+  return redirect("/");
 };
 
 const logoutAction = async () => {
@@ -60,23 +76,6 @@ const logoutAction = async () => {
   }
 
   return redirect("/");
-};
-
-const registerAction = async ({ request }) => {
-  const data = await request.formData();
-  const firstname = data.get("firstName");
-  const lastname = data.get("lastName");
-  const email = data.get("email");
-  const password = data.get("password");
-
-  try {
-    await register(firstname, lastname, email, password);
-  } catch (e) {
-    console.error(e);
-    return redirect("/");
-  }
-
-  return redirect("/dashboard");
 };
 
 const githubAction = async () => {
@@ -104,7 +103,6 @@ const profileLoader = ({ params }) => {
   return defer({ user: fetchProfile(urlName) });
 };
 
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -117,11 +115,11 @@ const router = createBrowserRouter([
         path: "/",
         element: <MainPage />,
         loader: loginLoader,
+        action: enterAction,
       },
       {
         path: "/dashboard",
         element: <UserDashboard />,
-        loader: dashboardLoader,
         children: [
           {
             path: "/dashboard/edit/:formParam",
@@ -154,16 +152,8 @@ const router = createBrowserRouter([
     error: <AppError />,
   },
   {
-    path: "/login",
-    action: loginAction,
-  },
-  {
     path: "/logout",
     action: logoutAction,
-  },
-  {
-    path: "/register",
-    action: registerAction,
   },
 ]);
 

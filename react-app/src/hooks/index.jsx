@@ -28,7 +28,7 @@ export const useAddRepos = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (reposToAdd) => addRepos(reposToAdd),
     onMutate: () => {
-      const id = setInfo({ nessages: ["adding new projects"] });
+      const id = setInfo({ messages: ["adding new projects"] });
       return { id };
     },
     onSettled: (repos, error, _, { id }) => {
@@ -36,7 +36,7 @@ export const useAddRepos = () => {
         setInfo({
           messages: ["unexpected error"],
           id,
-          severity: "error"
+          severity: "error",
         });
         return;
       }
@@ -107,7 +107,7 @@ export const useUpdateRepo = () => {
       setInfo({
         messages: error.message,
         id,
-        severity: "error"
+        severity: "error",
       });
     },
   });
@@ -125,10 +125,10 @@ export const useDeleteRepo = () => {
     onSuccess: (deletedRepo, _, { id }) => {
       deleteRepoFromCache(deletedRepo);
       setInfo({
-        messages:[`${deletedRepo.name} deleted`],
+        messages: [`${deletedRepo.name} deleted`],
         id,
-        severity: "success"},
-      );
+        severity: "success",
+      });
     },
     onError: (error, _, { id }) => {
       setInfo(error.messages, id, "error");
@@ -170,27 +170,28 @@ export const useSetInfo = () => {
 
   // messages: string[] --- message(s) to show
   // id: string         --- identifier of the action that triggered the notification chain
-  const setMessage = ({ messages, id=uuid(), severity="info" }) => {
+  const setMessage = ({ messages, id = uuid(), severity = "info" }) => {
     setState((state) => {
       const newState = state.filter((s) => s.id !== id);
       return newState.concat({ messages, severity, id });
     });
-    
+
     if (timeoutRef.current[id]) {
       clearTimeout(timeoutRef.current[id]);
     }
 
     timeoutRef.current[id] = setTimeout(() => {
-      setState(state => state.filter(s => s.id !== id));
+      setState((state) => state.filter((s) => s.id !== id));
       timeoutRef.current[id] = null;
-    }, 3000);
+    }, 5000);
     return id;
   };
 
   useEffect(() => {
     return () => {
-      Object.values(timeoutRef.current).forEach(timeoutId => {
+      Object.values(timeoutRef.current).forEach((timeoutId) => {
         clearTimeout(timeoutId);
+        setState([]);
       });
     };
   }, []);

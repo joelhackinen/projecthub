@@ -1,9 +1,19 @@
-import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useNavigate, useRouteLoaderData, useActionData } from "react-router-dom";
 import LoginPage from "./LoginPage.jsx";
+import { useSetInfo } from "../hooks/index.jsx";
+import { useEffect } from "react";
 
 const MainPage = () => {
   const user = useRouteLoaderData("root");
   const navigate = useNavigate();
+  const errorMessages = useActionData();
+  const setInfo = useSetInfo();
+  
+  useEffect(() => {
+    if (errorMessages) {
+      setInfo({ messages: errorMessages, severity: "error" });
+    }
+  }, [errorMessages]);
 
   return (
     <div>

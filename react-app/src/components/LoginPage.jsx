@@ -18,6 +18,7 @@ const LoginPage = () => {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const submit = useSubmit();
 
+/*
   const handleRegister = (e) => {
     e.preventDefault();
     if (password === passwordConfirm) {
@@ -31,6 +32,7 @@ const LoginPage = () => {
       );
     }
   };
+*/
 
   const handleRegisterClick = (e) => {
     e.preventDefault();
@@ -55,7 +57,7 @@ const LoginPage = () => {
   };
 
   const registerForm = () => (
-    <form className="register-form" onSubmit={handleRegister}>
+    <Form className="register-form" action="/" method="post" /*onSubmit={handleRegister}*/>
       <div className="input-container">
         <input
           type="text"
@@ -115,14 +117,20 @@ const LoginPage = () => {
         ></i>
       </div>
 
-      <button className="submit-button" type="submit">
+      <button
+        className="submit-button"
+        disabled={password !== passwordConfirm || password === ""}
+        type="submit"
+        name="intent"
+        value="register"
+      >
         Register
       </button>
-    </form>
+    </Form>
   );
 
   const loginForm = () => (
-    <Form className="login-form" action="/login" method="post">
+    <Form className="login-form" action="/" method="post">
       <div className="input-container">
         <input
           type="text"
@@ -146,7 +154,12 @@ const LoginPage = () => {
           onClick={(event) => togglePasswordVisibility(event)}
         ></i>
       </div>
-      <button className="submit-button" type="submit">
+      <button
+        className="submit-button"
+        type="submit"
+        name="intent"
+        value="login"
+      >
         Sign in
       </button>
     </Form>
