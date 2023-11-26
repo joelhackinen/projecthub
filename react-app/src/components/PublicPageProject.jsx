@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 
 const PublicPageProject = () => {
-  const { id } = useParams();
+  const { url_name, id } = useParams();
   const projects = useOutletContext();
 
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ const PublicPageProject = () => {
   
   const handleClose = () => {
     setOpen(false)
-    navigate("/user/villestrengell")
+    navigate(`/user/${url_name}`)
     return null
   }
 
