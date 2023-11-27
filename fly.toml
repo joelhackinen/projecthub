@@ -6,7 +6,12 @@
 app = "projecthub"
 primary_region = "ams"
 
+[experimental]
+  auto_rollback = true
+
 [build]
+  ignorefile = ".dockerignore"
+  dockerfile = "Dockerfile"
 
 [env]
   PORT = "4000"

@@ -19,12 +19,17 @@ jobs:
     name: Deploy app to fly.io
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - name: Set up Docker build args
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Set build args and deploy
         run: |
-          echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> $GITHUB_ENV
-          echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> $GITHUB_ENV
-          echo "ELEPHANTSQL_URL=${{ secrets.ELEPHANTSQL_URL }}" >> $GITHUB_ENV
-          echo "VITE_GITHUB_CLIENT_ID=${{ secrets.VITE_GITHUB_CLIENT_ID }}" >> $GITHUB_ENV
-      - run: flyctl deploy --remote-only
+          flyctl deploy \
+            --build-arg CLIENT_ID=${{ secrets.CLIENT_ID }} \
+            --build-arg CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
+            --build-arg ELEPHANTSQL_URL=${{ secrets.ELEPHANTSQL_URL }} \
+            --build-arg VITE_GITHUB_CLIENT_ID=${{ secrets.VITE_GITHUB_CLIENT_ID }} \
+            --remote-only
