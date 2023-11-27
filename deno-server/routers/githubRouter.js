@@ -1,13 +1,13 @@
 import { Router } from "../deps.js";
 import { sql } from "../database.js";
-import { isObject, isoToDate } from "../utils/index.ts";
+import { isObject, isoToDate, BASE_URL } from "../utils/index.ts";
 
 const CLIENT_ID = Deno.env.get("CLIENT_ID");
 const CLIENT_SECRET = Deno.env.get("CLIENT_SECRET");
 
 const router = new Router();
 
-router.post("/github/verifyUser", async ({ request, response, state }) => {
+router.post(`${BASE_URL}/github/verifyUser`, async ({ request, response, state }) => {
   if (!state.email) {
     return response.status = 401;
   }
@@ -65,7 +65,7 @@ router.post("/github/verifyUser", async ({ request, response, state }) => {
 });
 
 
-router.get("/github/fetchRepos", async ({ request, response, state }) => {
+router.get(`${BASE_URL}/github/fetchRepos`, async ({ request, response, state }) => {
   if (!state.email) {
     return response.status = 401;
   }

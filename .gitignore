@@ -4,4 +4,4 @@ database/postgres-data*
 **/dist
 .vscode
 .env
-prod.env
+.env.production

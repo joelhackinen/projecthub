@@ -2,13 +2,13 @@ import {
   Router,
   firstMessages,
 } from "../deps.js";
-import { omit, setJWT } from "../utils/index.ts";
+import { omit, setJWT, BASE_URL } from "../utils/index.ts";
 import { sql } from "../database.js";
 import { validateUserEdit } from "../utils/validations.js";
 
 const router = new Router();
 
-router.put("/users", async ({ request, response, state, cookies }) => {
+router.put(`${BASE_URL}/users`, async ({ request, response, state, cookies }) => {
   if (!state.email) {
     return response.status = 401;
   }

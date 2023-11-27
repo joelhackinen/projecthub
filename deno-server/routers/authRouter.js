@@ -1,10 +1,10 @@
 import { sql } from "../database.js";
 import { Router } from "../deps.js";
-import { omit } from "../utils/index.ts";
+import { omit, BASE_URL } from "../utils/index.ts";
 
 const router = new Router();
 
-router.get("/whoami", async ({ response, state }) => {
+router.get(`${BASE_URL}/whoami`, async ({ response, state }) => {
   if (!state.email) {
     return response.status = 401;
   }

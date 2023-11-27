@@ -6,10 +6,11 @@ import {
   firstMessages,
 } from "../deps.js";
 import { validateRepo } from "../utils/validations.js";
+import { BASE_URL } from "../utils/index.ts";
 
 const router = new Router();
 
-router.post("/repos/many", async ({ request, response, state }) => {
+router.post(`${BASE_URL}/repos/many`, async ({ request, response, state }) => {
   if (!state.email) {
     return response.status = 401;
   }
@@ -70,7 +71,7 @@ router.post("/repos/many", async ({ request, response, state }) => {
 });
 
 
-router.post("/repos", async ({ request, response, state }) => {
+router.post(`${BASE_URL}/repos`, async ({ request, response, state }) => {
   if (!state.email) {
     return response.status = 401;
   }
@@ -119,7 +120,7 @@ router.post("/repos", async ({ request, response, state }) => {
 });
 
 
-router.delete("/repos/:id", async ({ response, state, params }) => {
+router.delete(`${BASE_URL}/repos/:id`, async ({ response, state, params }) => {
   if (!state.email) {
     return response.status = 401;
   }
@@ -148,7 +149,7 @@ router.delete("/repos/:id", async ({ response, state, params }) => {
 });
 
 
-router.put("/repos/:id", async ({ request, response, state, params }) => {
+router.put(`${BASE_URL}/repos/:id`, async ({ request, response, state, params }) => {
   if (!state.email) {
     return response.status = 401;
   }

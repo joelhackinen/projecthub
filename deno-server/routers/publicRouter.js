@@ -3,13 +3,13 @@ import {
   scrypt,
   firstMessages,
 } from "../deps.js";
-import { omit, setJWT } from "../utils/index.ts";
+import { omit, setJWT, BASE_URL } from "../utils/index.ts";
 import { sql } from "../database.js";
 import { validateLogin, validateRegistration } from "../utils/validations.js";
 
 const router = new Router();
 
-router.get("/users/:urlName", async ({ response, params }) => {
+router.get(`${BASE_URL}/users/:urlName`, async ({ response, params }) => {
   let userData;
   let repoData;
   try {
@@ -46,7 +46,7 @@ router.get("/users/:urlName", async ({ response, params }) => {
 });
 
 
-router.post("/users", async ({ request, response, cookies }) => {
+router.post(`${BASE_URL}/users`, async ({ request, response, cookies }) => {
   const body = request.body({ type: "json" });
   const userData = await body.value;
 
@@ -98,7 +98,7 @@ router.post("/users", async ({ request, response, cookies }) => {
 });
 
 
-router.post("/login", async ({ request, response, cookies }) => {
+router.post(`${BASE_URL}/login`, async ({ request, response, cookies }) => {
   const body = request.body({ type: "json" });
   const data = await body.value;
   const { email, password } = data;
@@ -153,7 +153,7 @@ router.post("/login", async ({ request, response, cookies }) => {
 });
 
 
-router.post("/logout", async ({ response, cookies }) => {
+router.post(`${BASE_URL}/logout`, async ({ response, cookies }) => {
   await cookies.delete("token");
   response.status = 204;
 });

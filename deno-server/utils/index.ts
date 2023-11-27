@@ -6,6 +6,10 @@ import {
 } from "../deps.js";
 import { key } from "../app.js";
 
+export const BASE_URL = Deno.args[0] === "production"
+  ? "/api"
+  : "";
+
 // omit keys from object
 export const omit = <T, K extends keyof T>(obj: T, ...keys: K[]): Omit<T, K> => {
   const result = { ...obj };

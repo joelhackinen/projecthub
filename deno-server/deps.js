@@ -7,6 +7,7 @@ export * as scrypt from "https://deno.land/x/scrypt@v4.2.1/mod.ts";
 export {
   Application,
   Router,
+  send,
 } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 
 export {
