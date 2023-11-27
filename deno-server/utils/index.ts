@@ -62,5 +62,8 @@ export const setJWT = async (email: string, cookies: SecureCookieMap) => {
     { email, exp: getNumericDate(60 * 60 * 24) },
     key,
   );
-  await cookies.set("token", jwt, { httpOnly: true });
+  await cookies.set("token", jwt, {
+    httpOnly: true,
+    secure: Deno.args[0] === "production",
+  });
 };

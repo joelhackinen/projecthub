@@ -9,10 +9,6 @@ on:
       - main
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-  CLIENT_ID: ${{ secrets.CLIENT_ID }}
-  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-  ELEPHANTSQL_URL: ${{ secrets.ELEPHANTSQL_URL }}
-  VITE_GITHUB_CLIENT_ID: ${{ secrets.VITE_GITHUB_CLIENT_ID }}
 
 jobs:
   deploy:
