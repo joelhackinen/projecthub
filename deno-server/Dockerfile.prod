@@ -10,6 +10,4 @@ RUN deno cache deps.js
 
 COPY . .
 
-RUN rm ./.env && mv ./prod.env ./.env
-
 CMD [ "run", "--unstable", "--allow-net", "--allow-read", "--allow-env", "app.js", "production" ]
