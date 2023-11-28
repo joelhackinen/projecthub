@@ -20,7 +20,8 @@
   /* Togglable register/Sign in buttons */
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: flex-end;
+  --webkit-align-items: end;
   height: 50px;
 }
 .form-navbar .not-visible {
