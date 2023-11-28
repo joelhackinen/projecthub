@@ -168,7 +168,7 @@ const LoginPage = () => {
   const moreInfoParagraph = () => (
     <div className={`more-info-paragraph ${showMoreInfo ? "show" : "hide"}`}>
       <p>
-        Here is some extra info on our website!
+        CS-E4400 Design of WWW Services D course project
         <br />
         <br />
         Register to start creating your ProjectHub profile.

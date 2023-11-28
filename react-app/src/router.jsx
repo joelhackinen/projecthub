@@ -19,8 +19,9 @@ import { fetchProfile } from "./services/profiles.js";
 
 let redirectFlag = false;
 
-const appLoader = async () => {
+const appLoader = async ({ request }) => {
   if (redirectFlag) {
+    redirectFlag = false;
     return null;
   }
 
@@ -32,7 +33,14 @@ const appLoader = async () => {
   }
   redirectFlag = false;
 
-  return userData;
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  if (pathname === "/") {
+    return redirect("/dashboard");
+  }
+
+  return null;
 };
 
 const loginLoader = () => {
@@ -46,7 +54,10 @@ const enterAction = async ({ request }) => {
 
   if (intent === "login") {
     try {
-      await login(data.get("loginEmail"), data.get("loginPassword"));
+      await login(
+        data.get("loginEmail"),
+        data.get("loginPassword")
+      );
     } catch (error) {
       return error.messages;
     }
@@ -111,6 +122,7 @@ const router = createBrowserRouter([
     loader: appLoader,
     id: "root",
     errorElement: <AppError />,
+    shouldRevalidate: () => false,
     children: [
       {
         path: "/",
