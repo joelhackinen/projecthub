@@ -23,10 +23,10 @@ export const login = async (email, password) => {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
-  const data = await res.json();
   if (!res.ok) {
-    throwError(res, data.error);
+    await throwError(res);
   }
+  const data = await res.json();
   setUserToCache(data);
   return data;
 };
@@ -48,10 +48,10 @@ export const register = async (firstname, lastname, email, password) => {
       password,
     }),
   });
-  const data = await res.json();
   if (!res.ok) {
-    throwError(res, data.error);
+    await throwError(res);
   }
+  const data = await res.json();
   setUserToCache(data);
   return data;
 };
@@ -61,18 +61,18 @@ export const verifyGithubUser = async (code) => {
     method: "POST",
     body: JSON.stringify({ code }),
   });
-  const userData = await userRes.json();
   if (!userRes.ok) {
-    throwError(userRes, userData.error);
+    await throwError(userRes);
   }
+  const userData = await userRes.json();
   const { login, github_token } = userData;
   const oldData = qclient.getQueryData(["whoami"]);
   updateUserToCache({ ...oldData, github: login });
 
   const repoRes = await fetch(`/api/github/fetchRepos?github_token=${github_token}`);
-  const repoData = await repoRes.json();
   if (!repoRes.ok) {
-    throwError(repoRes, repoData.error);
+    await throwError(repoRes);
   }
+  const repoData = await repoRes.json();
   return repoData;
 };

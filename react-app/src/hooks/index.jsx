@@ -103,7 +103,7 @@ export const useUpdateRepo = () => {
     },
     onError: (error, _, { id }) => {
       setInfo({
-        messages: error.message,
+        messages: error.messages,
         id,
         severity: "error",
       });
@@ -129,7 +129,11 @@ export const useDeleteRepo = () => {
       });
     },
     onError: (error, _, { id }) => {
-      setInfo(error.messages, id, "error");
+      setInfo({
+        messages: error.messages,
+        id,
+        severity: "error"
+      });
     },
   });
   return [mutate, isPending];

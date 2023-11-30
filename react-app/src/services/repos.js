@@ -5,10 +5,10 @@ export const updateRepo = async (repoToUpdate) => {
     method: "PUT",
     body: JSON.stringify(repoToUpdate),
   });
-  const data = await res.json();
   if (!res.ok) {
-    throwError(res, data.error);
+    await throwError(res);
   }
+  const data = await res.json();
   return data;
 };
 
@@ -16,10 +16,10 @@ export const deleteRepo = async (id) => {
   const res = await fetch(`/api/repos/${id}`, {
     method: "DELETE",
   });
-  const data = await res.json();
   if (!res.ok) {
-    throwError(res, data.error);
+    await throwError(res);
   }
+  const data = await res.json();
   return data;
 };
 
@@ -28,10 +28,10 @@ export const addRepos = async (reposToAdd) => {
     method: "POST",
     body: JSON.stringify(reposToAdd),
   });
-  const data = await res.json();
   if (!res.ok) {
-    throwError(res, data.error);
+    await throwError(res);
   }
+  const data = await res.json();
   return data;
 };
 
@@ -40,9 +40,9 @@ export const addRepo = async (repoToAdd) => {
     method: "POST",
     body: JSON.stringify(repoToAdd),
   });
-  const data = await res.json();
   if (!res.ok) {
-    throwError(res, data.error);
+    await throwError(res);
   }
+  const data = await res.json();
   return data;
-}
+};

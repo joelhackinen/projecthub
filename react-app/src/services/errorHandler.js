@@ -1,4 +1,11 @@
-export const throwError = (res, errorObj=null) => {
+export const throwError = async (res) => {
+  let errorObj;
+  try {
+    const data = await res.json();
+    errorObj = data.error;
+  } catch (_error) {
+    errorObj = null;
+  }
   const error = new Error();
   switch (res.status) {
     case 401:
