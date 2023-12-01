@@ -43,9 +43,6 @@ const Project = ({ data, idx }) => {
     {idx !== 0 ? <Line /> : <></>}
     <div className="public-project">
       <Row> {/* Name + languages + created */}
-        <Col sm={12} md={4} lg={4}>
-          <div className="mx-auto public-proj-img-placeholder" />
-        </Col>
         <Col> {/* md={{ order: idx % 2 ? "last" : "first" }} */}
           <h1>{data?.name}</h1>
           <div style={{ position:"absolute", top:"2%", right:"2%"}}>
@@ -107,9 +104,6 @@ const PublicPageContent = () => {
         <h2>
           {firstName} {lastName}
         </h2>
-      </Row>
-      <Row>
-        <div className="public-image-placeholder"></div>
       </Row>
       <Row className="text-center">
         <div className="pb-4">{email}</div>

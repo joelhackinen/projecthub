@@ -151,9 +151,9 @@ const UserEditInformation = ({ open, handleClose }) => {
                 helperText={
                   errors.url_name ? errorTexts.url_name :
                     (user.url_name ?
-                      `Your public profiles URL is: /user/${user.url_name}`
+                      `Your public profiles URL is: https://projecthub.fly.dev/user/${user.url_name}`
                     :
-                      `Your public profiles URL will be: /user/<URL>`)}
+                      `Your public profiles URL will be: https://projecthub.fly.dev/user/<URL>`)}
                 error={errors.url_name}
                 inputRef={urlRef}
               />}
