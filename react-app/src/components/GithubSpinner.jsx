@@ -13,8 +13,8 @@ const style = {
 };
 
 const GithubSpinner = ({
-  msg="Waiting for resources from Github...",
-  color="white"
+  msg = "Waiting for resources from Github...",
+  color = "white",
 }) => {
   return (
     <div style={style}>

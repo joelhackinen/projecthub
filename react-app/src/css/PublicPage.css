@@ -1,7 +1,7 @@
 body {
-  --color-dark: #1F2833;
-  --color-light: #E5E0D8;
-  --color-accent: #66FCF1;
+  --color-dark: #1f2833;
+  --color-light: #e5e0d8;
+  --color-accent: #66fcf1;
 }
 
 .public-container {
@@ -13,7 +13,7 @@ body {
   background-color: var(--color-dark);
   color: white;
 }
-.public-main-info-container h2{
+.public-main-info-container h2 {
   color: var(--color-accent);
 }
 

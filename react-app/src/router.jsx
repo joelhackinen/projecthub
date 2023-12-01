@@ -54,10 +54,7 @@ const enterAction = async ({ request }) => {
 
   if (intent === "login") {
     try {
-      await login(
-        data.get("loginEmail"),
-        data.get("loginPassword")
-      );
+      await login(data.get("loginEmail"), data.get("loginPassword"));
     } catch (error) {
       return error.messages;
     }

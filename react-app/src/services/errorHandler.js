@@ -9,7 +9,9 @@ export const throwError = async (res) => {
   const error = new Error();
   switch (res.status) {
     case 401:
-      error.messages = errorObj ? Object.values(errorObj) : ["unauthorized, please log in again"];
+      error.messages = errorObj
+        ? Object.values(errorObj)
+        : ["unauthorized, please log in again"];
       throw error;
     case 500:
       error.messages = ["unexpected error"];

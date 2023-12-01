@@ -1,6 +1,5 @@
 import "./../css/loginPage.css";
 import { useState } from "react";
-import { useSubmit } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -16,23 +15,6 @@ const LoginPage = () => {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showMoreInfo, setShowMoreInfo] = useState(false);
-  const submit = useSubmit();
-
-/*
-  const handleRegister = (e) => {
-    e.preventDefault();
-    if (password === passwordConfirm) {
-      window.localStorage.setItem("firstName", firstName);
-      window.localStorage.setItem("lastName", lastName);
-      window.localStorage.setItem("email", email);
-
-      submit(
-        { firstName, lastName, email, password },
-        { method: "post", action: "/register" },
-      );
-    }
-  };
-*/
 
   const handleRegisterClick = (e) => {
     e.preventDefault();
@@ -57,7 +39,11 @@ const LoginPage = () => {
   };
 
   const registerForm = () => (
-    <Form className="register-form" action="/" method="post" /*onSubmit={handleRegister}*/>
+    <Form
+      className="register-form"
+      action="/"
+      method="post" /*onSubmit={handleRegister}*/
+    >
       <div className="input-container">
         <input
           type="text"

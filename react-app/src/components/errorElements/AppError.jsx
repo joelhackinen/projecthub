@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRouteError } from "react-router-dom";
 
-const AppError = ({ message="something went wrong" }) => {
+const AppError = ({ message = "something went wrong" }) => {
   const navigate = useNavigate();
   const error = useRouteError();
 

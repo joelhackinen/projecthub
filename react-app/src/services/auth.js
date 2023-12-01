@@ -69,7 +69,9 @@ export const verifyGithubUser = async (code) => {
   const oldData = qclient.getQueryData(["whoami"]);
   updateUserToCache({ ...oldData, github: login });
 
-  const repoRes = await fetch(`/api/github/fetchRepos?github_token=${github_token}`);
+  const repoRes = await fetch(
+    `/api/github/fetchRepos?github_token=${github_token}`,
+  );
   if (!repoRes.ok) {
     await throwError(repoRes);
   }

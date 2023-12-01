@@ -3,14 +3,14 @@ import { qclient } from "../../queryClient";
 export const addReposToCache = (reposToAdd) => {
   qclient.setQueryData(["whoami"], (oldData) => ({
     ...oldData,
-    repos: [ ...oldData.repos, ...reposToAdd ],
+    repos: [...oldData.repos, ...reposToAdd],
   }));
 };
 
 export const addRepoToCache = (addedRepo) => {
   qclient.setQueryData(["whoami"], (oldData) => ({
     ...oldData,
-    repos: [ ...oldData.repos, addedRepo ],
+    repos: [...oldData.repos, addedRepo],
   }));
 };
 

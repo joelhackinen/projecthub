@@ -1,4 +1,4 @@
-const GithubLogo = ({ className="", color="black" }) => {
+const GithubLogo = ({ className = "", color = "black" }) => {
   return (
     <svg
       className={className}

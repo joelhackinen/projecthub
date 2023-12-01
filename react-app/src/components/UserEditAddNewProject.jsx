@@ -1,16 +1,37 @@
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField, Radio, RadioGroup, FormControlLabel, List, ListItem, Checkbox, ListItemText, IconButton } from "@mui/material"
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { useAddRepo } from "../hooks"
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  TextField,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  List,
+  ListItem,
+  Checkbox,
+  ListItemText,
+  IconButton,
+} from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { useAddRepo } from "../hooks";
 import { useState, useRef } from "react";
 
 const UserEditAddNewProject = ({ open, handleClose }) => {
   const [addRepo, isAddRepoPending] = useAddRepo();
-  const [nameError, setNameError] = useState(false)
-  const [nameErrorText, setNameErrorText] = useState("")
-  const nameRef = useRef()
-  const [listOfLanguages, setListOfLanguages] = useState(['Python', 'Javascript', 'React', 'C++'])
+  const [nameError, setNameError] = useState(false);
+  const [nameErrorText, setNameErrorText] = useState("");
+  const nameRef = useRef();
+  const [listOfLanguages, setListOfLanguages] = useState([
+    "Python",
+    "Javascript",
+    "React",
+    "C++",
+  ]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [customLanguage, setCustomLanguage] = useState('');
+  const [customLanguage, setCustomLanguage] = useState("");
 
   const [newProject, setNewProject] = useState({
     //user_email: user.email, ---- ei tarvita, backendissä käyttäjä luetaan keksin tokenista
@@ -22,13 +43,13 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
     visible: "true",
     created_at: "",
     languages: [],
-  })
-  const handleChange = e => {
+  });
+  const handleChange = (e) => {
     setNewProject({
       ...newProject,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
   const handleToggleLanguage = (value) => {
     const currentIndex = selectedLanguages.indexOf(value);
     const newSelectedLanguages = [...selectedLanguages];
@@ -42,25 +63,33 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
     setSelectedLanguages(newSelectedLanguages);
   };
   const handleAddCustomLanguage = () => {
-    if (customLanguage.trim() !== '' && listOfLanguages.indexOf(customLanguage) === -1) {
+    if (
+      customLanguage.trim() !== "" &&
+      listOfLanguages.indexOf(customLanguage) === -1
+    ) {
       setListOfLanguages([...listOfLanguages, customLanguage]);
-      setSelectedLanguages([...selectedLanguages, customLanguage])
-      setCustomLanguage('');
+      setSelectedLanguages([...selectedLanguages, customLanguage]);
+      setCustomLanguage("");
     }
   };
-  
+
   const addNewProject = (e) => {
-    e.preventDefault()
-    const invalidName = !(newProject.name===undefined || (newProject.name.length <= 30 && newProject.name.length >= 2))
+    e.preventDefault();
+    const invalidName = !(
+      newProject.name === undefined ||
+      (newProject.name.length <= 30 && newProject.name.length >= 2)
+    );
     if (invalidName) {
-      setNameError(true)
-      setNameErrorText(invalidName ? "Name must be between 2 and 30 characters long." : "")
-      nameRef.current.focus()
-      return
+      setNameError(true);
+      setNameErrorText(
+        invalidName ? "Name must be between 2 and 30 characters long." : "",
+      );
+      nameRef.current.focus();
+      return;
     }
 
     const languagesObj = {};
-    selectedLanguages.forEach(lang => languagesObj[lang] = 0);
+    selectedLanguages.forEach((lang) => (languagesObj[lang] = 0));
 
     addRepo({
       ...newProject,
@@ -68,14 +97,16 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
       created_at: newProject.created_at,
       languages: languagesObj,
     });
-    handleClose()
-  }
+    handleClose();
+  };
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>
       <DialogTitle>Add a new project</DialogTitle>
       <form noValidate onSubmit={addNewProject}>
-        <DialogContent> {/* Name */}
+        <DialogContent>
+          {" "}
+          {/* Name */}
           <TextField
             id="name"
             name="name"
@@ -89,8 +120,12 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
             inputRef={nameRef}
           />
         </DialogContent>
-        <DialogContent> {/* created_at */}
-          <DialogContentText>When did you create this project?</DialogContentText>
+        <DialogContent>
+          {" "}
+          {/* created_at */}
+          <DialogContentText>
+            When did you create this project?
+          </DialogContentText>
           <TextField
             id="created_at"
             name="created_at"
@@ -99,7 +134,9 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
             onChange={handleChange}
           />
         </DialogContent>
-        <DialogContent> {/* Description */}
+        <DialogContent>
+          {" "}
+          {/* Description */}
           <TextField
             id="description"
             name="description"
@@ -111,7 +148,9 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
             onChange={handleChange}
           />
         </DialogContent>
-        <DialogContent> {/* Visibility */}
+        <DialogContent>
+          {" "}
+          {/* Visibility */}
           <DialogContentText>Visibility</DialogContentText>
           <RadioGroup
             id="visible"
@@ -119,15 +158,32 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
             name="visible"
             onChange={handleChange}
           >
-            <FormControlLabel value={true} control={<Radio />} label="Visible" />
-            <FormControlLabel value={false} control={<Radio />} label="Hidden" />
+            <FormControlLabel
+              value={true}
+              control={<Radio />}
+              label="Visible"
+            />
+            <FormControlLabel
+              value={false}
+              control={<Radio />}
+              label="Hidden"
+            />
           </RadioGroup>
         </DialogContent>
-        <DialogContent> {/* Languages */}
-          <DialogContentText>What languages/technologies did you use on this project?</DialogContentText>
+        <DialogContent>
+          {" "}
+          {/* Languages */}
+          <DialogContentText>
+            What languages/technologies did you use on this project?
+          </DialogContentText>
           <List>
             {listOfLanguages.map((item) => (
-              <ListItem key={item} dense button onClick={() => handleToggleLanguage(item)}>
+              <ListItem
+                key={item}
+                dense
+                button
+                onClick={() => handleToggleLanguage(item)}
+              >
                 <Checkbox
                   // edge="start"
                   size="small"
@@ -147,17 +203,19 @@ const UserEditAddNewProject = ({ open, handleClose }) => {
             onChange={(e) => setCustomLanguage(e.target.value)}
           />
           <IconButton onClick={handleAddCustomLanguage}>
-            <AddCircleOutlineIcon color="red"/>
+            <AddCircleOutlineIcon color="red" />
           </IconButton>
         </DialogContent>
 
         <DialogActions>
-          <Button variant="contained" type="submit">Add</Button>
+          <Button variant="contained" type="submit">
+            Add
+          </Button>
           <Button onClick={handleClose}>cancel</Button>
         </DialogActions>
       </form>
     </Dialog>
-  )
-}
+  );
+};
 
-export default UserEditAddNewProject
+export default UserEditAddNewProject;

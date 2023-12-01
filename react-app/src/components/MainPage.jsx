@@ -6,7 +6,7 @@ import { useEffect } from "react";
 const MainPage = () => {
   const errorMessages = useActionData();
   const [setInfo] = useSetInfo();
-  
+
   useEffect(() => {
     if (errorMessages) {
       setInfo({ messages: errorMessages, severity: "error" });

@@ -132,7 +132,7 @@ export const useDeleteRepo = () => {
       setInfo({
         messages: error.messages,
         id,
-        severity: "error"
+        severity: "error",
       });
     },
   });

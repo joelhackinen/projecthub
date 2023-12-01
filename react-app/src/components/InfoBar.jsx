@@ -32,20 +32,18 @@ const InfoBar = () => {
 
   return (
     <div style={style}>
-      {state
-        .slice(0, 5)
-        .map(({ messages, severity, id }) => (
-          <SlimAlert
-            sx={{ boxShadow: 10 }}
-            key={id}
-            severity={severity}
-            onClose={() => handleClose(id)}
-          >
-            {messages
-              ? messages.map((m, i) => <div key={`${id}-${i}`}>{m}</div>)
-              : "no message"}
-          </SlimAlert>
-        ))}
+      {state.slice(0, 5).map(({ messages, severity, id }) => (
+        <SlimAlert
+          sx={{ boxShadow: 10 }}
+          key={id}
+          severity={severity}
+          onClose={() => handleClose(id)}
+        >
+          {messages
+            ? messages.map((m, i) => <div key={`${id}-${i}`}>{m}</div>)
+            : "no message"}
+        </SlimAlert>
+      ))}
     </div>
   );
 };
